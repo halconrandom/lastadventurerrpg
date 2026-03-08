@@ -94,19 +94,19 @@ export default function NuevaPartidaPage() {
       />
 
       {/* Contenido */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-8">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-12">
         {/* Título */}
-        <h1 className="font-medieval text-4xl text-[#d4a843] mb-2 animate-fade-in">
+        <h1 className="font-medieval text-4xl text-[#d4a843] mb-3 animate-fade-in">
           Crear Personaje
         </h1>
-        <div className="h-[2px] w-48 bg-gradient-to-r from-transparent via-[#d4a843] to-transparent mb-8" />
+        <div className="h-[2px] w-56 bg-gradient-to-r from-transparent via-[#d4a843] to-transparent mb-10" />
 
         {/* Indicador de pasos */}
-        <div className="flex items-center gap-2 mb-8 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+        <div className="flex items-center gap-3 mb-10 animate-fade-in" style={{ animationDelay: "0.1s" }}>
           {(["nombre", "genero", "dificultad", "resumen"] as Paso[]).map((p, i) => (
             <div key={p} className="flex items-center">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center font-medieval text-sm transition-all duration-300 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-medieval text-base transition-all duration-300 ${
                   paso === p
                     ? "bg-[#d4a843] text-[#0a0a0f]"
                     : i < ["nombre", "genero", "dificultad", "resumen"].indexOf(paso)
@@ -118,7 +118,7 @@ export default function NuevaPartidaPage() {
               </div>
               {i < 3 && (
                 <div
-                  className={`w-12 h-[2px] transition-all duration-300 ${
+                  className={`w-16 h-[2px] transition-all duration-300 ${
                     i < ["nombre", "genero", "dificultad", "resumen"].indexOf(paso)
                       ? "bg-[#a67c00]"
                       : "bg-[#2a2a35]"
@@ -131,9 +131,9 @@ export default function NuevaPartidaPage() {
 
         {/* Paso: Nombre */}
         {paso === "nombre" && (
-          <div className="w-full max-w-md animate-fade-in">
-            <Card className="p-6">
-              <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-6">
+          <div className="w-full max-w-lg animate-fade-in">
+            <Card className="p-10">
+              <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-8">
                 ¿Cómo te llamas, aventurero?
               </h2>
               <input
@@ -142,14 +142,14 @@ export default function NuevaPartidaPage() {
                 onChange={(e) => nombreSet(e.target.value)}
                 placeholder="Tu nombre..."
                 maxLength={20}
-                className="w-full bg-[#0a0a0f] border border-[#2a2a35] rounded px-4 py-3 text-[#e8e4d9] font-medieval text-lg focus:border-[#d4a843] focus:outline-none focus:shadow-[0_0_10px_rgba(212,168,67,0.2)] transition-all"
+                className="w-full bg-[#0a0a0f] border-2 border-[#2a2a35] rounded-lg px-6 py-4 text-[#e8e4d9] font-medieval text-xl focus:border-[#d4a843] focus:outline-none focus:shadow-[0_0_15px_rgba(212,168,67,0.2)] transition-all"
               />
               {nombre.length > 0 && nombre.length < 3 && (
-                <p className="text-[#c44536] text-sm mt-2 text-center">
+                <p className="text-[#c44536] text-sm mt-3 text-center">
                   El nombre debe tener al menos 3 caracteres
                 </p>
               )}
-              <div className="flex justify-end mt-6">
+              <div className="flex justify-end mt-8">
                 <Button onClick={handleSiguiente} disabled={nombre.length < 3}>
                   Continuar
                 </Button>
@@ -160,24 +160,24 @@ export default function NuevaPartidaPage() {
 
         {/* Paso: Género */}
         {paso === "genero" && (
-          <div className="w-full max-w-2xl animate-fade-in">
-            <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-6">
+          <div className="w-full max-w-3xl animate-fade-in">
+            <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-8">
               ¿Cuál es tu género?
             </h2>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-6">
               {(["masculino", "femenino", "no_especificar"] as Genero[]).map((g) => (
                 <Card
                   key={g}
                   hoverable
                   selected={genero === g}
                   onClick={() => generoSet(g)}
-                  className="p-6 cursor-pointer"
+                  className="p-8 cursor-pointer"
                 >
                   <CardContent className="text-center">
-                    <div className="text-4xl mb-3">
+                    <div className="text-5xl mb-4">
                       {g === "masculino" ? "♂" : g === "femenino" ? "♀" : "?"}
                     </div>
-                    <p className="font-medieval text-lg text-[#d4a843]">
+                    <p className="font-medieval text-xl text-[#d4a843]">
                       {g === "masculino"
                         ? "Masculino"
                         : g === "femenino"
@@ -195,7 +195,7 @@ export default function NuevaPartidaPage() {
                 </Card>
               ))}
             </div>
-            <div className="flex justify-between mt-6">
+            <div className="flex justify-between mt-10">
               <Button variant="secondary" onClick={handleAnterior}>
                 Anterior
               </Button>
@@ -208,24 +208,24 @@ export default function NuevaPartidaPage() {
 
         {/* Paso: Dificultad */}
         {paso === "dificultad" && (
-          <div className="w-full max-w-2xl animate-fade-in">
-            <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-6">
+          <div className="w-full max-w-3xl animate-fade-in">
+            <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-8">
               Elige tu dificultad
             </h2>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-6">
               {(["facil", "normal", "dificil"] as Dificultad[]).map((d) => (
                 <Card
                   key={d}
                   hoverable
                   selected={dificultad === d}
                   onClick={() => dificultadSet(d)}
-                  className="p-6 cursor-pointer"
+                  className="p-8 cursor-pointer"
                 >
                   <CardContent className="text-center">
-                    <div className="text-4xl mb-3">
+                    <div className="text-5xl mb-4">
                       {d === "facil" ? "🌱" : d === "normal" ? "⚔️" : "💀"}
                     </div>
-                    <p className={`font-medieval text-lg ${dificultadesInfo[d].color}`}>
+                    <p className={`font-medieval text-xl ${dificultadesInfo[d].color}`}>
                       {dificultadesInfo[d].titulo}
                     </p>
                     <p className="text-sm text-[#9a978a] mt-2">
@@ -238,7 +238,7 @@ export default function NuevaPartidaPage() {
                 </Card>
               ))}
             </div>
-            <div className="flex justify-between mt-6">
+            <div className="flex justify-between mt-10">
               <Button variant="secondary" onClick={handleAnterior}>
                 Anterior
               </Button>
@@ -251,26 +251,26 @@ export default function NuevaPartidaPage() {
 
         {/* Paso: Resumen */}
         {paso === "resumen" && (
-          <div className="w-full max-w-md animate-fade-in">
-            <Card className="p-6">
-              <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-6">
+          <div className="w-full max-w-lg animate-fade-in">
+            <Card className="p-10">
+              <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-8">
                 Tu aventurero
               </h2>
 
               {/* Avatar placeholder */}
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-b from-[#1a1a25] to-[#12121a] border-2 border-[#d4a843] flex items-center justify-center">
-                <Swords className="w-12 h-12 text-[#d4a843]" />
+              <div className="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-b from-[#1a1a25] to-[#12121a] border-2 border-[#d4a843] flex items-center justify-center">
+                <Swords className="w-14 h-14 text-[#d4a843]" />
               </div>
 
               {/* Datos del personaje */}
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between items-center py-2 border-b border-[#2a2a35]">
+              <div className="space-y-4 mb-8">
+                <div className="flex justify-between items-center py-3 border-b border-[#2a2a35]">
                   <span className="text-[#9a978a]">Nombre</span>
-                  <span className="font-medieval text-[#d4a843]">{nombre}</span>
+                  <span className="font-medieval text-xl text-[#d4a843]">{nombre}</span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-[#2a2a35]">
+                <div className="flex justify-between items-center py-3 border-b border-[#2a2a35]">
                   <span className="text-[#9a978a]">Género</span>
-                  <span className="font-medieval text-[#d4a843]">
+                  <span className="font-medieval text-xl text-[#d4a843]">
                     {genero === "masculino"
                       ? "Masculino"
                       : genero === "femenino"
@@ -278,37 +278,37 @@ export default function NuevaPartidaPage() {
                       : "No especificar"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-[#2a2a35]">
+                <div className="flex justify-between items-center py-3 border-b border-[#2a2a35]">
                   <span className="text-[#9a978a]">Dificultad</span>
-                  <span className={`font-medieval ${dificultadesInfo[dificultad!].color}`}>
-                    {dificultadesInfo[dificultad!].titulo}
+                  <span className={`font-medieval text-xl ${dificultad ? dificultadesInfo[dificultad].color : ""}`}>
+                    {dificultad && dificultadesInfo[dificultad].titulo}
                   </span>
                 </div>
               </div>
 
               {/* Stats base */}
-              <div className="bg-[#0a0a0f] rounded p-4 mb-6">
-                <h3 className="font-medieval text-sm text-[#9a978a] mb-3">
+              <div className="bg-[#0a0a0f] rounded-lg p-6 mb-8">
+                <h3 className="font-medieval text-base text-[#9a978a] mb-4">
                   Stats iniciales
                 </h3>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-[#c44536]" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3">
+                    <Heart className="w-5 h-5 text-[#c44536]" />
                     <span className="text-[#9a978a]">HP:</span>
                     <span className="text-[#e8e4d9]">100</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Swords className="w-4 h-4 text-[#d4a843]" />
+                  <div className="flex items-center gap-3">
+                    <Swords className="w-5 h-5 text-[#d4a843]" />
                     <span className="text-[#9a978a]">ATK:</span>
                     <span className="text-[#e8e4d9]">10</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-[#3b82f6]" />
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-5 h-5 text-[#3b82f6]" />
                     <span className="text-[#9a978a]">DEF:</span>
                     <span className="text-[#e8e4d9]">5%</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-[#22c55e]" />
+                  <div className="flex items-center gap-3">
+                    <Zap className="w-5 h-5 text-[#22c55e]" />
                     <span className="text-[#9a978a]">Vel:</span>
                     <span className="text-[#e8e4d9]">10</span>
                   </div>
@@ -332,7 +332,7 @@ export default function NuevaPartidaPage() {
         )}
 
         {/* Botón de volver al menú */}
-        <div className="mt-8">
+        <div className="mt-10">
           <Button variant="secondary" onClick={handleVolver}>
             Volver al Menú
           </Button>

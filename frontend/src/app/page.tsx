@@ -126,21 +126,21 @@ export default function HomePage() {
       </div>
 
       {/* Contenido principal */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-8">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-12">
         {/* Logo/Título */}
-        <div className="mb-16 animate-fade-in">
-          <h1 className="font-medieval text-6xl md:text-8xl text-[#d4a843] text-center mb-2 tracking-wider drop-shadow-[0_0_30px_rgba(212,168,67,0.5)]">
+        <div className="mb-20 animate-fade-in">
+          <h1 className="font-medieval text-7xl md:text-8xl text-[#d4a843] text-center mb-4 tracking-wider drop-shadow-[0_0_30px_rgba(212,168,67,0.5)]">
             LAST ADVENTURER
           </h1>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#d4a843] to-transparent" />
-          <p className="text-center text-[#9a978a] mt-4 font-medieval tracking-widest">
+          <p className="text-center text-[#9a978a] mt-6 font-medieval tracking-widest text-lg">
             Un viaje hacia lo desconocido
           </p>
         </div>
 
         {/* Menú principal o selector de slots */}
         {!mostrarCargar ? (
-          <div className="flex flex-col gap-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+          <div className="flex flex-col gap-5 animate-fade-in" style={{ animationDelay: "0.3s" }}>
             <Button onClick={handleNuevaPartida} size="lg">
               Nueva Partida
             </Button>
@@ -157,26 +157,26 @@ export default function HomePage() {
             </Button>
           </div>
         ) : (
-          <div className="w-full max-w-md animate-fade-in">
-            <h2 className="font-medieval text-2xl text-[#d4a843] text-center mb-6">
+          <div className="w-full max-w-lg animate-fade-in">
+            <h2 className="font-medieval text-3xl text-[#d4a843] text-center mb-8">
               Cargar Partida
             </h2>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {slots.map((slot) => (
                 <Card
                   key={slot.numero}
                   hoverable={slot.ocupado}
                   selected={false}
-                  className={`p-4 ${!slot.ocupado ? "opacity-50" : ""}`}
+                  className={`p-6 ${!slot.ocupado ? "opacity-50" : ""}`}
                   onClick={() => slot.ocupado && handleSeleccionarSlot(slot)}
                 >
                   {slot.ocupado ? (
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="font-medieval text-[#d4a843]">
+                        <p className="font-medieval text-xl text-[#d4a843]">
                           {slot.info?.nombre}
                         </p>
-                        <p className="text-sm text-[#9a978a]">
+                        <p className="text-sm text-[#9a978a] mt-1">
                           Nivel {slot.info?.nivel} • {slot.info?.dificultad}
                         </p>
                       </div>
@@ -190,7 +190,7 @@ export default function HomePage() {
                 </Card>
               ))}
             </div>
-            <div className="mt-6 text-center">
+            <div className="mt-8 text-center">
               <Button variant="secondary" onClick={handleVolver}>
                 Volver
               </Button>
@@ -209,7 +209,7 @@ export default function HomePage() {
       </div>
 
       {/* Versión del juego */}
-      <div className="absolute bottom-4 right-4 text-[#9a978a]/50 text-sm">
+      <div className="absolute bottom-6 right-6 text-[#9a978a]/50 text-sm">
         v1.0.0
       </div>
     </main>

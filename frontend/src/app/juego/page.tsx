@@ -13,9 +13,9 @@ import {
   Swords,
   Save,
   LogOut,
-  Heart,
-  Zap,
-  Shield,
+  ChevronDown,
+  ChevronUp,
+  Lock,
 } from "lucide-react";
 
 type Tab = "personaje" | "inventario" | "explorar" | "combate";
@@ -25,6 +25,7 @@ export default function JuegoPage() {
   const { datos, slotActual, guardarPartida, reiniciar } = useGame();
   const [tabActiva, tabActivaSet] = useState<Tab>("personaje");
   const [guardando, guardandoSet] = useState(false);
+  const [combateExpandido, combateExpandidoSet] = useState(false);
 
   // Si no hay datos, redirigir al menú
   useEffect(() => {
@@ -65,6 +66,19 @@ export default function JuegoPage() {
     }
   };
 
+  // Determinar qué stats mostrar (solo mostrar si tienen valor > base)
+  const statsBase = {
+    ataque: 10,
+    defensa: 5,
+    velocidad: 10,
+    critico: 5,
+    evasion: 5,
+  };
+
+  const tieneMejorasCombate = stats.ataque > statsBase.ataque || stats.defensa > statsBase.defensa;
+  const tieneMejorasAgilidad = stats.velocidad > statsBase.velocidad || stats.evasion > statsBase.evasion;
+  const tieneMejorasCritico = stats.critico > statsBase.critico;
+
   const tabs: { id: Tab; nombre: string; icono: React.ReactNode }[] = [
     { id: "personaje", nombre: "Personaje", icono: <User className="w-5 h-5" /> },
     { id: "inventario", nombre: "Inventario", icono: <Package className="w-5 h-5" /> },
@@ -75,12 +89,12 @@ export default function JuegoPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0f] flex flex-col">
       {/* Header con info del personaje */}
-      <header className="bg-gradient-to-b from-[#12121a] to-[#0a0a0f] border-b border-[#2a2a35] px-6 py-4">
+      <header className="bg-gradient-to-b from-[#12121a] to-[#0a0a0f] border-b border-[#2a2a35] px-8 py-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           {/* Info del personaje */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-10">
             <div>
-              <h1 className="font-medieval text-xl text-[#d4a843]">
+              <h1 className="font-medieval text-2xl text-[#d4a843] mb-1">
                 {personaje.nombre}
               </h1>
               <p className="text-sm text-[#9a978a]">
@@ -89,7 +103,7 @@ export default function JuegoPage() {
             </div>
 
             {/* Barra de experiencia */}
-            <div className="w-48">
+            <div className="w-56">
               <StatBar
                 label="Experiencia"
                 current={stats.experiencia}
@@ -101,7 +115,7 @@ export default function JuegoPage() {
           </div>
 
           {/* Acciones */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Button variant="secondary" size="sm" onClick={handleGuardar} disabled={guardando}>
               <Save className="w-4 h-4 mr-2" />
               {guardando ? "Guardando..." : "Guardar"}
@@ -121,7 +135,7 @@ export default function JuegoPage() {
             <button
               key={tab.id}
               onClick={() => tabActivaSet(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 font-medieval text-sm transition-all duration-300 border-b-2 ${
+              className={`flex items-center gap-3 px-8 py-4 font-medieval text-base transition-all duration-300 border-b-2 ${
                 tabActiva === tab.id
                   ? "text-[#d4a843] border-[#d4a843] bg-[#0a0a0f]/50"
                   : "text-[#9a978a] border-transparent hover:text-[#d4a843] hover:border-[#a67c00]"
@@ -136,16 +150,16 @@ export default function JuegoPage() {
 
       {/* Contenido principal */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="max-w-6xl mx-auto p-8">
           {/* Tab: Personaje */}
           {tabActiva === "personaje" && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
               {/* Stats principales */}
-              <Card className="p-6">
-                <h2 className="font-medieval text-xl text-[#d4a843] mb-4">
-                  Stats
+              <Card className="p-8">
+                <h2 className="font-medieval text-2xl text-[#d4a843] mb-6">
+                  Estado Vital
                 </h2>
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <StatBar
                     label="HP"
                     current={stats.hp}
@@ -166,34 +180,8 @@ export default function JuegoPage() {
                   />
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2">
-                    <Swords className="w-5 h-5 text-[#d4a843]" />
-                    <span className="text-[#9a978a]">Ataque:</span>
-                    <span className="text-[#e8e4d9]">{stats.ataque}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-[#3b82f6]" />
-                    <span className="text-[#9a978a]">Defensa:</span>
-                    <span className="text-[#e8e4d9]">{stats.defensa}%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-[#22c55e]" />
-                    <span className="text-[#9a978a]">Velocidad:</span>
-                    <span className="text-[#e8e4d9]">{stats.velocidad}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#9a978a]">Crítico:</span>
-                    <span className="text-[#e8e4d9]">{stats.critico}%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#9a978a]">Evasión:</span>
-                    <span className="text-[#e8e4d9]">{stats.evasion}%</span>
-                  </div>
-                </div>
-
                 {stats.puntos_distribuibles > 0 && (
-                  <div className="mt-4 p-3 bg-[#d4a843]/10 border border-[#d4a843] rounded">
+                  <div className="mt-6 p-4 bg-[#d4a843]/10 border border-[#d4a843] rounded-lg">
                     <p className="text-[#d4a843] text-sm font-medieval">
                       ¡Tienes {stats.puntos_distribuibles} puntos para distribuir!
                     </p>
@@ -202,21 +190,21 @@ export default function JuegoPage() {
               </Card>
 
               {/* Habilidades */}
-              <Card className="p-6">
-                <h2 className="font-medieval text-xl text-[#d4a843] mb-4">
+              <Card className="p-8">
+                <h2 className="font-medieval text-2xl text-[#d4a843] mb-6">
                   Habilidades
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {Object.entries(personaje.habilidades).map(([nombre, datos]) => (
                     <div
                       key={nombre}
-                      className="flex justify-between items-center py-2 border-b border-[#2a2a35]"
+                      className="flex justify-between items-center py-3 border-b border-[#2a2a35]"
                     >
                       <div>
-                        <p className="font-medieval text-[#e8e4d9] capitalize">
+                        <p className="font-medieval text-lg text-[#e8e4d9] capitalize">
                           {nombre}
                         </p>
-                        <p className="text-xs text-[#9a978a]">
+                        <p className="text-sm text-[#9a978a]">
                           Nivel {datos.nivel}
                         </p>
                       </div>
@@ -230,19 +218,118 @@ export default function JuegoPage() {
                   ))}
                 </div>
               </Card>
+
+              {/* Sección Combate - Colapsable */}
+              <Card className="p-8 lg:col-span-2">
+                <button
+                  onClick={() => combateExpandidoSet(!combateExpandido)}
+                  className="w-full flex items-center justify-between"
+                >
+                  <h2 className="font-medieval text-2xl text-[#d4a843]">
+                    Combate
+                  </h2>
+                  <div className="flex items-center gap-2 text-[#9a978a]">
+                    {!tieneMejorasCombate && !tieneMejorasAgilidad && !tieneMejorasCritico && (
+                      <span className="text-sm flex items-center gap-1">
+                        <Lock className="w-4 h-4" />
+                        Bloqueado
+                      </span>
+                    )}
+                    {combateExpandido ? (
+                      <ChevronUp className="w-6 h-6" />
+                    ) : (
+                      <ChevronDown className="w-6 h-6" />
+                    )}
+                  </div>
+                </button>
+
+                {combateExpandido ? (
+                  <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in">
+                    {/* Armas */}
+                    <div className="bg-[#0a0a0f] rounded-lg p-6 border border-[#2a2a35]">
+                      <h3 className="font-medieval text-lg text-[#d4a843] mb-4 flex items-center gap-2">
+                        <Swords className="w-5 h-5" />
+                        Armas
+                      </h3>
+                      {tieneMejorasCombate ? (
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[#9a978a]">Ataque</span>
+                            <span className="text-[#e8e4d9] text-lg">{stats.ataque}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-[#9a978a]">Defensa</span>
+                            <span className="text-[#e8e4d9] text-lg">{stats.defensa}%</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-[#9a978a]/60 text-sm italic">
+                          Desbloquea mejoras de combate para ver estadísticas de armas.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Agilidad */}
+                    <div className="bg-[#0a0a0f] rounded-lg p-6 border border-[#2a2a35]">
+                      <h3 className="font-medieval text-lg text-[#d4a843] mb-4">
+                        Agilidad
+                      </h3>
+                      {tieneMejorasAgilidad ? (
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[#9a978a]">Velocidad</span>
+                            <span className="text-[#e8e4d9] text-lg">{stats.velocidad}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-[#9a978a]">Evasión</span>
+                            <span className="text-[#e8e4d9] text-lg">{stats.evasion}%</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-[#9a978a]/60 text-sm italic">
+                          Desbloquea mejoras de agilidad para ver estadísticas.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Crítico */}
+                    <div className="bg-[#0a0a0f] rounded-lg p-6 border border-[#2a2a35]">
+                      <h3 className="font-medieval text-lg text-[#d4a843] mb-4">
+                        Crítico
+                      </h3>
+                      {tieneMejorasCritico ? (
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[#9a978a]">Probabilidad</span>
+                            <span className="text-[#e8e4d9] text-lg">{stats.critico}%</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-[#9a978a]/60 text-sm italic">
+                          Desbloquea mejoras de crítico para ver estadísticas.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="mt-4 text-[#9a978a]/60 text-sm">
+                    Haz clic para expandir y ver las estadísticas de combate.
+                  </p>
+                )}
+              </Card>
             </div>
           )}
 
           {/* Tab: Inventario */}
           {tabActiva === "inventario" && (
             <div className="animate-fade-in">
-              <Card className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="font-medieval text-xl text-[#d4a843]">
+              <Card className="p-8">
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="font-medieval text-2xl text-[#d4a843]">
                     Inventario
                   </h2>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[#d4a843] font-medieval">
+                  <div className="flex items-center gap-6">
+                    <span className="text-[#d4a843] font-medieval text-lg">
                       💰 {datos.inventario.oro} oro
                     </span>
                     <span className="text-[#9a978a]">
@@ -252,25 +339,25 @@ export default function JuegoPage() {
                 </div>
 
                 {/* Grid de inventario estilo Diablo */}
-                <div className="grid grid-cols-6 gap-2">
+                <div className="grid grid-cols-6 gap-3">
                   {Array.from({ length: datos.inventario.slots_maximos }).map((_, i) => {
                     const item = datos.inventario.items[i];
                     return (
                       <div
                         key={i}
-                        className="aspect-square bg-[#0a0a0f] border border-[#2a2a35] rounded flex items-center justify-center hover:border-[#d4a843] transition-colors cursor-pointer"
+                        className="aspect-square bg-[#0a0a0f] border-2 border-[#2a2a35] rounded-lg flex items-center justify-center hover:border-[#d4a843] transition-all duration-200 cursor-pointer hover:shadow-[0_0_15px_rgba(212,168,67,0.2)]"
                       >
                         {item ? (
-                          <div className="text-center">
-                            <span className="text-2xl">📦</span>
+                          <div className="text-center relative">
+                            <span className="text-3xl">📦</span>
                             {item.cantidad > 1 && (
-                              <span className="absolute bottom-1 right-1 text-xs text-[#d4a843]">
+                              <span className="absolute -bottom-1 -right-1 bg-[#d4a843] text-[#0a0a0f] text-xs font-bold px-1.5 py-0.5 rounded">
                                 {item.cantidad}
                               </span>
                             )}
                           </div>
                         ) : (
-                          <span className="text-[#2a2a35] text-xs">Vacío</span>
+                          <span className="text-[#2a2a35]/50 text-xs">Vacío</span>
                         )}
                       </div>
                     );
@@ -278,7 +365,7 @@ export default function JuegoPage() {
                 </div>
 
                 {datos.inventario.items.length === 0 && (
-                  <p className="text-center text-[#9a978a] mt-6">
+                  <p className="text-center text-[#9a978a] mt-8 py-8">
                     Tu inventario está vacío. ¡Explora para encontrar items!
                   </p>
                 )}
@@ -289,16 +376,16 @@ export default function JuegoPage() {
           {/* Tab: Explorar */}
           {tabActiva === "explorar" && (
             <div className="animate-fade-in">
-              <Card className="p-6">
-                <h2 className="font-medieval text-xl text-[#d4a843] mb-4">
+              <Card className="p-8">
+                <h2 className="font-medieval text-2xl text-[#d4a843] mb-6">
                   Exploración
                 </h2>
-                <div className="text-center py-12">
-                  <Map className="w-16 h-16 text-[#9a978a] mx-auto mb-4" />
-                  <p className="text-[#9a978a]">
+                <div className="text-center py-16">
+                  <Map className="w-20 h-20 text-[#9a978a]/50 mx-auto mb-6" />
+                  <p className="text-[#9a978a] text-lg">
                     Sistema de exploración en desarrollo...
                   </p>
-                  <p className="text-[#9a978a]/70 text-sm mt-2">
+                  <p className="text-[#9a978a]/60 text-sm mt-3">
                     Próximamente podrás explorar zonas y encontrar tesoros.
                   </p>
                 </div>
@@ -309,16 +396,16 @@ export default function JuegoPage() {
           {/* Tab: Combate */}
           {tabActiva === "combate" && (
             <div className="animate-fade-in">
-              <Card className="p-6">
-                <h2 className="font-medieval text-xl text-[#d4a843] mb-4">
+              <Card className="p-8">
+                <h2 className="font-medieval text-2xl text-[#d4a843] mb-6">
                   Combate
                 </h2>
-                <div className="text-center py-12">
-                  <Swords className="w-16 h-16 text-[#9a978a] mx-auto mb-4" />
-                  <p className="text-[#9a978a]">
+                <div className="text-center py-16">
+                  <Swords className="w-20 h-20 text-[#9a978a]/50 mx-auto mb-6" />
+                  <p className="text-[#9a978a] text-lg">
                     Sistema de combate en desarrollo...
                   </p>
-                  <p className="text-[#9a978a]/70 text-sm mt-2">
+                  <p className="text-[#9a978a]/60 text-sm mt-3">
                     Próximamente podrás luchar contra enemigos.
                   </p>
                 </div>
