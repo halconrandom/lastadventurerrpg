@@ -1,0 +1,30 @@
+[
+    {
+        "arquetipo": "Guerrero",
+        "hp": 120,
+        "ataque": 18,
+        "defensa": 8,
+        "descripcion": "Resistente, alto daño"
+    },
+    {
+        "arquetipo": "Mago",
+        "hp": 70,
+        "ataque": 25,
+        "defensa": 3,
+        "descripcion": "Fragil, daño devastador"
+    },
+    {
+        "arquetipo": "Arquero",
+        "hp": 90,
+        "ataque": 20,
+        "defensa": 5,
+        "descripcion": "Balanceado"
+    },
+    {
+        "arquetipo": "Paladin",
+        "hp": 100,
+        "ataque": 15,
+        "defensa": 10,
+        "descripcion": "Tanque, buena defensa"
+    }
+]
