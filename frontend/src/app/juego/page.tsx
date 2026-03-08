@@ -189,7 +189,7 @@ export default function JuegoPage() {
                 )}
               </Card>
 
-              {/* Estadísticas de Combate - Siempre visibles */}
+              {/* Estadísticas de Combate */}
               <Card className="p-8">
                 <h2 className="font-medieval text-2xl text-[#d4a843] mb-6 flex items-center gap-3">
                   <Swords className="w-6 h-6" />
@@ -216,22 +216,22 @@ export default function JuegoPage() {
                     <span className="text-[#9a978a]">Crítico:</span>
                     <span className="text-[#e8e4d9] text-lg">{stats.critico}%</span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 col-span-2">
                     <span className="text-[#9a978a] ml-8">Evasión:</span>
                     <span className="text-[#e8e4d9] text-lg">{stats.evasion}%</span>
                   </div>
                 </div>
               </Card>
 
-              {/* Habilidades de Armas - Colapsable, solo si tiene */}
-              <Card className="p-8 lg:col-span-2">
+              {/* Habilidades de Armas */}
+              <Card className="p-8">
                 <button
                   onClick={() => habilidadesExpandidoSet(!habilidadesExpandido)}
                   className="w-full flex items-center justify-between"
                 >
                   <h2 className="font-medieval text-2xl text-[#d4a843] flex items-center gap-3">
                     <Swords className="w-6 h-6" />
-                    Habilidades de Armas
+                    Habilidades
                   </h2>
                   <div className="flex items-center gap-2 text-[#9a978a]">
                     {!tieneHabilidadesCombate && (
@@ -249,37 +249,29 @@ export default function JuegoPage() {
                 </button>
 
                 {habilidadesExpandido ? (
-                  <div className="mt-6 animate-fade-in">
+                  <div className="mt-6 space-y-4 animate-fade-in">
                     {tieneHabilidadesCombate ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {habilidadesUsadas.map(([nombre, datos]) => (
-                          <div
-                            key={nombre}
-                            className="bg-[#0a0a0f] rounded-lg p-4 border border-[#2a2a35]"
-                          >
-                            <div className="flex justify-between items-center mb-2">
-                              <p className="font-medieval text-lg text-[#e8e4d9]">
-                                {nombre}
-                              </p>
-                              <span className="text-sm text-[#d4a843]">
-                                Nv. {datos.nivel}
-                              </span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs text-[#9a978a]">Experiencia</span>
-                              <span className="text-sm text-[#9a978a]">
-                                {datos.experiencia} / {datos.experiencia_necesaria}
-                              </span>
-                            </div>
-                            <div className="mt-2 h-2 bg-[#1a1a25] rounded overflow-hidden">
-                              <div
-                                className="h-full bg-gradient-to-r from-[#d4a843] to-[#a67c00]"
-                                style={{ width: `${(datos.experiencia / datos.experiencia_necesaria) * 100}%` }}
-                              />
-                            </div>
+                      habilidadesUsadas.map(([nombre, datos]) => (
+                        <div
+                          key={nombre}
+                          className="flex justify-between items-center py-3 border-b border-[#2a2a35] last:border-0"
+                        >
+                          <div>
+                            <p className="font-medieval text-lg text-[#e8e4d9]">
+                              {nombre}
+                            </p>
+                            <p className="text-sm text-[#9a978a]">
+                              Nivel {datos.nivel}
+                            </p>
                           </div>
-                        ))}
-                      </div>
+                          <div className="text-right">
+                            <p className="text-sm text-[#d4a843]">
+                              {datos.experiencia} / {datos.experiencia_necesaria}
+                            </p>
+                            <p className="text-xs text-[#9a978a]">EXP</p>
+                          </div>
+                        </div>
+                      ))
                     ) : (
                       <div className="text-center py-8">
                         <Swords className="w-12 h-12 text-[#9a978a]/30 mx-auto mb-4" />
@@ -287,7 +279,7 @@ export default function JuegoPage() {
                           Aún no has usado ninguna habilidad de armas.
                         </p>
                         <p className="text-[#9a978a]/60 text-sm mt-2">
-                          ¡Explora y combate para mejorar tus habilidades!
+                          ¡Explora y combate!
                         </p>
                       </div>
                     )}
@@ -295,8 +287,8 @@ export default function JuegoPage() {
                 ) : (
                   <p className="mt-4 text-[#9a978a]/60 text-sm">
                     {tieneHabilidadesCombate 
-                      ? `${habilidadesUsadas.length} habilidad${habilidadesUsadas.length > 1 ? 'es' : ''} de armas`
-                      : "Haz clic para ver las habilidades de armas"
+                      ? `${habilidadesUsadas.length} habilidad${habilidadesUsadas.length > 1 ? 'es' : ''}`
+                      : "Haz clic para ver"
                     }
                   </p>
                 )}
