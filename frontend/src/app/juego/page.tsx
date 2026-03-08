@@ -16,6 +16,9 @@ import {
   ChevronDown,
   ChevronUp,
   Lock,
+  Heart,
+  Shield,
+  Zap,
 } from "lucide-react";
 
 type Tab = "personaje" | "inventario" | "explorar" | "combate";
@@ -28,7 +31,7 @@ export default function JuegoPage() {
   const { datos, slotActual, guardarPartida, reiniciar } = useGame();
   const [tabActiva, tabActivaSet] = useState<Tab>("personaje");
   const [guardando, guardandoSet] = useState(false);
-  const [combateExpandido, combateExpandidoSet] = useState(false);
+  const [habilidadesExpandido, habilidadesExpandidoSet] = useState(false);
 
   // Si no hay datos, redirigir al menú
   useEffect(() => {
@@ -75,19 +78,6 @@ export default function JuegoPage() {
 
   // Verificar si tiene alguna habilidad de combate
   const tieneHabilidadesCombate = habilidadesUsadas.length > 0;
-
-  // Stats base para determinar si mostrar stats de combate
-  const statsBase = {
-    ataque: 10,
-    defensa: 5,
-    velocidad: 10,
-    critico: 5,
-    evasion: 5,
-  };
-
-  const tieneMejorasCombate = stats.ataque > statsBase.ataque || stats.defensa > statsBase.defensa;
-  const tieneMejorasAgilidad = stats.velocidad > statsBase.velocidad || stats.evasion > statsBase.evasion;
-  const tieneMejorasCritico = stats.critico > statsBase.critico;
 
   const tabs: { id: Tab; nombre: string; icono: React.ReactNode }[] = [
     { id: "personaje", nombre: "Personaje", icono: <User className="w-5 h-5" /> },
@@ -199,15 +189,49 @@ export default function JuegoPage() {
                 )}
               </Card>
 
-              {/* Stats de Combate - Colapsable */}
+              {/* Estadísticas de Combate - Siempre visibles */}
               <Card className="p-8">
+                <h2 className="font-medieval text-2xl text-[#d4a843] mb-6 flex items-center gap-3">
+                  <Swords className="w-6 h-6" />
+                  Estadísticas
+                </h2>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="flex items-center gap-3">
+                    <Swords className="w-5 h-5 text-[#d4a843]" />
+                    <span className="text-[#9a978a]">Ataque:</span>
+                    <span className="text-[#e8e4d9] text-lg">{stats.ataque}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-5 h-5 text-[#3b82f6]" />
+                    <span className="text-[#9a978a]">Defensa:</span>
+                    <span className="text-[#e8e4d9] text-lg">{stats.defensa}%</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Zap className="w-5 h-5 text-[#22c55e]" />
+                    <span className="text-[#9a978a]">Velocidad:</span>
+                    <span className="text-[#e8e4d9] text-lg">{stats.velocidad}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Heart className="w-5 h-5 text-[#c44536]" />
+                    <span className="text-[#9a978a]">Crítico:</span>
+                    <span className="text-[#e8e4d9] text-lg">{stats.critico}%</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[#9a978a] ml-8">Evasión:</span>
+                    <span className="text-[#e8e4d9] text-lg">{stats.evasion}%</span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Habilidades de Armas - Colapsable, solo si tiene */}
+              <Card className="p-8 lg:col-span-2">
                 <button
-                  onClick={() => combateExpandidoSet(!combateExpandido)}
+                  onClick={() => habilidadesExpandidoSet(!habilidadesExpandido)}
                   className="w-full flex items-center justify-between"
                 >
                   <h2 className="font-medieval text-2xl text-[#d4a843] flex items-center gap-3">
                     <Swords className="w-6 h-6" />
-                    Combate
+                    Habilidades de Armas
                   </h2>
                   <div className="flex items-center gap-2 text-[#9a978a]">
                     {!tieneHabilidadesCombate && (
@@ -216,7 +240,7 @@ export default function JuegoPage() {
                         Sin habilidades
                       </span>
                     )}
-                    {combateExpandido ? (
+                    {habilidadesExpandido ? (
                       <ChevronUp className="w-6 h-6" />
                     ) : (
                       <ChevronDown className="w-6 h-6" />
@@ -224,28 +248,34 @@ export default function JuegoPage() {
                   </div>
                 </button>
 
-                {combateExpandido ? (
+                {habilidadesExpandido ? (
                   <div className="mt-6 animate-fade-in">
                     {tieneHabilidadesCombate ? (
-                      <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {habilidadesUsadas.map(([nombre, datos]) => (
                           <div
                             key={nombre}
-                            className="flex justify-between items-center py-3 border-b border-[#2a2a35]"
+                            className="bg-[#0a0a0f] rounded-lg p-4 border border-[#2a2a35]"
                           >
-                            <div>
+                            <div className="flex justify-between items-center mb-2">
                               <p className="font-medieval text-lg text-[#e8e4d9]">
                                 {nombre}
                               </p>
-                              <p className="text-sm text-[#9a978a]">
-                                Nivel {datos.nivel}
-                              </p>
+                              <span className="text-sm text-[#d4a843]">
+                                Nv. {datos.nivel}
+                              </span>
                             </div>
-                            <div className="text-right">
-                              <p className="text-sm text-[#d4a843]">
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-[#9a978a]">Experiencia</span>
+                              <span className="text-sm text-[#9a978a]">
                                 {datos.experiencia} / {datos.experiencia_necesaria}
-                              </p>
-                              <p className="text-xs text-[#9a978a]">EXP</p>
+                              </span>
+                            </div>
+                            <div className="mt-2 h-2 bg-[#1a1a25] rounded overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-[#d4a843] to-[#a67c00]"
+                                style={{ width: `${(datos.experiencia / datos.experiencia_necesaria) * 100}%` }}
+                              />
                             </div>
                           </div>
                         ))}
@@ -254,60 +284,19 @@ export default function JuegoPage() {
                       <div className="text-center py-8">
                         <Swords className="w-12 h-12 text-[#9a978a]/30 mx-auto mb-4" />
                         <p className="text-[#9a978a]">
-                          Aún no has usado ninguna habilidad de combate.
+                          Aún no has usado ninguna habilidad de armas.
                         </p>
                         <p className="text-[#9a978a]/60 text-sm mt-2">
                           ¡Explora y combate para mejorar tus habilidades!
                         </p>
                       </div>
                     )}
-
-                    {/* Stats de combate si tiene mejoras */}
-                    {(tieneMejorasCombate || tieneMejorasAgilidad || tieneMejorasCritico) && (
-                      <div className="mt-6 pt-6 border-t border-[#2a2a35]">
-                        <h3 className="font-medieval text-lg text-[#d4a843] mb-4">
-                          Estadísticas
-                        </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                          {tieneMejorasCombate && (
-                            <>
-                              <div className="flex justify-between items-center">
-                                <span className="text-[#9a978a]">Ataque</span>
-                                <span className="text-[#e8e4d9]">{stats.ataque}</span>
-                              </div>
-                              <div className="flex justify-between items-center">
-                                <span className="text-[#9a978a]">Defensa</span>
-                                <span className="text-[#e8e4d9]">{stats.defensa}%</span>
-                              </div>
-                            </>
-                          )}
-                          {tieneMejorasAgilidad && (
-                            <>
-                              <div className="flex justify-between items-center">
-                                <span className="text-[#9a978a]">Velocidad</span>
-                                <span className="text-[#e8e4d9]">{stats.velocidad}</span>
-                              </div>
-                              <div className="flex justify-between items-center">
-                                <span className="text-[#9a978a]">Evasión</span>
-                                <span className="text-[#e8e4d9]">{stats.evasion}%</span>
-                              </div>
-                            </>
-                          )}
-                          {tieneMejorasCritico && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-[#9a978a]">Crítico</span>
-                              <span className="text-[#e8e4d9]">{stats.critico}%</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <p className="mt-4 text-[#9a978a]/60 text-sm">
                     {tieneHabilidadesCombate 
-                      ? `${habilidadesUsadas.length} habilidad${habilidadesUsadas.length > 1 ? 'es' : ''} de combate`
-                      : "Haz clic para ver las habilidades de combate"
+                      ? `${habilidadesUsadas.length} habilidad${habilidadesUsadas.length > 1 ? 'es' : ''} de armas`
+                      : "Haz clic para ver las habilidades de armas"
                     }
                   </p>
                 )}
