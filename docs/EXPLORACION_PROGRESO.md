@@ -15,7 +15,7 @@
 | 5 | Eventos de Exploración | ✅ COMPLETADO | `backend/src/systems/eventos.py`, `backend/tests/test_eventos.py` |
 | 6 | Clima Dinámico | ✅ COMPLETADO | `backend/src/systems/clima.py`, `backend/tests/test_clima.py` |
 | 7 | API Endpoints | ✅ COMPLETADO | `backend/src/api/exploracion.py`, `backend/tests/test_api_exploracion.py` |
-| 8 | Frontend Panel | ⏳ PENDIENTE | - |
+| 8 | Frontend Panel | ✅ COMPLETADO | `frontend/src/components/juego/panels/ExplorarPanel.tsx`, `frontend/src/hooks/useExploracion.ts` |
 | 9 | Persistencia | ⏳ PENDIENTE | - |
 
 ---
@@ -291,15 +291,46 @@ Crear endpoints de API para conectar frontend con sistemas de exploracion.
 ### Objetivo
 Crear panel de exploracion en el frontend para mostrar zona, clima y eventos.
 
-### Archivos a crear
-- `frontend/src/components/juego/panels/ExploracionPanel.tsx` - Panel actualizado
+### Archivos creados
+- `frontend/src/components/juego/panels/ExplorarPanel.tsx` - Panel actualizado
 - `frontend/src/hooks/useExploracion.ts` - Hook para API
+- `frontend/src/hooks/index.ts` - Export del hook
+
+### Funcionalidades implementadas
+- [x] Mostrar zona actual con nombre y bioma
+- [x] Mostrar clima y ciclo dia/noche con iconos
+- [x] Boton de explorar con estados
+- [x] Modal de eventos con opciones
+- [x] Modal de resultado de evento
+- [x] Log de exploracion
+- [x] Integracion con API de exploracion
+- [x] Tipos TypeScript para zona, clima, evento
+
+### Tests
+```
+[OK] Frontend compila sin errores
+[OK] Hook useExploracion implementado
+[OK] Panel conectado a API
+[OK] Modales de eventos funcionales
+```
+
+### Estado: `✅ COMPLETADO`
+
+---
+
+## Sistema 9: Persistencia
+
+### Objetivo
+Guardar estado de exploracion en el save del jugador.
+
+### Archivos a crear/modificar
+- `backend/src/systems/save_manager.py` - Modificar para incluir exploracion
+- `backend/src/systems/exploracion_state.py` - Estado de exploracion
 
 ### Funcionalidades
-- [ ] Mostrar zona actual con descripcion
-- [ ] Mostrar clima y ciclo dia/noche
-- [ ] Boton de explorar
-- [ ] Modal de eventos
-- [ ] Log de exploracion
+- [ ] Guardar semilla del mundo
+- [ ] Guardar zonas descubiertas
+- [ ] Guardar estado de zonas (veces exploradas)
+- [ ] Cargar estado al iniciar partida
 
 ### Estado: `⏳ PENDIENTE`

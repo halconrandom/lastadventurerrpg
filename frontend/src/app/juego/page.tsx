@@ -18,13 +18,11 @@ import {
 
 export default function JuegoPage() {
   const router = useRouter();
-  const { datos, guardarPartida, reiniciar, explorar } = useGame();
+  const { datos, slotActual, guardarPartida, reiniciar } = useGame();
 
   // Estados locales
   const [tabActiva, tabActivaSet] = useState<Tab>("explorar");
   const [guardando, guardandoSet] = useState(false);
-  const [explorando, explorandoSet] = useState(false);
-  const [mensajeExploracion, mensajeExploracionSet] = useState<string | null>(null);
   const [sidebarAbierto, sidebarAbiertoSet] = useState(false);
 
   // Si no hay datos, redirigir al menú
@@ -63,19 +61,6 @@ export default function JuegoPage() {
     }
   };
 
-  const handleExplorar = async () => {
-    explorandoSet(true);
-    mensajeExploracionSet(null);
-    try {
-      const msg = await explorar();
-      mensajeExploracionSet(msg);
-    } catch (error) {
-      console.error("Error explorando:", error);
-    } finally {
-      explorandoSet(false);
-    }
-  };
-
   return (
     <div className="flex bg-[#0a0a0f] min-h-screen">
       {/* Sidebar de Personaje */}
@@ -108,11 +93,7 @@ export default function JuegoPage() {
             <AnimatePresence mode="wait">
               {tabActiva === "explorar" && (
                 <div key="panel-explorar">
-                  <ExplorarPanel
-                    explorando={explorando}
-                    mensajeExploracion={mensajeExploracion}
-                    onExplorar={handleExplorar}
-                  />
+                  <ExplorarPanel slot={slotActual || 1} />
                 </div>
               )}
 

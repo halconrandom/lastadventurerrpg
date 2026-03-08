@@ -18,6 +18,7 @@ import json
 from systems.save_manager import SaveManager
 from game_manager import crear_nuevo_personaje, calcular_recompensa_exploracion
 from models.personaje import Personaje
+from api.exploracion import exploracion_bp
 
 # Crear la aplicación Flask
 app = Flask(__name__)
@@ -30,6 +31,9 @@ CORS(app, resources={
         "allow_headers": ["Content-Type"]
     }
 })
+
+# Registrar blueprints
+app.register_blueprint(exploracion_bp, url_prefix="/api/exploracion")
 
 # Instancia global del SaveManager
 save_manager = SaveManager()
