@@ -20,6 +20,9 @@ import {
 
 type Tab = "personaje" | "inventario" | "explorar" | "combate";
 
+// Habilidades de combate disponibles
+const HABILIDADES_COMBATE = ["Espada", "Espadón", "Arco", "Magia", "Dagas", "Defensa"];
+
 export default function JuegoPage() {
   const router = useRouter();
   const { datos, slotActual, guardarPartida, reiniciar } = useGame();
@@ -66,7 +69,14 @@ export default function JuegoPage() {
     }
   };
 
-  // Determinar qué stats mostrar (solo mostrar si tienen valor > base)
+  // Filtrar habilidades de combate que el jugador ha usado (exp > 0)
+  const habilidadesUsadas = Object.entries(personaje.habilidades)
+    .filter(([nombre, datos]) => HABILIDADES_COMBATE.includes(nombre) && datos.experiencia > 0);
+
+  // Verificar si tiene alguna habilidad de combate
+  const tieneHabilidadesCombate = habilidadesUsadas.length > 0;
+
+  // Stats base para determinar si mostrar stats de combate
   const statsBase = {
     ataque: 10,
     defensa: 5,
@@ -154,7 +164,7 @@ export default function JuegoPage() {
           {/* Tab: Personaje */}
           {tabActiva === "personaje" && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
-              {/* Stats principales */}
+              {/* Estado Vital */}
               <Card className="p-8">
                 <h2 className="font-medieval text-2xl text-[#d4a843] mb-6">
                   Estado Vital
@@ -189,50 +199,21 @@ export default function JuegoPage() {
                 )}
               </Card>
 
-              {/* Habilidades */}
+              {/* Stats de Combate - Colapsable */}
               <Card className="p-8">
-                <h2 className="font-medieval text-2xl text-[#d4a843] mb-6">
-                  Habilidades
-                </h2>
-                <div className="space-y-4">
-                  {Object.entries(personaje.habilidades).map(([nombre, datos]) => (
-                    <div
-                      key={nombre}
-                      className="flex justify-between items-center py-3 border-b border-[#2a2a35]"
-                    >
-                      <div>
-                        <p className="font-medieval text-lg text-[#e8e4d9] capitalize">
-                          {nombre}
-                        </p>
-                        <p className="text-sm text-[#9a978a]">
-                          Nivel {datos.nivel}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-[#d4a843]">
-                          {datos.experiencia} / {datos.experiencia_necesaria}
-                        </p>
-                        <p className="text-xs text-[#9a978a]">EXP</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-
-              {/* Sección Combate - Colapsable */}
-              <Card className="p-8 lg:col-span-2">
                 <button
                   onClick={() => combateExpandidoSet(!combateExpandido)}
                   className="w-full flex items-center justify-between"
                 >
-                  <h2 className="font-medieval text-2xl text-[#d4a843]">
+                  <h2 className="font-medieval text-2xl text-[#d4a843] flex items-center gap-3">
+                    <Swords className="w-6 h-6" />
                     Combate
                   </h2>
                   <div className="flex items-center gap-2 text-[#9a978a]">
-                    {!tieneMejorasCombate && !tieneMejorasAgilidad && !tieneMejorasCritico && (
+                    {!tieneHabilidadesCombate && (
                       <span className="text-sm flex items-center gap-1">
                         <Lock className="w-4 h-4" />
-                        Bloqueado
+                        Sin habilidades
                       </span>
                     )}
                     {combateExpandido ? (
@@ -244,76 +225,90 @@ export default function JuegoPage() {
                 </button>
 
                 {combateExpandido ? (
-                  <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in">
-                    {/* Armas */}
-                    <div className="bg-[#0a0a0f] rounded-lg p-6 border border-[#2a2a35]">
-                      <h3 className="font-medieval text-lg text-[#d4a843] mb-4 flex items-center gap-2">
-                        <Swords className="w-5 h-5" />
-                        Armas
-                      </h3>
-                      {tieneMejorasCombate ? (
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#9a978a]">Ataque</span>
-                            <span className="text-[#e8e4d9] text-lg">{stats.ataque}</span>
+                  <div className="mt-6 animate-fade-in">
+                    {tieneHabilidadesCombate ? (
+                      <div className="space-y-4">
+                        {habilidadesUsadas.map(([nombre, datos]) => (
+                          <div
+                            key={nombre}
+                            className="flex justify-between items-center py-3 border-b border-[#2a2a35]"
+                          >
+                            <div>
+                              <p className="font-medieval text-lg text-[#e8e4d9]">
+                                {nombre}
+                              </p>
+                              <p className="text-sm text-[#9a978a]">
+                                Nivel {datos.nivel}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-[#d4a843]">
+                                {datos.experiencia} / {datos.experiencia_necesaria}
+                              </p>
+                              <p className="text-xs text-[#9a978a]">EXP</p>
+                            </div>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#9a978a]">Defensa</span>
-                            <span className="text-[#e8e4d9] text-lg">{stats.defensa}%</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-[#9a978a]/60 text-sm italic">
-                          Desbloquea mejoras de combate para ver estadísticas de armas.
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Swords className="w-12 h-12 text-[#9a978a]/30 mx-auto mb-4" />
+                        <p className="text-[#9a978a]">
+                          Aún no has usado ninguna habilidad de combate.
                         </p>
-                      )}
-                    </div>
+                        <p className="text-[#9a978a]/60 text-sm mt-2">
+                          ¡Explora y combate para mejorar tus habilidades!
+                        </p>
+                      </div>
+                    )}
 
-                    {/* Agilidad */}
-                    <div className="bg-[#0a0a0f] rounded-lg p-6 border border-[#2a2a35]">
-                      <h3 className="font-medieval text-lg text-[#d4a843] mb-4">
-                        Agilidad
-                      </h3>
-                      {tieneMejorasAgilidad ? (
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#9a978a]">Velocidad</span>
-                            <span className="text-[#e8e4d9] text-lg">{stats.velocidad}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#9a978a]">Evasión</span>
-                            <span className="text-[#e8e4d9] text-lg">{stats.evasion}%</span>
-                          </div>
+                    {/* Stats de combate si tiene mejoras */}
+                    {(tieneMejorasCombate || tieneMejorasAgilidad || tieneMejorasCritico) && (
+                      <div className="mt-6 pt-6 border-t border-[#2a2a35]">
+                        <h3 className="font-medieval text-lg text-[#d4a843] mb-4">
+                          Estadísticas
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          {tieneMejorasCombate && (
+                            <>
+                              <div className="flex justify-between items-center">
+                                <span className="text-[#9a978a]">Ataque</span>
+                                <span className="text-[#e8e4d9]">{stats.ataque}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-[#9a978a]">Defensa</span>
+                                <span className="text-[#e8e4d9]">{stats.defensa}%</span>
+                              </div>
+                            </>
+                          )}
+                          {tieneMejorasAgilidad && (
+                            <>
+                              <div className="flex justify-between items-center">
+                                <span className="text-[#9a978a]">Velocidad</span>
+                                <span className="text-[#e8e4d9]">{stats.velocidad}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-[#9a978a]">Evasión</span>
+                                <span className="text-[#e8e4d9]">{stats.evasion}%</span>
+                              </div>
+                            </>
+                          )}
+                          {tieneMejorasCritico && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-[#9a978a]">Crítico</span>
+                              <span className="text-[#e8e4d9]">{stats.critico}%</span>
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <p className="text-[#9a978a]/60 text-sm italic">
-                          Desbloquea mejoras de agilidad para ver estadísticas.
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Crítico */}
-                    <div className="bg-[#0a0a0f] rounded-lg p-6 border border-[#2a2a35]">
-                      <h3 className="font-medieval text-lg text-[#d4a843] mb-4">
-                        Crítico
-                      </h3>
-                      {tieneMejorasCritico ? (
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#9a978a]">Probabilidad</span>
-                            <span className="text-[#e8e4d9] text-lg">{stats.critico}%</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-[#9a978a]/60 text-sm italic">
-                          Desbloquea mejoras de crítico para ver estadísticas.
-                        </p>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <p className="mt-4 text-[#9a978a]/60 text-sm">
-                    Haz clic para expandir y ver las estadísticas de combate.
+                    {tieneHabilidadesCombate 
+                      ? `${habilidadesUsadas.length} habilidad${habilidadesUsadas.length > 1 ? 'es' : ''} de combate`
+                      : "Haz clic para ver las habilidades de combate"
+                    }
                   </p>
                 )}
               </Card>
