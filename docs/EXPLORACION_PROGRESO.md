@@ -1,6 +1,6 @@
 # Progreso: Sistema de Exploración Procedural
 
-## Estado General: `EN PROGRESO`
+## Estado General: `✅ COMPLETADO`
 
 ---
 
@@ -323,14 +323,60 @@ Crear panel de exploracion en el frontend para mostrar zona, clima y eventos.
 ### Objetivo
 Guardar estado de exploracion en el save del jugador.
 
-### Archivos a crear/modificar
-- `backend/src/systems/save_manager.py` - Modificar para incluir exploracion
-- `backend/src/systems/exploracion_state.py` - Estado de exploracion
+### Archivos creados/modificados
+- `backend/src/systems/exploracion_state.py` - Nuevo: Estado de exploracion
+- `backend/src/systems/save_manager.py` - Modificado: Integracion con exploracion
+- `backend/tests/test_exploracion_state.py` - Tests del sistema
 
-### Funcionalidades
-- [ ] Guardar semilla del mundo
-- [ ] Guardar zonas descubiertas
-- [ ] Guardar estado de zonas (veces exploradas)
-- [ ] Cargar estado al iniciar partida
+### Funcionalidades implementadas
+- [x] Clase ZonaDescubierta para zonas visitadas
+- [x] Clase ExploracionState para estado completo
+- [x] Guardar semilla del mundo
+- [x] Guardar zonas descubiertas con estado
+- [x] Guardar coordenadas del jugador
+- [x] Historial de eventos completados
+- [x] Estadisticas de exploracion
+- [x] Migracion de saves antiguos (v1.0 -> v1.1)
+- [x] Serializacion completa
 
-### Estado: `⏳ PENDIENTE`
+### Tests
+```
+[OK] ZonaDescubierta se crea correctamente
+[OK] ZonaDescubierta serializa/deserializa
+[OK] ExploracionState inicial correcto
+[OK] Descubrir zona la registra
+[OK] No duplica zonas existentes
+[OK] Explorar zona actualiza estado
+[OK] POIs se descubren correctamente
+[OK] Error si zona no descubierta
+[OK] Mover jugador actualiza coords
+[OK] Registrar eventos funciona
+[OK] Encuentros hostiles se registran
+[OK] Zonas adyacentes correctas
+[OK] Resumen contiene datos
+[OK] Serializacion completa funciona
+[OK] crear_exploracion_inicial funciona
+[OK] Determinismo verificado
+```
+
+### Estado: `✅ COMPLETADO`
+
+---
+
+## Resumen Final
+
+**Sistema de Exploracion Procedural: 9/9 sistemas completados**
+
+| Sistema | Tests | Estado |
+|---------|-------|--------|
+| Semillas | 9/9 | ✅ |
+| Biomas | 10/10 | ✅ |
+| Zonas | 12/12 | ✅ |
+| Nombres | 13/13 | ✅ |
+| Eventos | 12/12 | ✅ |
+| Clima | 12/12 | ✅ |
+| API | 10/10 | ✅ |
+| Frontend | Build OK | ✅ |
+| Persistencia | 16/16 | ✅ |
+
+**Total: 94 tests, todos pasando**

@@ -7,7 +7,7 @@ class SaveManager:
 
     SLOTS_DIR = "saves"
     NUM_SLOTS = 3
-    VERSION = "1.0"
+    VERSION = "1.1"  # Actualizado para incluir exploracion
 
     def __init__(self):
         self._asegurar_directorio()
@@ -38,11 +38,27 @@ class SaveManager:
                 stats = data["personaje"].get("stats", {})
                 nivel = stats.get("nivel", 1)
                 dificultad = stats.get("dificultad", "normal")
+                
+                # Obtener zona actual de exploracion
+                exploracion = data.get("exploracion", {})
+                zona_actual = exploracion.get("zonas", {})
+                if zona_actual:
+                    # Obtener la ultima zona visitada
+                    x = exploracion.get("x", 0)
+                    y = exploracion.get("y", 0)
+                    zona_key = f"{x}_{y}"
+                    if zona_key in zona_actual:
+                        zona_nombre = zona_actual[zona_key].get("nombre", "Desconocida")
+                    else:
+                        zona_nombre = "Desconocida"
+                else:
+                    zona_nombre = "Pueblo Inicio"
+                
                 return {
                     "nombre": data["personaje"]["nombre"],
                     "nivel": nivel,
                     "dificultad": dificultad,
-                    "zona": data["progreso"]["zonas_visitadas"][-1] if data["progreso"]["zonas_visitadas"] else "Desconocida",
+                    "zona": zona_nombre,
                     "fecha": data["fecha"]
                 }
         except Exception:
@@ -98,8 +114,14 @@ class SaveManager:
         """Migra datos antiguos a la versión actual"""
         version_guardada = data.get("version", "0.0")
 
-        # Aquí irían las migraciones según versión
-        # Ejemplo: if version_guardada == "0.9": data = migrar_09_a_10(data)
+        # Migracion de 1.0 a 1.1: añadir exploracion
+        if version_guardada == "1.0" and "exploracion" not in data:
+            from systems.exploracion_state import crear_exploracion_inicial
+            from systems.seed import init_global_seed
+            
+            # Crear semilla si no existe
+            seed = init_global_seed()
+            data["exploracion"] = crear_exploracion_inicial(str(seed)).to_dict()
 
         return data
 
@@ -107,9 +129,15 @@ class SaveManager:
         """Crea una estructura de save vacía para nueva partida"""
         from models.stats import Stats
         from models.experiencia import SistemaHabilidades
+        from systems.exploracion_state import crear_exploracion_inicial
+        from systems.seed import init_global_seed
 
         stats = Stats(dificultad=dificultad)
         habilidades = SistemaHabilidades()
+        
+        # Crear semilla y estado de exploracion
+        seed = init_global_seed()
+        exploracion = crear_exploracion_inicial(str(seed))
 
         return {
             "personaje": {
@@ -136,5 +164,6 @@ class SaveManager:
                 "misiones_activas": [],
                 "zonas_visitadas": ["pueblo_inicio"],
                 "npcs_conocidos": []
-            }
+            },
+            "exploracion": exploracion.to_dict()
         }
