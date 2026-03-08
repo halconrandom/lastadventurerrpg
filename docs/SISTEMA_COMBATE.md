@@ -90,6 +90,10 @@ Experiencia Defensa = Nivel Enemigo × 2
 
 ## Preguntas a Definir
 
+> **Nota:** Las preguntas sobre enemigos están en [SISTEMA_ENEMIGOS.md](./SISTEMA_ENEMIGOS.md)
+
+### Mecánicas de Combate
+
 - [ ] **¿Usar item consume turno?**
   - Sí
   - No
@@ -111,7 +115,7 @@ Experiencia Defensa = Nivel Enemigo × 2
   - Basado en habilidad
   - Respuesta:
 
-- [ ] **¿Esvasión?**
+- [ ] **¿Evasión?**
   - Probabilidad de esquivar
   - Basado en armadura ligera
   - Respuesta:
