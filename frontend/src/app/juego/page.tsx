@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
 import { useGame } from "@/lib/GameContext";
-import { CharacterSidebar } from "@/components/ui/CharacterSidebar";
 import {
   LoadingScreen,
   GameHeader,
   GameNav,
+  CharacterSidebar,
   ExplorarPanel,
   InventarioPanel,
   CombatePanel,
