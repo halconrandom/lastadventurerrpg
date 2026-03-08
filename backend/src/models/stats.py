@@ -365,26 +365,40 @@ class Stats:
             "dificultad": self.dificultad,
             "nivel": self.nivel,
             "experiencia": self.experiencia,
+            "experiencia_necesaria": self.experiencia_para_subir(),
+            "progreso_nivel": self.get_progreso_nivel(),
             "hp_base": self.hp_base,
             "hp_actual": self.hp_actual,
+            "hp": self.hp_actual,  # Alias para frontend
+            "hp_max": self.hp_base, # Alias para frontend
             "puntos_hp": self.puntos_hp,
             "atk_base": self.atk_base,
+            "ataque": self.get_atk(), # Campo para frontend
             "puntos_atk": self.puntos_atk,
             "def_base": self.def_base,
+            "defensa": self.get_def(), # Campo para frontend
             "puntos_def": self.puntos_def,
             "velocidad_base": self.velocidad_base,
+            "velocidad": self.get_velocidad(), # Campo para frontend
             "puntos_velocidad": self.puntos_velocidad,
             "critico_base": self.critico_base,
+            "critico": self.get_critico(), # Campo para frontend
             "puntos_critico": self.puntos_critico,
             "evasion_base": self.evasion_base,
+            "evasion": self.get_evasion(), # Campo para frontend
             "puntos_evasion": self.puntos_evasion,
             "mana_base": self.mana_base,
             "mana_actual": self.mana_actual,
+            "mana": self.mana_actual, # Alias para frontend
+            "mana_max": self.mana_base, # Alias para frontend
             "puntos_mana": self.puntos_mana,
             "stamina_base": self.stamina_base,
             "stamina_actual": self.stamina_actual,
+            "stamina": self.stamina_actual, # Alias para frontend
+            "stamina_max": self.stamina_base, # Alias para frontend
             "puntos_stamina": self.puntos_stamina,
-            "puntos_disponibles": self.puntos_disponibles
+            "puntos_disponibles": self.puntos_disponibles,
+            "puntos_distribuibles": self.puntos_disponibles # Campo para frontend
         }
 
     @classmethod

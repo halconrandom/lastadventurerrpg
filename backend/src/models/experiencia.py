@@ -41,6 +41,7 @@ class Habilidad:
             "nombre": self.nombre,
             "nivel": self.nivel,
             "experiencia": self.experiencia,
+            "experiencia_necesaria": self.experiencia_para_subir(),
             "perks_desbloqueados": self.perks_desbloqueados
         }
 
