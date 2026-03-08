@@ -13,23 +13,28 @@ Sistema híbrido inspirado en **Diablo** + **Skyrim**:
 
 ```
 Personaje
-├── Stats (componente central)
-│   ├── Nivel (1-100)
-│   ├── Experiencia acumulada
-│   ├── Puntos disponibles para distribuir
+├── Stats (ver SISTEMA_STATS.md)
 │   ├── HP, ATK, DEF, Velocidad, Crítico, Evasión, Mana, Stamina
-│   └── Métodos: ganar_experiencia(), subir_nivel(), asignar_X()
+│   └── Puntos disponibles para distribuir
 │
-├── SistemaHabilidades
+├── Nivel General (1-100)
+│   ├── Experiencia acumulada
+│   └── Otorga puntos al subir (van a Stats)
+│
+├── Habilidades de Combate
 │   ├── Espada      → nivel (1-100), exp, perks
 │   ├── Espadón     → nivel (1-100), exp, perks
 │   ├── Arco        → nivel (1-100), exp, perks
 │   ├── Magia       → nivel (1-100), exp, perks
 │   ├── Dagas       → nivel (1-100), exp, perks
-│   ├── Defensa     → nivel (1-100), exp (ESPECIAL: suma a Stats.DEF)
 │   └── [extensible] → futuras armas/habilidades
 │
-└── Perks (implementar después)
+├── Defensa (Habilidad especial)
+│   ├── Nivel (1-100)
+│   ├── Afecta reducción de daño
+│   └── Afecta chance de contraataque
+│
+└── Perks
     ├── Pasivos (siempre activos)
     └── Activos (consumen recursos)
 ```
@@ -38,36 +43,43 @@ Personaje
 
 ## Relación con Sistema de Stats
 
-**IMPORTANTE:** Stats es el componente central que maneja TODO:
+**IMPORTANTE:** El sistema de experiencia y el sistema de stats están separados pero conectados:
 
 | Sistema | Responsabilidad |
 |---------|-----------------|
-| **Stats** | Nivel, Experiencia, HP, ATK, DEF, Velocidad, Crítico, Evasión, Mana, Stamina y puntos distribuibles |
-| **SistemaHabilidades** | Habilidades de combate (Espada, Arco, etc.) con su nivel/exp independiente |
-| **Perks** | Se implementarán después (placeholder por ahora) |
+| **Stats** | Maneja HP, ATK, DEF, Velocidad, Crítico, Evasión, Mana, Stamina y puntos distribuibles |
+| **Experiencia** | Maneja nivel general, habilidades de combate, perks y recompensas |
 
 **Flujo de puntos:**
 ```
-1. Stats.ganar_experiencia(cantidad) → suma exp
-2. Si sube de nivel → Stats.subir_nivel() → +puntos_disponibles
-3. Jugador distribuye puntos via Stats.asignar_X()
+1. Subes de nivel general → +puntos disponibles
+2. Puntos van a Stats.puntos_disponibles
+3. Jugador distribuye puntos en Stats
 ```
 
 ---
 
-## Decisiones de Integración (Definidas)
+## Preguntas de Integración
 
-- [x] **¿Puntos por nivel van a Stats o se manejan por separado?**
-  - ✅ Respuesta: **Todo en Stats** - Nivel, experiencia y puntos viven en Stats
+- [ ] **¿Puntos por nivel van a Stats o se manejan por separado?**
+  - Opción A: `ExperienciaPersonaje.subir_nivel()` llama a `Stats.puntos_disponibles += X`
+  - Opción B: Se manejan por separado y se sincronizan al guardar
+  - Respuesta:Seria bueno tener un registro. Asi el jugador podra ver cuanta experiencia tiene y cuanto le falta para subir al siguiente nivel de algo.
 
-- [x] **¿La habilidad Defensa afecta Stats.DEF o es separado?**
-  - ✅ Respuesta: **Suma a la reducción total** - Nivel Habilidad Defensa suma a Stats.get_def()
+- [ ] **¿La habilidad Defensa afecta Stats.DEF o es separado?**
+  - Opción A: Nivel Defensa suma a la reducción de daño total
+  - Opción B: Es completamente separado
+  - Respuesta: stat de defensa y habilidad de defensa es literalmente lo mismo.
 
-- [x] **¿Dónde se guardan los puntos asignados?**
-  - ✅ Respuesta: **Solo en Stats** - No duplicar
+- [ ] **¿Dónde se guardan los puntos asignados?**
+  - Opción A: Solo en Stats (actualmente así está)
+  - Opción B: Duplicar en ExperienciaPersonaje para tracking
+  - Respuesta: duplicar para llevar registro visual para el jugador.
 
-- [x] **¿ExperienciaPersonaje se elimina y se usa solo Stats?**
-  - ✅ Respuesta: **Sí, se elimina** - Stats maneja nivel y experiencia del personaje
+- [ ] **¿ExperienciaPersonaje se elimina y se usa solo Stats?**
+  - Opción A: Sí, Stats maneja todo lo de atributos
+  - Opción B: No, ExperienciaPersonaje maneja nivel y puntos, Stats maneja valores
+  - Respuesta: Fusionalos. Todo los stats, experiencia y eso se maneja en un solo sitio para evitar bugs.
 
 ---
 
@@ -255,37 +267,48 @@ Ejemplos:
 
 | Archivo | Estado | Propósito |
 |---------|--------|-----------|
-| `models/stats.py` | ⚠️ Modificar | Agregar nivel, experiencia, métodos ganar_experiencia(), subir_nivel() |
-| `models/experiencia.py` | ⚠️ Modificar | Eliminar ExperienciaPersonaje, mantener Habilidad y SistemaHabilidades |
-| `models/personaje.py` | ⚠️ Modificar | Agregar SistemaHabilidades como atributo |
-| `models/perk.py` | ❌ Después | Clase para perks (placeholder) |
-| `data/habilidades.json` | ❌ Después | Datos de habilidades |
-| `data/perks.json` | ❌ Después | Datos de perks |
+| `models/stats.py` | ✅ Creado | Maneja todos los stats y puntos |
+| `models/experiencia.py` | ⚠️ Existe | Necesita integración con Stats |
+| `models/habilidad.py` | ❌ No existe | Clase para habilidades (puede ir en experiencia.py) |
+| `models/perk.py` | ❌ No existe | Clase para perks |
+| `data/habilidades.json` | ❌ No existe | Datos de habilidades |
+| `data/perks.json` | ❌ No existe | Datos de perks |
 
 ---
 
 ## Preguntas de Implementación
 
 ### Integración Stats-Experiencia
-- [x] **¿ExperienciaPersonaje se mantiene o se elimina?**
-  - ✅ Respuesta: **Se elimina** - Stats maneja todo
+- [ ] **¿ExperienciaPersonaje se mantiene o se elimina?**
+  - Si se mantiene: Solo maneja nivel y experiencia general
+  - Si se elimina: Nivel y experiencia van en otra parte
+  - Respuesta: en stats claramente
 
-- [x] **¿Dónde va el nivel del personaje?**
-  - ✅ Respuesta: **En Stats** - Stats.nivel y Stats.experiencia
+- [ ] **¿Dónde va el nivel del personaje?**
+  - Opción A: En `Stats` (añadir nivel, experiencia)
+  - Opción B: En `SistemaExperiencia` separado
+  - Opción C: En el JSON de guardado directamente
+  - Respuesta: Opcion A. 
 
-- [x] **¿Cómo se conectan al guardar/cargar?**
-  - ✅ Respuesta: **Stats.to_dict() y Stats.from_dict()** - Serialización directa
+- [ ] **¿Cómo se conectan al guardar/cargar?**
+  - Opción A: `SistemaExperiencia` tiene una instancia de `Stats`
+  - Opción B: Son independientes, se sincronizan en `save_manager`
+  - Respuesta: tienen una instancia en stats
 
 ### Habilidades
-- [x] **¿Las habilidades se guardan en el JSON de experiencia o separado?**
-  - ✅ Respuesta: **En el JSON principal** - Sección "habilidades" en el save
+- [ ] **¿Las habilidades se guardan en el JSON de experiencia o separado?**
+  - Respuesta: separado
 
-- [x] **¿La habilidad Defensa es especial o igual que las demás?**
-  - ✅ Respuesta: **Especial** - No es un arma, afecta stats de defensa (suma a reducción)
+- [ ] **¿La habilidad Defensa es especial o igual que las demás?**
+  - Especial: No es un arma, afecta stats de defensa
+  - Igual: Se trata como otra habilidad más
+  - Respuesta: es una stat
 
 ### Perks
-- [x] **¿Los perks se implementan ahora o después?**
-  - ✅ Respuesta: **Después** - Placeholder por ahora, sistema completo más adelante
+- [ ] **¿Los perks se implementan ahora o después?**
+  - Ahora: Crear sistema completo
+  - Después: Placeholder para futuro
+  - Respuesta: Placeholder para futuro
 
 ---
 

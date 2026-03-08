@@ -1,0 +1,273 @@
+/* Google Fonts - Cinzel para títulos, Inter para UI */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  /* Colores base - Tema medieval oscuro */
+  --background: #0a0a0f;
+  --background-secondary: #12121a;
+  --foreground: #e8e4d9;
+  --foreground-muted: #9a978a;
+  
+  /* Colores de acento - Dorado y rojo */
+  --gold: #d4a843;
+  --gold-light: #f0c654;
+  --gold-dark: #a67c00;
+  --red: #8b2942;
+  --red-light: #c44536;
+  
+  /* Colores de estado */
+  --hp: #c44536;
+  --mana: #3b82f6;
+  --stamina: #22c55e;
+  --exp: #d4a843;
+  
+  /* Bordes y sombras */
+  --border: #2a2a35;
+  --border-gold: #d4a843;
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-red: var(--red);
+  --color-red-light: var(--red-light);
+  --color-hp: var(--hp);
+  --color-mana: var(--mana);
+  --color-stamina: var(--stamina);
+  --color-exp: var(--exp);
+  --color-border: var(--border);
+  --color-border-gold: var(--border-gold);
+  
+  --font-cinzel: 'Cinzel', serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+/* Reset y estilos base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+/* Tipografía medieval para títulos */
+.font-medieval {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.05em;
+}
+
+/* Contenedor principal del juego */
+.game-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%);
+}
+
+/* Animación de antorcha - efecto de fuego */
+@keyframes torch-flicker {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+  75% {
+    opacity: 0.9;
+    transform: scale(1.01);
+  }
+}
+
+@keyframes torch-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px 10px rgba(212, 168, 67, 0.3),
+                0 0 40px 20px rgba(212, 168, 67, 0.2),
+                0 0 60px 30px rgba(212, 168, 67, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px 15px rgba(212, 168, 67, 0.4),
+                0 0 60px 30px rgba(212, 168, 67, 0.25),
+                0 0 90px 45px rgba(212, 168, 67, 0.15);
+  }
+}
+
+.torch {
+  animation: torch-flicker 0.5s ease-in-out infinite,
+             torch-glow 2s ease-in-out infinite;
+}
+
+/* Animación de entrada */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+/* Animación de pulso para elementos importantes */
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(212, 168, 67, 0);
+  }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+/* Estilos de botones medievales */
+.btn-medieval {
+  font-family: 'Cinzel', serif;
+  background: linear-gradient(180deg, #1a1a25 0%, #12121a 100%);
+  border: 2px solid var(--gold-dark);
+  color: var(--gold);
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-medieval::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 67, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-medieval:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(212, 168, 67, 0.3);
+}
+
+.btn-medieval:hover::before {
+  left: 100%;
+}
+
+.btn-medieval:active {
+  transform: translateY(0);
+}
+
+/* Cards medievales */
+.card-medieval {
+  background: linear-gradient(180deg, #1a1a25 0%, #12121a 100%);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 24px;
+  position: relative;
+}
+
+.card-medieval::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+}
+
+/* Barras de estado */
+.stat-bar {
+  height: 20px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.stat-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+}
+
+.stat-bar-hp .stat-bar-fill {
+  background: linear-gradient(180deg, #c44536 0%, #8b2942 100%);
+}
+
+.stat-bar-mana .stat-bar-fill {
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.stat-bar-stamina .stat-bar-fill {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+}
+
+.stat-bar-exp .stat-bar-fill {
+  background: linear-gradient(180deg, #d4a843 0%, #a67c00 100%);
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-dark);
+}
