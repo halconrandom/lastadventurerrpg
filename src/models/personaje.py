@@ -4,13 +4,21 @@ from models.experiencia import SistemaHabilidades
 
 
 class Personaje(Entidad):
-    def __init__(self, nombre, hp, ataque, defensa, nivel):
-        # Inicializar Entidad (nombre, hp, ataque, defensa)
-        super().__init__(nombre, hp, ataque, defensa)
+    def __init__(self, nombre, genero="no_especificar", dificultad="normal"):
+        # Inicializar Entidad con stats base
+        super().__init__(nombre, Stats.HP_BASE_INICIAL, Stats.ATK_BASE_INICIAL, Stats.DEF_BASE_INICIAL)
 
-        # Sistema de stats (incluye nivel y experiencia)
-        self.stats = Stats()
-        self.stats.nivel = nivel
+        # Datos personales
+        self.genero = genero  # "masculino", "femenino", "no_especificar"
+
+        # Sistema de stats (incluye nivel, experiencia y dificultad)
+        self.stats = Stats(dificultad=dificultad)
+
+        # Actualizar hp_max según dificultad aplicada
+        self.hp = self.stats.hp_base
+        self.hp_max = self.stats.hp_base
+        self.ataque = self.stats.get_atk()
+        self.defensa = self.stats.get_def()
 
         # Sistema de habilidades
         self.habilidades = SistemaHabilidades()
@@ -37,6 +45,19 @@ class Personaje(Entidad):
         """Retorna el nivel de la habilidad Defensa"""
         return self.habilidades.get_nivel_defensa()
 
+    def get_dificultad(self):
+        """Retorna la dificultad del juego"""
+        return self.stats.dificultad
+
+    def get_genero_pronombre(self):
+        """Retorna el pronombre según el género"""
+        if self.genero == "masculino":
+            return "él"
+        elif self.genero == "femenino":
+            return "ella"
+        else:
+            return "eles"
+
     def calcular_daño_total(self, nombre_habilidad, daño_arma=0):
         """Calcula el daño total con multiplicador de habilidad"""
         habilidad = self.habilidades.obtener_habilidad(nombre_habilidad)
@@ -55,6 +76,7 @@ class Personaje(Entidad):
         """Serializa el personaje a diccionario"""
         return {
             "nombre": self.nombre,
+            "genero": self.genero,
             "hp": self.hp,
             "hp_max": self.hp_max,
             "ataque": self.ataque,
@@ -67,12 +89,11 @@ class Personaje(Entidad):
     def from_dict(cls, data):
         """Crea un Personaje desde un diccionario"""
         personaje = cls(
-            data["nombre"],
-            data.get("hp", 100),
-            data.get("ataque", 10),
-            data.get("defensa", 0),
-            1
+            nombre=data["nombre"],
+            genero=data.get("genero", "no_especificar"),
+            dificultad=data.get("dificultad", "normal")
         )
+
         personaje.hp = data.get("hp", personaje.hp)
         personaje.hp_max = data.get("hp_max", personaje.hp)
 

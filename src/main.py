@@ -24,9 +24,9 @@ class Juego:
     def mostrar_menu_principal(self):
         """Muestra el menú principal del juego"""
         self.limpiar_pantalla()
-        print("=" * 30)
-        print("      LAST ADVENTURER")
-        print("=" * 30)
+        print("=" * 40)
+        print("         LAST ADVENTURER")
+        print("=" * 40)
         print()
         print("1. Nueva Partida")
         print("2. Cargar Partida")
@@ -36,15 +36,16 @@ class Juego:
     def menu_cargar_partida(self):
         """Muestra el menú de cargar partida"""
         self.limpiar_pantalla()
-        print("=" * 30)
-        print("     CARGAR PARTIDA")
-        print("=" * 30)
+        print("=" * 40)
+        print("        CARGAR PARTIDA")
+        print("=" * 40)
         print()
 
         for slot in range(1, SaveManager.NUM_SLOTS + 1):
             info = self.save_manager.obtener_info_slot(slot)
             if info:
-                print(f"{slot}. {info['nombre']} - Nivel {info['nivel']} - {info['zona']}")
+                dificultad_str = f"[{info.get('dificultad', 'normal').capitalize()}]"
+                print(f"{slot}. {info['nombre']} - Nv{info['nivel']} {dificultad_str} - {info['zona']}")
             else:
                 print(f"{slot}. [Vacío]")
 
@@ -54,12 +55,6 @@ class Juego:
 
     def nueva_partida(self):
         """Inicia una nueva partida"""
-        self.limpiar_pantalla()
-        print("=" * 30)
-        print("    NUEVA PARTIDA")
-        print("=" * 30)
-        print()
-
         # Buscar slot libre
         slot_libre = None
         for slot in range(1, SaveManager.NUM_SLOTS + 1):
@@ -69,19 +64,27 @@ class Juego:
 
         if slot_libre is None:
             # Todos los slots ocupados
+            self.limpiar_pantalla()
+            print("=" * 40)
+            print("        NUEVA PARTIDA")
+            print("=" * 40)
+            print()
             print("Todos los slots están ocupados.")
             print("Debes eliminar una partida para crear una nueva.")
             print()
             input("Presiona Enter para volver...")
             return
 
-        # Crear personaje
+        # Crear personaje con el nuevo flujo
         personaje = crear_personaje()
 
         if personaje:
             # Crear datos iniciales usando el personaje creado
-            self.datos_juego = self.save_manager.crear_save_vacio()
-            self.datos_juego["personaje"]["nombre"] = personaje.nombre
+            self.datos_juego = self.save_manager.crear_save_vacio(
+                nombre=personaje.nombre,
+                genero=personaje.genero,
+                dificultad=personaje.stats.dificultad
+            )
             self.datos_juego["personaje"]["stats"] = personaje.stats.to_dict()
             self.datos_juego["personaje"]["habilidades"] = personaje.habilidades.to_dict()
 
@@ -97,8 +100,8 @@ class Juego:
                 print(f"\nError: {mensaje}")
                 input("Presiona Enter para volver...")
         else:
-            print("\nCreación de personaje cancelada.")
-            time.sleep(1)
+            # Creación cancelada - volver al menú principal silenciosamente
+            pass
 
     def cargar_partida(self):
         """Carga una partida existente"""
@@ -147,9 +150,11 @@ class Juego:
             self.limpiar_pantalla()
             stats = self.datos_juego["personaje"]["stats"]
             nivel = stats.get("nivel", 1)
-            print("=" * 30)
+            dificultad = stats.get("dificultad", "normal").capitalize()
+            print("=" * 40)
             print(f"  {self.datos_juego['personaje']['nombre']} - Nivel {nivel}")
-            print("=" * 30)
+            print(f"  Dificultad: {dificultad}")
+            print("=" * 40)
             print()
             print("1. Explorar")
             print("2. Inventario")
@@ -205,15 +210,19 @@ class Juego:
     def ver_personaje(self):
         """Muestra los stats del personaje"""
         self.limpiar_pantalla()
-        print("=" * 30)
-        print("      PERSONAJE")
-        print("=" * 30)
+        print("=" * 40)
+        print("          PERSONAJE")
+        print("=" * 40)
         print()
 
         p = self.datos_juego["personaje"]
         stats = Stats.from_dict(p["stats"])
 
+        # Mostrar datos personales
         print(f"Nombre: {p['nombre']}")
+        print(f"Género: {p.get('genero', 'no_especificar').capitalize()}")
+        print(f"Dificultad: {stats.dificultad.capitalize()}")
+        print()
         print(stats)
         print()
 

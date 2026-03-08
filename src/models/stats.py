@@ -7,12 +7,12 @@ class Stats:
     # Valores base iniciales
     HP_BASE_INICIAL = 100
     ATK_BASE_INICIAL = 10
-    DEF_BASE_INICIAL = 0
+    DEF_BASE_INICIAL = 5
     VELOCIDAD_BASE_INICIAL = 10
     CRITICO_BASE_INICIAL = 5
-    EVASION_BASE_INICIAL = 10
-    MANA_BASE_INICIAL = 100
-    STAMINA_BASE_INICIAL = 10
+    EVASION_BASE_INICIAL = 5
+    MANA_BASE_INICIAL = 50
+    STAMINA_BASE_INICIAL = 100
 
     # Caps máximos
     DEF_CAP = 80
@@ -29,7 +29,17 @@ class Stats:
     MANA_POR_PUNTO = 10
     STAMINA_POR_PUNTO = 2
 
-    def __init__(self):
+    # Modificadores de dificultad
+    MODIFICADORES_DIFICULTAD = {
+        "facil": {"hp_mod": 1.2, "dano_enemigo_mod": 0.9},
+        "normal": {"hp_mod": 1.0, "dano_enemigo_mod": 1.0},
+        "dificil": {"hp_mod": 0.9, "dano_enemigo_mod": 1.1}
+    }
+
+    def __init__(self, dificultad="normal"):
+        # Dificultad del juego
+        self.dificultad = dificultad
+
         # Nivel y experiencia
         self.nivel = 1
         self.experiencia = 0
@@ -43,6 +53,9 @@ class Stats:
         self.evasion_base = self.EVASION_BASE_INICIAL
         self.mana_base = self.MANA_BASE_INICIAL
         self.stamina_base = self.STAMINA_BASE_INICIAL
+
+        # Aplicar modificador de dificultad a HP
+        self._aplicar_dificultad()
 
         # Valores actuales (pueden variar en combate)
         self.hp_actual = self.hp_base
@@ -61,6 +74,16 @@ class Stats:
 
         # Puntos disponibles para asignar
         self.puntos_disponibles = 0
+
+    def _aplicar_dificultad(self):
+        """Aplica el modificador de dificultad al HP base"""
+        mods = self.MODIFICADORES_DIFICULTAD.get(self.dificultad, self.MODIFICADORES_DIFICULTAD["normal"])
+        self.hp_base = int(self.hp_base * mods["hp_mod"])
+
+    def get_modificador_dano_enemigo(self):
+        """Retorna el modificador de daño de enemigos según dificultad"""
+        mods = self.MODIFICADORES_DIFICULTAD.get(self.dificultad, self.MODIFICADORES_DIFICULTAD["normal"])
+        return mods["dano_enemigo_mod"]
 
     # ==================== GETTERS DE STATS TOTALES ====================
 
@@ -339,6 +362,7 @@ class Stats:
     def to_dict(self):
         """Convierte los stats a diccionario para guardar"""
         return {
+            "dificultad": self.dificultad,
             "nivel": self.nivel,
             "experiencia": self.experiencia,
             "hp_base": self.hp_base,
@@ -366,7 +390,7 @@ class Stats:
     @classmethod
     def from_dict(cls, data):
         """Crea una instancia de Stats desde un diccionario"""
-        stats = cls()
+        stats = cls(dificultad=data.get("dificultad", "normal"))
 
         stats.nivel = data.get("nivel", 1)
         stats.experiencia = data.get("experiencia", 0)

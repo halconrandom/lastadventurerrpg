@@ -34,11 +34,14 @@ class SaveManager:
         try:
             with open(self._ruta_slot(slot_num), "r", encoding="utf-8") as f:
                 data = json.load(f)
-                # El nivel ahora está en stats
-                nivel = data["personaje"]["stats"].get("nivel", 1)
+                # El nivel y dificultad están en stats
+                stats = data["personaje"].get("stats", {})
+                nivel = stats.get("nivel", 1)
+                dificultad = stats.get("dificultad", "normal")
                 return {
                     "nombre": data["personaje"]["nombre"],
                     "nivel": nivel,
+                    "dificultad": dificultad,
                     "zona": data["progreso"]["zonas_visitadas"][-1] if data["progreso"]["zonas_visitadas"] else "Desconocida",
                     "fecha": data["fecha"]
                 }
@@ -100,17 +103,18 @@ class SaveManager:
 
         return data
 
-    def crear_save_vacio(self):
+    def crear_save_vacio(self, nombre="", genero="no_especificar", dificultad="normal"):
         """Crea una estructura de save vacía para nueva partida"""
         from models.stats import Stats
         from models.experiencia import SistemaHabilidades
 
-        stats = Stats()
+        stats = Stats(dificultad=dificultad)
         habilidades = SistemaHabilidades()
 
         return {
             "personaje": {
-                "nombre": "",
+                "nombre": nombre,
+                "genero": genero,
                 "stats": stats.to_dict(),
                 "habilidades": habilidades.to_dict()
             },

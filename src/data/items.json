@@ -1,0 +1,82 @@
+[
+    {
+        "id": "ropajes_basicos",
+        "nombre": "Ropajes Básicos",
+        "tipo": "cosmetico",
+        "efecto": 0,
+        "descripcion": "Ropajes simples de viaje. No proporcionan protección.",
+        "stackable": false
+    },
+    {
+        "id": "pocion_pequena",
+        "nombre": "Poción Pequeña",
+        "tipo": "pocion",
+        "efecto": 20,
+        "descripcion": "Cura 20 HP",
+        "stackable": true
+    },
+    {
+        "id": "pocion_grande",
+        "nombre": "Poción Grande",
+        "tipo": "pocion",
+        "efecto": 50,
+        "descripcion": "Cura 50 HP",
+        "stackable": true
+    },
+    {
+        "id": "pocion_maxima",
+        "nombre": "Poción Máxima",
+        "tipo": "pocion",
+        "efecto": 100,
+        "descripcion": "Cura 100 HP",
+        "stackable": true
+    },
+    {
+        "id": "elixir_vida",
+        "nombre": "Elixir de Vida",
+        "tipo": "pocion",
+        "efecto": 999,
+        "descripcion": "Cura todo el HP",
+        "stackable": true
+    },
+    {
+        "id": "espada_hierro",
+        "nombre": "Espada de Hierro",
+        "tipo": "arma",
+        "efecto": 5,
+        "descripcion": "Aumenta ataque +5",
+        "stackable": false
+    },
+    {
+        "id": "espada_acero",
+        "nombre": "Espada de Acero",
+        "tipo": "arma",
+        "efecto": 10,
+        "descripcion": "Aumenta ataque +10",
+        "stackable": false
+    },
+    {
+        "id": "escudo_madera",
+        "nombre": "Escudo de Madera",
+        "tipo": "armadura",
+        "efecto": 3,
+        "descripcion": "Aumenta defensa +3",
+        "stackable": false
+    },
+    {
+        "id": "armadura_placas",
+        "nombre": "Armadura de Placas",
+        "tipo": "armadura",
+        "efecto": 8,
+        "descripcion": "Aumenta defensa +8",
+        "stackable": false
+    },
+    {
+        "id": "anillo_poder",
+        "nombre": "Anillo de Poder",
+        "tipo": "accesorio",
+        "efecto": 3,
+        "descripcion": "Aumenta ATK y DEF +3",
+        "stackable": false
+    }
+]
