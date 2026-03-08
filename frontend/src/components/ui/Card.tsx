@@ -1,63 +1,103 @@
-"use client";
+import * as React from "react"
 
-import type { ReactNode } from "react";
+import { cn } from "@/lib/utils"
 
-interface CardProps {
-  children: ReactNode;
-  className?: string;
-  onClick?: () => void;
-  selected?: boolean;
-  hoverable?: boolean;
-}
-
-export function Card({
-  children,
-  className = "",
-  onClick,
-  selected = false,
-  hoverable = false,
-}: CardProps) {
-  const baseStyles =
-    "bg-gradient-to-b from-[#1a1a25] to-[#12121a] border rounded relative";
-
-  const borderStyles = selected
-    ? "border-[#d4a843] shadow-[0_0_20px_rgba(212,168,67,0.3)]"
-    : "border-[#2a2a35]";
-
-  const hoverStyles = hoverable
-    ? "cursor-pointer hover:border-[#d4a843] hover:shadow-[0_0_15px_rgba(212,168,67,0.2)] transition-all duration-300"
-    : "";
-
+function Card({
+  className,
+  size = "default",
+  ...props
+}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
   return (
     <div
-      className={`${baseStyles} ${borderStyles} ${hoverStyles} ${className}`}
-      onClick={onClick}
-    >
-      {/* Línea dorada superior */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#a67c00] to-transparent" />
-      {children}
-    </div>
-  );
+      data-slot="card"
+      data-size={size}
+      className={cn(
+        "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card py-4 text-sm text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-interface CardHeaderProps {
-  children: ReactNode;
-  className?: string;
-}
-
-export function CardHeader({ children, className = "" }: CardHeaderProps) {
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className={`p-4 border-b border-[#2a2a35] ${className}`}>
-      <h3 className="font-medieval text-[#d4a843] text-lg">{children}</h3>
-    </div>
-  );
+    <div
+      data-slot="card-header"
+      className={cn(
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-interface CardContentProps {
-  children: ReactNode;
-  className?: string;
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn(
+        "text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-export function CardContent({ children, className = "" }: CardContentProps) {
-  return <div className={`p-4 ${className}`}>{children}</div>;
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
+  )
+}
+
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
+      {...props}
+    />
+  )
+}
+
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn(
+        "flex items-center rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/card:p-3",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
 }

@@ -1,6 +1,9 @@
 "use client";
 
 import { Map, Package, Swords } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
 
 export type Tab = "inventario" | "explorar" | "combate";
 
@@ -23,26 +26,34 @@ interface GameNavProps {
 
 export function GameNav({ tabActiva, onTabChange }: GameNavProps) {
   return (
-    <nav className="bg-[#12121a]/80 backdrop-blur-md border-b border-[#2a2a35] sticky top-0 z-30 flex-shrink-0">
-      <div className="max-w-6xl mx-auto flex justify-center sm:justify-start">
+    <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-30 flex-shrink-0">
+      <div className="max-w-7xl mx-auto flex justify-center sm:justify-start">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`flex items-center gap-3 px-10 py-4 font-medieval text-sm uppercase tracking-widest transition-all duration-500 relative ${
+            className={cn(
+              "flex items-center gap-3 px-12 py-5 font-medieval text-[11px] uppercase tracking-[0.25em] transition-all duration-300 relative focus:outline-none",
               tabActiva === tab.id
                 ? "text-[#d4a843]"
-                : "text-[#9a978a] hover:text-[#d4a843]/70"
-            }`}
+                : "text-muted-foreground hover:text-foreground/80"
+            )}
           >
-            {tab.icono}
+
+            <div className={cn("transition-transform duration-300", tabActiva === tab.id && "scale-110")}>
+              {tab.icono}
+            </div>
             {tab.nombre}
             {tabActiva === tab.id && (
-              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#d4a843] to-transparent" />
+              <motion.div
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#d4a843] to-transparent shadow-[0_0_10px_rgba(212,168,67,0.3)]"
+              />
             )}
           </button>
         ))}
       </div>
     </nav>
+
   );
 }

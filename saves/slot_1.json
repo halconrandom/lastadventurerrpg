@@ -8,12 +8,13 @@
     "hp_max": 100,
     "ataque": 10,
     "defensa": 5,
+    "imagen_url": null,
     "stats": {
       "dificultad": "normal",
       "nivel": 3,
-      "experiencia": 147,
+      "experiencia": 270,
       "experiencia_necesaria": 390,
-      "progreso_nivel": 37,
+      "progreso_nivel": 69,
       "hp_base": 100,
       "hp_actual": 100,
       "hp": 100,
@@ -97,7 +98,7 @@
     "slots_maximos": 10,
     "items": [],
     "materiales": [],
-    "oro": 105
+    "oro": 144
   },
   "equipamiento": {
     "arma": null,

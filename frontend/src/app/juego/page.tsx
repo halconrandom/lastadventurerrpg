@@ -19,7 +19,7 @@ import {
 export default function JuegoPage() {
   const router = useRouter();
   const { datos, guardarPartida, reiniciar, explorar } = useGame();
-  
+
   // Estados locales
   const [tabActiva, tabActivaSet] = useState<Tab>("explorar");
   const [guardando, guardandoSet] = useState(false);
@@ -102,25 +102,33 @@ export default function JuegoPage() {
         />
 
         {/* Contenido de Tabs */}
-        <div className="flex-1 bg-[radial-gradient(circle_at_center,_#12121a_0%,_#0a0a0f_100%)] overflow-hidden">
-          <div className="max-w-6xl mx-auto p-8">
+        <div className="flex-1 bg-[radial-gradient(circle_at_center,_#12121a_0%,_#0a0a0f_100%)] overflow-y-auto custom-scrollbar">
+          <div className="max-w-7xl mx-auto p-12">
+
             <AnimatePresence mode="wait">
               {tabActiva === "explorar" && (
-                <ExplorarPanel
-                  explorando={explorando}
-                  mensajeExploracion={mensajeExploracion}
-                  onExplorar={handleExplorar}
-                />
+                <div key="panel-explorar">
+                  <ExplorarPanel
+                    explorando={explorando}
+                    mensajeExploracion={mensajeExploracion}
+                    onExplorar={handleExplorar}
+                  />
+                </div>
               )}
 
               {tabActiva === "inventario" && (
-                <InventarioPanel datos={datos} />
+                <div key="panel-inventario">
+                  <InventarioPanel datos={datos} />
+                </div>
               )}
 
               {tabActiva === "combate" && (
-                <CombatePanel />
+                <div key="panel-combate">
+                  <CombatePanel />
+                </div>
               )}
             </AnimatePresence>
+
           </div>
         </div>
       </main>

@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
 import { useGame } from "@/lib/GameContext";
 import * as api from "@/lib/api";
 import type { Slot } from "@/lib/types";
+import { cn } from "@/lib/utils";
+
 
 export default function HomePage() {
   const router = useRouter();
@@ -38,7 +41,7 @@ export default function HomePage() {
 
   const handleSeleccionarSlot = async (slot: Slot) => {
     if (!slot.ocupado) return;
-    
+
     cargandoSet(true);
     try {
       await cargarPartida(slot.numero);
@@ -165,29 +168,33 @@ export default function HomePage() {
               {slots.map((slot) => (
                 <Card
                   key={slot.numero}
-                  hoverable={slot.ocupado}
-                  selected={false}
-                  className={`p-6 ${!slot.ocupado ? "opacity-50" : ""}`}
+                  className={cn(
+                    "relative overflow-hidden cursor-pointer transition-all duration-300 border-border/50",
+                    slot.ocupado ? "hover:border-[#d4a843]/50 hover:bg-[#d4a843]/5" : "opacity-50 cursor-not-allowed"
+                  )}
                   onClick={() => slot.ocupado && handleSeleccionarSlot(slot)}
                 >
-                  {slot.ocupado ? (
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medieval text-xl text-[#d4a843]">
-                          {slot.info?.nombre}
-                        </p>
-                        <p className="text-sm text-[#9a978a] mt-1">
-                          Nivel {slot.info?.nivel} • {slot.info?.dificultad}
+                  <CardContent className="p-6">
+                    {slot.ocupado ? (
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medieval text-xl text-[#d4a843]">
+                            {slot.info?.nombre}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Nivel {slot.info?.nivel} • {slot.info?.dificultad}
+                          </p>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {slot.info?.zona}
                         </p>
                       </div>
-                      <p className="text-sm text-[#9a978a]">
-                        {slot.info?.zona}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-[#9a978a] text-center">Slot {slot.numero} - Vacío</p>
-                  )}
+                    ) : (
+                      <p className="text-muted-foreground text-center">Slot {slot.numero} - Vacío</p>
+                    )}
+                  </CardContent>
                 </Card>
+
               ))}
             </div>
             <div className="mt-8 text-center">

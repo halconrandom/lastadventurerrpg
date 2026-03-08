@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { Cinzel, Inter } from "next/font/google";
+import { Cinzel, Inter, Geist } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -26,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" className={cn("font-sans", geist.variable)}>
       <body className={`${cinzel.variable} ${inter.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>

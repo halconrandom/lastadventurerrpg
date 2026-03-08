@@ -10,6 +10,8 @@ class Personaje(Entidad):
 
         # Datos personales
         self.genero = genero  # "masculino", "femenino", "no_especificar"
+        self.imagen_url = None
+
 
         # Sistema de stats (incluye nivel, experiencia y dificultad)
         self.stats = Stats(dificultad=dificultad)
@@ -81,8 +83,10 @@ class Personaje(Entidad):
             "hp_max": self.hp_max,
             "ataque": self.ataque,
             "defensa": self.defensa,
+            "imagen_url": self.imagen_url,
             "stats": self.stats.to_dict(),
             "habilidades": self.habilidades.to_dict()
+
         }
 
     @classmethod
@@ -93,9 +97,10 @@ class Personaje(Entidad):
             genero=data.get("genero", "no_especificar"),
             dificultad=data.get("dificultad", "normal")
         )
-
+        personaje.imagen_url = data.get("imagen_url")
         personaje.hp = data.get("hp", personaje.hp)
         personaje.hp_max = data.get("hp_max", personaje.hp)
+
 
         if "stats" in data:
             personaje.stats = Stats.from_dict(data["stats"])
