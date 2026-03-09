@@ -6,13 +6,27 @@ El sistema de mapa gestiona el mundo del juego: tiles con coordenadas X/Y, gener
 
 ---
 
+## Decisiones Tomadas (Iteración 1)
+
+| Aspecto | Decisión | Notas |
+|---------|----------|-------|
+| Escala de tiles | 1 km de lado | Tile = 1 km² |
+| Mundo | Infinito con chunks | 1 chunk = 9 tiles (3x3), 30 chunks cargados |
+| Transiciones | Suaves | Perlin noise |
+| Ubicaciones | Opción B | 10-20 pueblos, 3-5 ciudades, 1-2 capitales, 20-40 mazmorras, 30-50 POIs |
+| Distancias | Pathfinding A* | Considerando terreno |
+| Revelado | 3 tiles alrededor | Radio de visión base |
+| Spawn | Ubicación aleatoria | Cualquier pueblo/ciudad |
+
+---
+
 ## Componentes del Sistema
 
 ### 1. Estructura del Mundo
 
 #### Tiles y Coordenadas
 
-El mundo se divide en tiles (celdas) con coordenadas X/Y.
+El mundo se divide en tiles (celdas) con coordenadas X/Y. Cada tile = 1 km².
 
 ```
         X →
@@ -46,18 +60,59 @@ class Tile:
     rutas: list               # Rutas que pasan por este tile
 ```
 
-**Pregunta 1**: ¿Cuál debería ser el tamaño de un tile en términos de "escala"?
+---
 
-| Opción | Escala | Descripción |
-|--------|--------|-------------|
-| A | 1 km² | Un tile = 1 km de lado |
-| B | 5 km² | Un tile = 5 km de lado |
-| C | 10 km² | Un tile = 10 km de lado |
-| D | Abstracto | No tiene escala real, es una unidad de juego |
+### 2. Sistema de Chunks
+
+El mundo es infinito pero se gestiona por chunks para optimizar rendimiento.
+
+#### Estructura de Chunks
+
+```python
+class Chunk:
+    x: int                    # Coordenada X del chunk
+    y: int                    # Coordenada Y del chunk
+    tiles: list               # 9 tiles (3x3)
+    generado: bool            # Si ya fue generado
+```
+
+#### Gestión de Chunks
+
+```python
+class GestorChunks:
+    radio_carga: int = 30     # Chunks cargados alrededor del jugador
+    
+    def cargar_chunks_around(self, x: int, y: int) -> list:
+        # Carga chunks en radio de 30 alrededor de la posición
+        pass
+    
+    def descargar_chunks_lejanos(self, x: int, y: int) -> list:
+        # Descarga chunks fuera del radio
+        pass
+    
+    def generar_chunk(self, x: int, y: int) -> Chunk:
+        # Genera un chunk nuevo proceduralmente
+        pass
+```
+
+#### Visualización
+
+```
+Chunk 3x3 tiles:
+┌───┬───┬───┐
+│0,0│1,0│2,0│  ← 1 chunk = 9 tiles
+├───┼───┼───┤     = 9 km²
+│0,1│1,1│2,1│
+├───┼───┼───┤
+│0,2│1,2│2,2│
+└───┴───┴───┘
+
+30 chunks de radio = ~2700 tiles cargados máximo
+```
 
 ---
 
-### 2. Generación Procedural
+### 3. Generación Procedural
 
 El mundo se genera proceduralmente al crear una nueva partida.
 
@@ -73,22 +128,14 @@ class SemillaMundo:
 
 #### Proceso de Generación
 
-1. **Generar biomas**: Usar Perlin noise para distribución natural
+1. **Generar biomas**: Usar Perlin noise para distribución natural con transiciones suaves
 2. **Generar ubicaciones**: Pueblos, ciudades, puntos de interés
-3. **Generar rutas**: Conexiones entre ubicaciones
+3. **Generar rutas**: Conexiones entre ubicaciones usando A*
 4. **Generar contenido**: Recursos, enemigos, eventos por tile
-
-**Pregunta 2**: ¿El mundo debe ser infinito o tener límites?
-
-| Opción | Descripción | Ventajas | Desventajas |
-|--------|-------------|----------|-------------|
-| A | Infinito | Exploración sin límites | Dificulta persistencia |
-| B | Limitado (ej: 1000x1000) | Mundo finito, manejable | Límite artificial |
-| C | Expande dinámicamente | Crece según el jugador explora | Complejo de implementar |
 
 ---
 
-### 3. Biomas
+### 4. Biomas
 
 Los biomas definen el tipo de terreno y afectan clima, recursos y enemigos.
 
@@ -105,31 +152,27 @@ Los biomas definen el tipo de terreno y afectan clima, recursos y enemigos.
 | Costa | Playa, Acantilados, Puertos | Moderado | Pescado, Sal | Piratas, Sirenas |
 | Pradera | Campos, Colinas, Granjas | Templado | Cultivos, Ganado | Bandidos, Animales |
 
-**Pregunta 3**: ¿Los biomas deben tener transiciones suaves o bordes definidos?
+#### Transiciones Suaves
 
-| Opción | Descripción |
-|--------|-------------|
-| A | Transiciones suaves (Perlin noise) |
-| B | Bordes definidos (cambio abrupto) |
-| C | Zonas de transición (tiles mixtos) |
+Los biomas usan Perlin noise para transiciones naturales sin bordes abruptos.
 
 ---
 
-### 4. Ubicaciones
+### 5. Ubicaciones
 
-Las ubicaciones son puntos de interés en el mapa: pueblos, ciudades, mazmorras, etc.
+Las ubicaciones son puntos de interés en el mapa.
 
-#### Tipos de Ubicaciones
+#### Cantidad de Ubicaciones (Opción B)
 
-| Tipo | Tamaño | Descripción | Ejemplos |
-|------|--------|-------------|----------|
-| Pueblo | Pequeño | 10-50 NPCs, servicios básicos | Aldea, Campamento |
-| Ciudad | Mediano | 50-200 NPCs, servicios completos | Puerto, Fortaleza |
-| Capital | Grande | 200+ NPCs, servicios especiales | Ciudad principal |
-| Mazmorra | Variable | Exploración, combate, tesoros | Cueva, Ruinas |
-| Punto de Interés | Pequeño | Sin NPCs, eventos especiales | Santuario, Monolito |
+| Tipo | Cantidad | NPCs | Servicios |
+|------|----------|------|-----------|
+| Pueblos | 10-20 | 10-50 | Básicos (tienda, posada) |
+| Ciudades | 3-5 | 50-200 | Completos (tienda, herrero, posada, templo) |
+| Capitales | 1-2 | 200+ | Especiales + servicios completos |
+| Mazmorras | 20-40 | 0 | Combate, tesoros |
+| POIs | 30-50 | 0-5 | Eventos especiales |
 
-#### Generación de Ubicaciones
+#### Estructura de Ubicación
 
 ```python
 class Ubicacion:
@@ -139,27 +182,32 @@ class Ubicacion:
     x: int                    # Coordenada X
     y: int                    # Coordenada Y
     bioma: str                # Bioma donde está ubicada
-    
-    # Contenido
     npcs: list                # NPCs en la ubicación
     servicios: list           # Tiendas, herreros, etc.
     eventos: list             # Eventos disponibles
-    
-    # Conexiones
     rutas: list               # Rutas hacia otras ubicaciones
 ```
 
-**Pregunta 4**: ¿Cuántas ubicaciones debería generar el mundo inicial?
+---
 
-| Opción | Pueblos | Ciudades | Capitales | Mazmorras | POIs |
-|--------|---------|----------|-----------|-----------|------|
-| A | 5-10 | 2-3 | 1 | 10-20 | 20-30 |
-| B | 10-20 | 3-5 | 1-2 | 20-40 | 30-50 |
-| C | 20-40 | 5-10 | 2-3 | 40-80 | 50-100 |
+### 6. Mapa de Ubicación (Pregunta Pendiente)
+
+**Pregunta 8**: ¿Cómo funciona el mapa DENTRO de una ubicación?
+
+Si un tile del mapa mundial = 1 km², ¿cómo se mueve el jugador dentro de una ciudad?
+
+#### Opciones
+
+| Opción | Descripción | Ventajas | Desventajas |
+|--------|-------------|----------|-------------|
+| **A) Mapa de ubicación** | Cada ubicación tiene su propio mapa con tiles pequeños (10m/tile) | Exploración detallada | Doble sistema de mapas |
+| **B) Sub-tiles** | Un tile mundial se subdivide en 100 sub-tiles (10x10) | Sistema unificado | Complejo |
+| **C) Instancias** | Ubicaciones son escenas separadas, sin tiles | Simple | Menos inmersión |
+| **D) Escala variable** | Dentro de ubicaciones, tiempo por acción sin mapa visual | Muy simple | Sin exploración visual |
 
 ---
 
-### 5. Sistema de Rutas y Distancias
+### 7. Sistema de Rutas y Distancias
 
 Las rutas conectan ubicaciones y definen el tiempo de viaje.
 
@@ -171,41 +219,28 @@ class Ruta:
     origen: str               # ID de ubicación origen
     destino: str              # ID de ubicación destino
     tipo: str                 # camino/sendero/carretera/rio
-    
-    # Propiedades
     distancia: float          # Distancia en km
     tiempo_base: int          # Tiempo base en horas
     dificultad: int           # 1-10 (afecta eventos negativos)
-    
-    # Tiles por los que pasa
     tiles: list               # Lista de coordenadas [(x,y), ...]
-    
-    # Eventos
     eventos_posibles: list    # Eventos que pueden ocurrir en la ruta
 ```
 
-#### Cálculo de Distancias
+#### Modificadores de Tiempo por Terreno
 
-El tiempo de viaje depende de:
-
-1. **Distancia base**: Calculada con A* pathfinding
-2. **Tipo de ruta**: Carretera = rápido, Sendero = lento
-3. **Biomas atravesados**: Montaña = más lento, Pradera = más rápido
-4. **Condiciones**: Clima, estación, hora del día
-
-**Pregunta 5**: ¿Cómo se calculan las distancias?
-
-| Opción | Descripción |
-|--------|-------------|
-| A | Distancia euclidiana simple (línea recta) |
-| B | Pathfinding A* considerando terreno |
-| C | Predefinido por el sistema de generación |
+| Terreno | Multiplicador |
+|---------|---------------|
+| Carretera | 1.0x |
+| Pradera | 1.2x |
+| Bosque | 1.5x |
+| Pantano | 2.0x |
+| Montaña | 2.5x |
+| Desierto | 1.8x |
+| Tundra | 2.0x |
 
 ---
 
-### 6. Exploración y Revelado
-
-El jugador no ve todo el mapa al inicio. Debe explorar.
+### 8. Exploración y Revelado
 
 #### Estados de Visibilidad
 
@@ -216,45 +251,39 @@ El jugador no ve todo el mapa al inicio. Debe explorar.
 | Explorado | Tile visitado, todos los detalles visibles |
 | Actual | Tile donde está el jugador ahora |
 
-#### Radio de Visión
+#### Radio de Visión (3 tiles)
 
 ```python
 class VisionJugador:
     radio_base: int = 3       # Tiles visibles alrededor
-    modificadores: dict       # Bonos por habilidades, items, etc.
     
     def calcular_visibles(self, x: int, y: int) -> list:
-        # Retorna lista de tiles visibles desde (x, y)
-        pass
+        visibles = []
+        for dx in range(-3, 4):
+            for dy in range(-3, 4):
+                if abs(dx) + abs(dy) <= 3:  # Distancia Manhattan
+                    visibles.append((x + dx, y + dy))
+        return visibles
 ```
 
-**Pregunta 6**: ¿Cómo funciona el revelado del mapa?
+---
 
-| Opción | Descripción |
-|--------|-------------|
-| A | Solo se revela el tile actual |
-| B | Radio de visión (3-5 tiles alrededor) |
-| C | Todo el bioma actual se revela al entrar |
-| D | Configurable por dificultad |
+### 9. Spawn del Jugador
+
+El jugador aparece en una ubicación aleatoria al inicio.
+
+```python
+def generar_spawn_aleatorio(ubicaciones: list) -> Ubicacion:
+    # Filtrar ubicaciones seguras (pueblos y ciudades)
+    ubicaciones_seguras = [u for u in ubicaciones if u.tipo in ["pueblo", "ciudad"]]
+    
+    # Seleccionar aleatoriamente
+    return random.choice(ubicaciones_seguras)
+```
 
 ---
 
-### 7. Spawn del Jugador
-
-¿Dónde aparece el jugador al inicio?
-
-**Pregunta 7**: ¿Dónde hace spawn el jugador?
-
-| Opción | Descripción |
-|--------|-------------|
-| A | Ubicación aleatoria (cualquier pueblo/ciudad) |
-| B | Siempre en un pueblo seguro |
-| C | Ubicación configurada por el jugador |
-| D | Zona específica según la historia |
-
----
-
-### 8. Persistencia del Mapa
+### 10. Persistencia del Mapa
 
 #### Datos a Persistir
 
@@ -262,9 +291,12 @@ class VisionJugador:
 {
   "mapa": {
     "seed": 12345,
+    "chunks_generados": [
+      {"x": 0, "y": 0, "tiles": [...]},
+      {"x": 1, "y": 0, "tiles": [...]}
+    ],
     "tiles_explorados": [
-      {"x": 0, "y": 0, "bioma": "bosque", "explorado": true},
-      {"x": 1, "y": 0, "bioma": "bosque", "explorado": true}
+      {"x": 0, "y": 0, "bioma": "bosque", "explorado": true}
     ],
     "ubicaciones_conocidas": ["pueblo_1", "ciudad_1"],
     "rutas_conocidas": ["ruta_1", "ruta_2"],
@@ -275,36 +307,26 @@ class VisionJugador:
 
 ---
 
-## Preguntas para la Primera Iteración
+## Preguntas para la Segunda Iteración
 
-### Pregunta 1: Escala de Tiles
-¿Cuál debería ser el tamaño de un tile?
+### Pregunta 8: Mapa dentro de Ubicaciones
+¿Cómo funciona el mapa DENTRO de una ubicación (ciudad, pueblo)?
 
-### Pregunta 2: Mundo Infinito vs Limitado
-¿El mundo debe ser infinito o tener límites?
-
-### Pregunta 3: Transiciones de Biomas
-¿Los biomas deben tener transiciones suaves o bordes definidos?
-
-### Pregunta 4: Cantidad de Ubicaciones
-¿Cuántas ubicaciones debería generar el mundo inicial?
-
-### Pregunta 5: Cálculo de Distancias
-¿Cómo se calculan las distancias entre ubicaciones?
-
-### Pregunta 6: Revelado del Mapa
-¿Cómo funciona el revelado del mapa?
-
-### Pregunta 7: Spawn del Jugador
-¿Dónde hace spawn el jugador al inicio?
+| Opción | Descripción |
+|--------|-------------|
+| A | Mapa de ubicación con tiles pequeños (10m/tile) |
+| B | Sub-tiles (1 tile mundial = 100 sub-tiles) |
+| C | Instancias separadas sin tiles |
+| D | Sin mapa visual, solo menús/diálogos |
 
 ---
 
-## Estructura de Archivos Propuesta
+## Estructura de Archivos
 
 ```
 backend/src/systems/
 ├── mapa.py                # Sistema principal de mapa
+├── chunks.py              # Gestión de chunks
 ├── generacion_mundo.py    # Generación procedural
 ├── biomas.py              # Definición de biomas
 ├── ubicaciones.py         # Gestión de ubicaciones
@@ -326,10 +348,22 @@ frontend/src/components/
 
 ---
 
+## Dependencias
+
+| Sistema | Relación |
+|---------|----------|
+| **Tiempo** | Consume distancias para calcular viajes |
+| Clima | Recibe bioma para clima base |
+| NPCs | Recibe ubicación para spawn |
+| Exploración | Consume tiles y visibilidad |
+| Combate | Recibe enemigos por tile |
+
+---
+
 ## Próximos Pasos
 
-1. ⏳ Responder preguntas de esta iteración
-2. 🔜 Segunda iteración con más detalle técnico
+1. ✅ Primera iteración completada
+2. ⏳ Segunda iteración (pregunta 8)
 3. 🔜 Implementación en `experiments/mapa/`
 4. 🔜 Tests de validación
 5. 🔜 Integración al backend principal
