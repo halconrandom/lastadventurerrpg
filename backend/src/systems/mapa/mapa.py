@@ -104,10 +104,8 @@ class MapaMundo:
             visibilidad=EstadoVisibilidad.NO_DESCUBIERTO
         )
         
-        # Generar sub-tiles si es necesario
-        if ubicacion.tipo in [TipoUbicacion.PUEBLO, TipoUbicacion.CIUDAD, 
-                              TipoUbicacion.CAPITAL, TipoUbicacion.MAZMORRA]:
-            tile.generar_sub_tiles(ubicacion.tipo.value)
+        # Generar sub-tiles (lazy - se generan cuando el jugador entra al tile)
+        # Los sub-tiles se generan automáticamente cuando se accede a ellos
         
         self.gestor_chunks.set_tile(tile)
     
