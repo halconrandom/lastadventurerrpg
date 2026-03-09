@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { useGame } from "@/lib/GameContext";
-import { Swords, Heart, Shield, Zap } from "lucide-react";
+import * as api from "@/lib/api";
+import { Swords, Heart, Shield, Zap, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Slot } from "@/lib/types";
 
 
 type Paso = "nombre" | "genero" | "dificultad" | "resumen";
@@ -24,6 +26,21 @@ export default function NuevaPartidaPage() {
   const [dificultad, dificultadSet] = useState<Dificultad | null>(null);
   const [cargando, cargandoSet] = useState(false);
   const [error, errorSet] = useState<string | null>(null);
+  const [slots, slotsSet] = useState<Slot[]>([]);
+  const [mostrarModalSlots, mostrarModalSlotsSet] = useState(false);
+
+  // Cargar slots al iniciar
+  useEffect(() => {
+    async function fetchSlots() {
+      try {
+        const slotsData = await api.obtenerSlots();
+        slotsSet(slotsData);
+      } catch (error) {
+        console.error("Error al cargar slots:", error);
+      }
+    }
+    fetchSlots();
+  }, []);
 
   const handleSiguiente = () => {
     if (paso === "nombre" && nombre.length >= 3) {
@@ -51,8 +68,30 @@ export default function NuevaPartidaPage() {
       await crearNuevaPartida(nombre, genero, dificultad);
       router.push("/juego");
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Error al crear partida";
+      // Si todos los slots están ocupados, mostrar modal para seleccionar
+      if (errorMessage.includes("slots") || errorMessage.includes("ocupados")) {
+        errorSet("Todos los slots están ocupados. Selecciona uno para sobrescribir.");
+        mostrarModalSlotsSet(true);
+      } else {
+        errorSet(errorMessage);
+      }
+      cargandoSet(false);
+    }
+  };
+
+  const handleSobrescribirSlot = async (slotNum: number) => {
+    cargandoSet(true);
+    errorSet(null);
+    
+    try {
+      // Eliminar slot existente primero
+      await api.eliminarPartida(slotNum);
+      // Luego crear nueva partida
+      await crearNuevaPartida(nombre!, genero!, dificultad!);
+      router.push("/juego");
+    } catch (err) {
       errorSet(err instanceof Error ? err.message : "Error al crear partida");
-    } finally {
       cargandoSet(false);
     }
   };
@@ -350,6 +389,63 @@ export default function NuevaPartidaPage() {
           </Button>
         </div>
       </div>
+
+      {/* Modal de selección de slot */}
+      {mostrarModalSlots && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full border-[#c44536]/50">
+            <CardContent className="p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <AlertTriangle className="w-6 h-6 text-[#c44536]" />
+                <h2 className="font-medieval text-2xl text-[#c44536]">
+                  Slots Llenos
+                </h2>
+              </div>
+              
+              <p className="text-[#9a978a] mb-6">
+                Todos los slots de guardado están ocupados. Selecciona uno para sobrescribir:
+              </p>
+              
+              <div className="space-y-3 mb-6">
+                {slots.map((slot) => (
+                  <button
+                    key={slot.numero}
+                    onClick={() => handleSobrescribirSlot(slot.numero)}
+                    disabled={cargando}
+                    className={cn(
+                      "w-full p-4 rounded-lg border text-left transition-all",
+                      "hover:border-[#d4a843]/50 hover:bg-[#d4a843]/5",
+                      "border-[#2a2a35] bg-[#1a1a25]"
+                    )}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medieval text-lg text-[#d4a843]">
+                          {slot.info?.nombre || "Vacío"}
+                        </p>
+                        <p className="text-sm text-[#9a978a]">
+                          Slot {slot.numero} • Nivel {slot.info?.nivel || 1} • {slot.info?.dificultad || "normal"}
+                        </p>
+                      </div>
+                      <span className="text-xs text-[#c44536]">
+                        Sobrescribir
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              
+              <Button 
+                variant="secondary" 
+                onClick={() => mostrarModalSlotsSet(false)}
+                className="w-full"
+              >
+                Cancelar
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </main>
   );
 }

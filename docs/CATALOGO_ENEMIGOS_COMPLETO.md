@@ -1239,4 +1239,143 @@ Oro = Oro_Base × (1 + Nivel × 0.1)
 **HP:** 500 | **ATK:** 55 | **DEF:** 40 | **VEL:** 10 | **CRT:** 20% | **EVS:** 5% | **EXP:** 600 | **ORO:** 550
 **Descripción:** Bestia colosal de tierra.
 **Comportamiento:** Inmune a aturdir/miedo. Terremoto constante. Alta defensa. Lento.
-**Habilidades:** Pisada del Behemoth (2.5x área, Aturde), Terremoto (2.0x área), Rugido de la Tierra
+**Habilidades:** Pisada del Behemoth (2.5x área, Aturde), Terremoto (2.0x área), Rugido de la Tierra (Miedo 60%)
+**Drops:** Piel de Behemoth (15%), Núcleo de Tierra (8%), Corazón de Behemoth (3%)
+
+---
+
+### Leviatán
+**HP:** 450 | **ATK:** 48 | **DEF:** 30 | **VEL:** 12 | **CRT:** 22% | **EVS:** 20% | **EXP:** 550 | **ORO:** 500
+**Descripción:** Serpiente marina gigante.
+**Comportamiento:** Inmune a agua. Hundir barcos. Ataque múltiple. Tragar objetivos.
+**Habilidades:** Tsunami (2.5x área, Inmoviliza), Mordisco de Leviatán (2.2x, Sangrado), Tragar (3.5x, solo HP < 30%)
+**Drops:** Escama de Leviatán (12%), Corazón de Mar (6%), Perla Negra (4%)
+
+---
+
+### Tiamat - La Dragón de Cinco Cabezas
+**HP:** 600 | **ATK:** 60 | **DEF:** 35 | **VEL:** 18 | **CRT:** 30% | **EVS:** 20% | **EXP:** 700 | **ORO:** 650
+**Descripción:** Dragón de cinco cabezas, cada una con un elemento.
+**Comportamiento:** 5 ataques por turno. Inmune a todos los elementos. Vuela. Magia devastadora.
+**Habilidades:** Aliento Elemental (5 cabezas, cada elemento), Tormenta de Dragón (2.5x área mágico), Invocar Drakes (3 Drakes elementales)
+**Drops:** Escama de Tiamat (8%), Cabeza de Tiamat (3%), Corazón de Tiamat (2%)
+
+---
+
+# JEFES FINALES
+
+---
+
+### El Rey Demonio
+**HP:** 800 | **ATK:** 70 | **DEF:** 45 | **VEL:** 20 | **CRT:** 35% | **EVS:** 15% | **EXP:** 1000 | **ORO:** 1000
+**Descripción:** El señor de todos los demonios.
+**Comportamiento:** Inmune a todo efecto negativo. Magia demoníaca devastadora. Invoca demonios. Fases múltiples.
+**Habilidades:**
+- Infierno Eterno (3.0x área mágico, Quema masiva)
+- Invocar Legión (5 Demonios Guerreros)
+- Maldición del Rey (-50% stats permanentes)
+- Destrucción Final (5.0x, solo si HP < 30%)
+**Drops:** Corona del Rey Demonio (5%), Espada del Infierno (3%), Esencia del Rey Demonio (2%)
+
+---
+
+### El Anciano del Vacío
+**HP:** 700 | **ATK:** 65 | **DEF:** 30 | **VEL:** 25 | **CRT:** 40% | **EVS:** 35% | **EXP:** 900 | **ORO:** 900
+**Descripción:** Entidad cósmica del vacío entre mundos.
+**Comportamiento:** Inmune a daño físico (80%). Teleport constante. Drena existencia. Ataca realidad.
+**Habilidades:**
+- Vacío Absoluto (3.5x, ignora DEF, drena 50% HP)
+- Desgarrar Realidad (2.8x área, Confusión 70%)
+- Existencia Nula (Elimina 1 habilidad del combate)
+- Fragmento del Vacío (Invoca 3 Sombras Mayores)
+**Drops:** Fragmento del Vacío (5%), Esencia del Anciano (3%), Ojo del Vacío (2%)
+
+---
+
+### El Dragón Primordial
+**HP:** 1000 | **ATK:** 80 | **DEF:** 50 | **VEL:** 22 | **CRT:** 35% | **EVS:** 18% | **EXP:** 1200 | **ORO:** 1200
+**Descripción:** El primer dragón, padre de todos los demás.
+**Comportamiento:** Inmune a todo. Fases múltiples. Aliento cósmico. Invoca dragónes. Regeneración.
+**Habilidades:**
+- Aliento Primordial (4.0x área, todo elemento)
+- Llamada de los Dragones (2 Dragones Adultos)
+- Escamas Ancestrales (+100% DEF 3t)
+- Rugido del Principio (Aturde área, Miedo 80%)
+- Renacer (Revive con 30% HP 1 vez)
+**Drops:** Escama Primordial (5%), Corazón de Dragón Primordial (2%), Huevo de Dragón (1%)
+
+---
+
+### El Dios Caído
+**HP:** 1200 | **ATK:** 90 | **DEF:** 55 | **VEL:** 28 | **CRT:** 45% | **EVS:** 25% | **EXP:** 1500 | **ORO:** 1500
+**Descripción:** Un dios que perdió su divinidad y busca venganza.
+**Comportamiento:** Inmune a todo. 3 fases. Magia divina corrupta. Destruye equipamiento.
+**Habilidades:**
+- **Fase 1 (100%-70% HP):**
+  - Ira Divina (3.0x área mágico)
+  - Juicio Caído (-30% stats 3t)
+  - Luz Corrupta (Ceguera 60%)
+- **Fase 2 (70%-30% HP):**
+  - Destrucción de Equipamiento (Rompe 1 item)
+  - Lluvia de Meteoros (2.5x área cada turno)
+  - Invocar Ángeles Caídos (3 Ángeles Caídos)
+- **Fase 3 (30%-0% HP):**
+  - Sacrificio Divino (Drena 100% HP propio, 5.0x área)
+  - Último Juicio (6.0x, mata si HP < 20%)
+  - Explosión Divina (8.0x área al morir)
+**Drops:** Fragmento de Divinidad (3%), Armadura del Dios Caído (2%), Espada del Dios Caído (2%), Esencia Divina (1%)
+
+---
+
+# RESUMEN DEL CATÁLOGO
+
+| Categoría | Cantidad | Rango de Nivel |
+|-----------|----------|----------------|
+| Bestias | 35 | 1-30 |
+| Humanoides | 35 | 1-40 |
+| No-Muertos | 25 | 5-50 |
+| Mágicos | 25 | 10-45 |
+| Demonios | 15 | 20-55 |
+| Dragones | 12 | 30-60 |
+| Únicos | 10 | 40-60 |
+| Jefes Finales | 4 | 70-100 |
+| **TOTAL** | **161** | **1-100** |
+
+---
+
+## Notas de Diseño
+
+### Escalado Recomendado
+- Los enemigos comunes escalan con la zona (nivel 1-30)
+- Los enemigos únicos aparecen en zonas específicas (nivel 40-60)
+- Los jefes finales son encounters únicos de final de juego (nivel 70-100)
+
+### Drops por Rareza
+| Rareza Drop | Probabilidad | Ejemplo |
+|-------------|--------------|---------|
+| Común | 30-50% | Hueso, Piel |
+| Poco Común | 15-25% | Colmillo, Garra |
+| Raro | 8-15% | Esencia, Núcleo |
+| Muy Raro | 3-8% | Corazón, Fragmento |
+| Legendario | 1-3% | Item único de jefe |
+
+### Biomas Sugeridos
+| Bioma | Enemigos Principales |
+|-------|---------------------|
+| Bosque | Lobos, Osos, Arañas, Ciervos |
+| Caverna | Murciélagos, Arañas de Cueva, Golems |
+| Desierto | Escorpiones, Serpientes, Momias |
+| Nieve | Lobos Invernales, Osos Polares, Elementales de Hielo |
+| Volcán | Elementales de Fuego, Demonios, Drakes de Fuego |
+| Pantano | Serpientes, Slimes, Zombis |
+| Ruinas | Esqueletos, Espectros, Nigromantes |
+| Cielo | Águilas, Drakes, Wyvernas |
+| Mar | Kraken, Leviatán, Piratas |
+| Infierno | Demonios, Imps, Hellhounds |
+| Vacío | Sombras, Wraiths, El Anciano del Vacío |
+
+---
+
+*Catálogo completado - Versión 1.0*
+*Total de enemigos: 161*
+*Listo para implementación en enemigos.json*

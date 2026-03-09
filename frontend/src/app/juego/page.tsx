@@ -111,7 +111,7 @@ export default function JuegoPage() {
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <InventarioPanel datos={datos} />
+                    <InventarioPanel />
                   </motion.div>
                 ) : tabActiva === "combate" ? (
                   <motion.div

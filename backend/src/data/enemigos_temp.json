@@ -1,0 +1,1639 @@
+{
+  "version": "1.0",
+  "descripcion": "Templates de enemigos - Last Adventurer",
+  "enemigos": {
+    "bestias": [
+      {
+        "id": "lobo_salvaje",
+        "nombre": "Lobo Salvaje",
+        "categoria": "bestia",
+        "descripcion": "Lobo gris que acecha en bosques.",
+        "stats_base": {
+          "hp": 30,
+          "atk": 8,
+          "def": 2,
+          "velocidad": 15,
+          "critico": 8,
+          "evasion": 10,
+          "mana": 0,
+          "stamina": 80
+        },
+        "experiencia_base": 25,
+        "oro_base": 8,
+        "habilidades": [
+          {
+            "nombre": "Mordisco",
+            "tipo": "fisico",
+            "multiplicador": 1.2,
+            "costo": 15
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_lobo", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "piel_lobo", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "lobo_alfa",
+        "nombre": "Lobo Alfa",
+        "categoria": "bestia",
+        "descripcion": "Líder de la manada.",
+        "stats_base": {
+          "hp": 55,
+          "atk": 14,
+          "def": 5,
+          "velocidad": 18,
+          "critico": 15,
+          "evasion": 12,
+          "mana": 0,
+          "stamina": 100
+        },
+        "experiencia_base": 50,
+        "oro_base": 25,
+        "habilidades": [
+          {
+            "nombre": "Mordisco Salvaje",
+            "tipo": "fisico",
+            "multiplicador": 1.4,
+            "costo": 25,
+            "efecto": "sangrado"
+          },
+          {
+            "nombre": "Aullido de Manada",
+            "tipo": "buff",
+            "multiplicador": 0,
+            "costo": 20,
+            "efecto": "buff_atk_aliados"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_alfa", "probabilidad": 0.4, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_lobo_alfa", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "garra_lobo", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "lobo_sombra",
+        "nombre": "Lobo de Sombra",
+        "categoria": "bestia",
+        "descripcion": "Lobo oscuro de zonas sin luz.",
+        "stats_base": {
+          "hp": 45,
+          "atk": 12,
+          "def": 3,
+          "velocidad": 20,
+          "critico": 18,
+          "evasion": 22,
+          "mana": 0,
+          "stamina": 90
+        },
+        "experiencia_base": 40,
+        "oro_base": 18,
+        "habilidades": [
+          {
+            "nombre": "Mordisco Sombrío",
+            "tipo": "fisico",
+            "multiplicador": 1.3,
+            "costo": 20,
+            "efecto": "ceguera"
+          },
+          {
+            "nombre": "Paso de Sombra",
+            "tipo": "buff",
+            "multiplicador": 0,
+            "costo": 15,
+            "efecto": "evasion"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_sombrio", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pelaje_sombra", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_oscuridad", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "lobo_invernal",
+        "nombre": "Lobo Invernal",
+        "categoria": "bestia",
+        "descripcion": "Lobo blanco de zonas nevadas.",
+        "stats_base": {
+          "hp": 60,
+          "atk": 15,
+          "def": 6,
+          "velocidad": 14,
+          "critico": 12,
+          "evasion": 8,
+          "mana": 20,
+          "stamina": 100
+        },
+        "experiencia_base": 55,
+        "oro_base": 22,
+        "habilidades": [
+          {
+            "nombre": "Mordisco Helado",
+            "tipo": "hielo",
+            "multiplicador": 1.3,
+            "costo": 20,
+            "efecto": "ralentizar"
+          },
+          {
+            "nombre": "Aliento de Escarcha",
+            "tipo": "hielo",
+            "multiplicador": 1.2,
+            "costo": 25,
+            "efecto": "congelar"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_invernal", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pelaje_blanco", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "cristal_hielo", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "lobo_infernal",
+        "nombre": "Lobo Infernal",
+        "categoria": "bestia",
+        "descripcion": "Lobo con pelaje de llamas.",
+        "stats_base": {
+          "hp": 70,
+          "atk": 18,
+          "def": 5,
+          "velocidad": 16,
+          "critico": 20,
+          "evasion": 10,
+          "mana": 30,
+          "stamina": 100
+        },
+        "experiencia_base": 65,
+        "oro_base": 30,
+        "habilidades": [
+          {
+            "nombre": "Mordisco Ardiente",
+            "tipo": "fuego",
+            "multiplicador": 1.5,
+            "costo": 25,
+            "efecto": "quemar"
+          },
+          {
+            "nombre": "Aullido Infernal",
+            "tipo": "fuego",
+            "multiplicador": 0,
+            "costo": 35,
+            "efecto": "buff_atk_quema_area"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_ardiente", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pelaje_fuego", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_fuego", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "oso_pardo",
+        "nombre": "Oso Pardo",
+        "categoria": "bestia",
+        "descripcion": "Oso grande de bosques y montañas.",
+        "stats_base": {
+          "hp": 80,
+          "atk": 15,
+          "def": 8,
+          "velocidad": 8,
+          "critico": 5,
+          "evasion": 3,
+          "mana": 0,
+          "stamina": 120
+        },
+        "experiencia_base": 60,
+        "oro_base": 20,
+        "habilidades": [
+          {
+            "nombre": "Zarpazo",
+            "tipo": "fisico",
+            "multiplicador": 1.4,
+            "costo": 20
+          },
+          {
+            "nombre": "Abrazo de Oso",
+            "tipo": "fisico",
+            "multiplicador": 1.8,
+            "costo": 35,
+            "efecto": "inmovilizar"
+          }
+        ],
+        "drops": [
+          {"item_id": "garra_oso", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "piel_oso", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "carne_oso", "probabilidad": 0.4, "cantidad_min": 1, "cantidad_max": 2}
+        ]
+      },
+      {
+        "id": "oso_cavernas",
+        "nombre": "Oso de las Cavernas",
+        "categoria": "bestia",
+        "descripcion": "Oso prehistórico de cavernas.",
+        "stats_base": {
+          "hp": 120,
+          "atk": 22,
+          "def": 15,
+          "velocidad": 6,
+          "critico": 8,
+          "evasion": 2,
+          "mana": 0,
+          "stamina": 150
+        },
+        "experiencia_base": 95,
+        "oro_base": 45,
+        "habilidades": [
+          {
+            "nombre": "Golpe Sísmico",
+            "tipo": "fisico",
+            "multiplicador": 1.6,
+            "costo": 30,
+            "efecto": "aturdir"
+          },
+          {
+            "nombre": "Rugido Aterrador",
+            "tipo": "fisico",
+            "multiplicador": 0.5,
+            "costo": 25,
+            "efecto": "miedo"
+          }
+        ],
+        "drops": [
+          {"item_id": "garra_oso_cave", "probabilidad": 0.35, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "piel_oso_cave", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "hueso_grande", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 2}
+        ]
+      },
+      {
+        "id": "oso_polar",
+        "nombre": "Oso Polar",
+        "categoria": "bestia",
+        "descripcion": "Oso blanco del norte helado.",
+        "stats_base": {
+          "hp": 100,
+          "atk": 18,
+          "def": 12,
+          "velocidad": 7,
+          "critico": 10,
+          "evasion": 5,
+          "mana": 20,
+          "stamina": 130
+        },
+        "experiencia_base": 80,
+        "oro_base": 35,
+        "habilidades": [
+          {
+            "nombre": "Zarpazo Helado",
+            "tipo": "hielo",
+            "multiplicador": 1.5,
+            "costo": 25,
+            "efecto": "congelar"
+          },
+          {
+            "nombre": "Embestida Polar",
+            "tipo": "fisico",
+            "multiplicador": 1.7,
+            "costo": 30,
+            "efecto": "aturdir"
+          }
+        ],
+        "drops": [
+          {"item_id": "garra_polar", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_polar", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "grasa_oso", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "oso_corrupto",
+        "nombre": "Oso Corrupto",
+        "categoria": "bestia",
+        "descripcion": "Oso corrompido por magia oscura.",
+        "stats_base": {
+          "hp": 110,
+          "atk": 20,
+          "def": 10,
+          "velocidad": 8,
+          "critico": 12,
+          "evasion": 4,
+          "mana": 30,
+          "stamina": 120
+        },
+        "experiencia_base": 85,
+        "oro_base": 40,
+        "habilidades": [
+          {
+            "nombre": "Zarpazo Corrupto",
+            "tipo": "fisico",
+            "multiplicador": 1.6,
+            "costo": 25,
+            "efecto": "enfermedad"
+          },
+          {
+            "nombre": "Rugido de Locura",
+            "tipo": "magico",
+            "multiplicador": 0.5,
+            "costo": 30,
+            "efecto": "confusion"
+          }
+        ],
+        "drops": [
+          {"item_id": "garra_corrupta", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_corrupta", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_oscura", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "serpiente_venenosa",
+        "nombre": "Serpiente Venenosa",
+        "categoria": "bestia",
+        "descripcion": "Serpiente con colmillos venenosos.",
+        "stats_base": {
+          "hp": 20,
+          "atk": 6,
+          "def": 1,
+          "velocidad": 20,
+          "critico": 15,
+          "evasion": 25,
+          "mana": 0,
+          "stamina": 60
+        },
+        "experiencia_base": 20,
+        "oro_base": 5,
+        "habilidades": [
+          {
+            "nombre": "Mordedura Venenosa",
+            "tipo": "fisico",
+            "multiplicador": 1.0,
+            "costo": 15,
+            "efecto": "veneno"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_serpiente", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "veneno", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_serpiente", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "serpiente_coral",
+        "nombre": "Serpiente Coral",
+        "categoria": "bestia",
+        "descripcion": "Serpiente de colores brillantes, veneno mortal.",
+        "stats_base": {
+          "hp": 35,
+          "atk": 10,
+          "def": 2,
+          "velocidad": 22,
+          "critico": 18,
+          "evasion": 28,
+          "mana": 0,
+          "stamina": 70
+        },
+        "experiencia_base": 35,
+        "oro_base": 12,
+        "habilidades": [
+          {
+            "nombre": "Mordedura Coral",
+            "tipo": "fisico",
+            "multiplicador": 1.1,
+            "costo": 20,
+            "efecto": "veneno_fuerte"
+          },
+          {
+            "nombre": "Enroscarse",
+            "tipo": "buff",
+            "multiplicador": 0,
+            "costo": 10,
+            "efecto": "buff_def"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_coral", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "veneno_potente", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "escamas_coral", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "serpiente_gigante",
+        "nombre": "Serpiente Gigante",
+        "categoria": "bestia",
+        "descripcion": "Serpiente de tamaño descomunal.",
+        "stats_base": {
+          "hp": 90,
+          "atk": 16,
+          "def": 6,
+          "velocidad": 12,
+          "critico": 12,
+          "evasion": 15,
+          "mana": 0,
+          "stamina": 100
+        },
+        "experiencia_base": 75,
+        "oro_base": 30,
+        "habilidades": [
+          {
+            "nombre": "Constricción",
+            "tipo": "fisico",
+            "multiplicador": 1.4,
+            "costo": 30,
+            "efecto": "inmovilizar"
+          },
+          {
+            "nombre": "Tragar",
+            "tipo": "fisico",
+            "multiplicador": 2.0,
+            "costo": 40,
+            "efecto": "ejecucion"
+          },
+          {
+            "nombre": "Veneno Concentrado",
+            "tipo": "fisico",
+            "multiplicador": 1.0,
+            "costo": 25,
+            "efecto": "veneno_fuerte"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_gigante", "probabilidad": 0.35, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_serpiente_gigante", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "veneno_concentrado", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "serpiente_anima",
+        "nombre": "Serpiente de Ánima",
+        "categoria": "bestia",
+        "descripcion": "Serpiente espectral que drena energía vital.",
+        "stats_base": {
+          "hp": 55,
+          "atk": 14,
+          "def": 4,
+          "velocidad": 18,
+          "critico": 20,
+          "evasion": 20,
+          "mana": 40,
+          "stamina": 80
+        },
+        "experiencia_base": 50,
+        "oro_base": 25,
+        "habilidades": [
+          {
+            "nombre": "Mordedura de Ánima",
+            "tipo": "magico",
+            "multiplicador": 1.3,
+            "costo": 25,
+            "efecto": "drenar_hp"
+          },
+          {
+            "nombre": "Toque Espectral",
+            "tipo": "magico",
+            "multiplicador": 1.0,
+            "costo": 20,
+            "efecto": "ignora_def"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_espectral", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_anima", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "polvo_alma", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "jabali",
+        "nombre": "Jabalí",
+        "categoria": "bestia",
+        "descripcion": "Jabalí agresivo con colmillos afilados.",
+        "stats_base": {
+          "hp": 45,
+          "atk": 12,
+          "def": 6,
+          "velocidad": 12,
+          "critico": 10,
+          "evasion": 8,
+          "mana": 0,
+          "stamina": 90
+        },
+        "experiencia_base": 35,
+        "oro_base": 12,
+        "habilidades": [
+          {
+            "nombre": "Embestida",
+            "tipo": "fisico",
+            "multiplicador": 1.5,
+            "costo": 20
+          },
+          {
+            "nombre": "Colmillazo",
+            "tipo": "fisico",
+            "multiplicador": 1.2,
+            "costo": 15,
+            "efecto": "sangrado"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_jabali", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "piel_jabali", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "carne_jabali", "probabilidad": 0.45, "cantidad_min": 1, "cantidad_max": 2}
+        ]
+      },
+      {
+        "id": "jabali_corrupto",
+        "nombre": "Jabalí Corrupto",
+        "categoria": "bestia",
+        "descripcion": "Jabalí corrompido por magia oscura.",
+        "stats_base": {
+          "hp": 65,
+          "atk": 18,
+          "def": 8,
+          "velocidad": 14,
+          "critico": 15,
+          "evasion": 6,
+          "mana": 20,
+          "stamina": 100
+        },
+        "experiencia_base": 55,
+        "oro_base": 22,
+        "habilidades": [
+          {
+            "nombre": "Embestida Corrupta",
+            "tipo": "fisico",
+            "multiplicador": 1.7,
+            "costo": 25,
+            "efecto": "enfermedad"
+          },
+          {
+            "nombre": "Aura Oscura",
+            "tipo": "buff",
+            "multiplicador": 0,
+            "costo": 20,
+            "efecto": "buff_atk"
+          }
+        ],
+        "drops": [
+          {"item_id": "colmillo_corrupto", "probabilidad": 0.35, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_corrupta", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_oscura", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "jabali_armadura",
+        "nombre": "Jabalí Armadura",
+        "categoria": "bestia",
+        "descripcion": "Jabalí con piel endurecida como armadura.",
+        "stats_base": {
+          "hp": 80,
+          "atk": 14,
+          "def": 14,
+          "velocidad": 10,
+          "critico": 8,
+          "evasion": 5,
+          "mana": 0,
+          "stamina": 110
+        },
+        "experiencia_base": 60,
+        "oro_base": 28,
+        "habilidades": [
+          {
+            "nombre": "Embestida Blindada",
+            "tipo": "fisico",
+            "multiplicador": 1.4,
+            "costo": 25,
+            "efecto": "aturdir"
+          },
+          {
+            "nombre": "Defensa Total",
+            "tipo": "buff",
+            "multiplicador": 0,
+            "costo": 20,
+            "efecto": "buff_def"
+          }
+        ],
+        "drops": [
+          {"item_id": "placa_jabali", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "colmillo_jabali", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "carne_jabali", "probabilidad": 0.35, "cantidad_min": 1, "cantidad_max": 2}
+        ]
+      },
+      {
+        "id": "arania_bosque",
+        "nombre": "Araña del Bosque",
+        "categoria": "bestia",
+        "descripcion": "Araña mediana que teje telarañas.",
+        "stats_base": {
+          "hp": 25,
+          "atk": 8,
+          "def": 3,
+          "velocidad": 16,
+          "critico": 12,
+          "evasion": 18,
+          "mana": 0,
+          "stamina": 60
+        },
+        "experiencia_base": 22,
+        "oro_base": 8,
+        "habilidades": [
+          {
+            "nombre": "Telaraña",
+            "tipo": "fisico",
+            "multiplicador": 0.5,
+            "costo": 15,
+            "efecto": "ralentizar"
+          },
+          {
+            "nombre": "Mordisco",
+            "tipo": "fisico",
+            "multiplicador": 1.1,
+            "costo": 10
+          }
+        ],
+        "drops": [
+          {"item_id": "seda_arania", "probabilidad": 0.35, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "veneno_arania", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "patas_arania", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 2}
+        ]
+      },
+      {
+        "id": "arania_viuda_negra",
+        "nombre": "Araña Viuda Negra",
+        "categoria": "bestia",
+        "descripcion": "Araña negra con marcas rojas, muy venenosa.",
+        "stats_base": {
+          "hp": 40,
+          "atk": 14,
+          "def": 4,
+          "velocidad": 18,
+          "critico": 20,
+          "evasion": 22,
+          "mana": 0,
+          "stamina": 80
+        },
+        "experiencia_base": 45,
+        "oro_base": 18,
+        "habilidades": [
+          {
+            "nombre": "Mordedura Letal",
+            "tipo": "fisico",
+            "multiplicador": 1.2,
+            "costo": 20,
+            "efecto": "veneno_fuerte"
+          },
+          {
+            "nombre": "Telaraña Pegajosa",
+            "tipo": "fisico",
+            "multiplicador": 0.5,
+            "costo": 15,
+            "efecto": "inmovilizar"
+          },
+          {
+            "nombre": "Salto",
+            "tipo": "fisico",
+            "multiplicador": 1.4,
+            "costo": 20,
+            "efecto": "ignora_def"
+          }
+        ],
+        "drops": [
+          {"item_id": "veneno_viuda", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "seda_viuda", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "caparazon_viuda", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "arania_gigante",
+        "nombre": "Araña Gigante",
+        "categoria": "bestia",
+        "descripcion": "Araña de tamaño monstruoso.",
+        "stats_base": {
+          "hp": 70,
+          "atk": 15,
+          "def": 8,
+          "velocidad": 14,
+          "critico": 15,
+          "evasion": 12,
+          "mana": 0,
+          "stamina": 100
+        },
+        "experiencia_base": 60,
+        "oro_base": 25,
+        "habilidades": [
+          {
+            "nombre": "Envoltura",
+            "tipo": "fisico",
+            "multiplicador": 0.8,
+            "costo": 25,
+            "efecto": "inmovilizar"
+          },
+          {
+            "nombre": "Llamada de Arácnidos",
+            "tipo": "invocacion",
+            "multiplicador": 0,
+            "costo": 30,
+            "efecto": "invocar_aranias"
+          },
+          {
+            "nombre": "Veneno Paralizante",
+            "tipo": "fisico",
+            "multiplicador": 1.3,
+            "costo": 25,
+            "efecto": "paralisis"
+          }
+        ],
+        "drops": [
+          {"item_id": "seda_gigante", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "veneno_paralizante", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "mandibulas", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "arania_cueva",
+        "nombre": "Araña de Cueva",
+        "categoria": "bestia",
+        "descripcion": "Araña pálida adaptada a la oscuridad.",
+        "stats_base": {
+          "hp": 50,
+          "atk": 12,
+          "def": 6,
+          "velocidad": 15,
+          "critico": 14,
+          "evasion": 16,
+          "mana": 0,
+          "stamina": 85
+        },
+        "experiencia_base": 45,
+        "oro_base": 18,
+        "habilidades": [
+          {
+            "nombre": "Telaraña Invisible",
+            "tipo": "fisico",
+            "multiplicador": 0.5,
+            "costo": 15,
+            "efecto": "inmovilizar"
+          },
+          {
+            "nombre": "Mordisco de Cueva",
+            "tipo": "fisico",
+            "multiplicador": 1.3,
+            "costo": 20,
+            "efecto": "veneno"
+          }
+        ],
+        "drops": [
+          {"item_id": "seda_cueva", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "veneno_cueva", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "ojos_arania", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "aguila_salvaje",
+        "nombre": "Águila Salvaje",
+        "categoria": "bestia",
+        "descripcion": "Águila que domina los cielos.",
+        "stats_base": {
+          "hp": 35,
+          "atk": 10,
+          "def": 2,
+          "velocidad": 25,
+          "critico": 20,
+          "evasion": 30,
+          "mana": 0,
+          "stamina": 70
+        },
+        "experiencia_base": 30,
+        "oro_base": 10,
+        "habilidades": [
+          {
+            "nombre": "Picotazo",
+            "tipo": "fisico",
+            "multiplicador": 1.2,
+            "costo": 10
+          },
+          {
+            "nombre": "Ataque en Picado",
+            "tipo": "fisico",
+            "multiplicador": 1.6,
+            "costo": 25,
+            "efecto": "ignora_def"
+          },
+          {
+            "nombre": "Garra de Águila",
+            "tipo": "fisico",
+            "multiplicador": 1.3,
+            "costo": 15,
+            "efecto": "ceguera"
+          }
+        ],
+        "drops": [
+          {"item_id": "pluma_aguila", "probabilidad": 0.35, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "garra_aguila", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pico_aguila", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "aguila_real",
+        "nombre": "Águila Real",
+        "categoria": "bestia",
+        "descripcion": "Águila majestuosa de plumaje dorado.",
+        "stats_base": {
+          "hp": 55,
+          "atk": 14,
+          "def": 4,
+          "velocidad": 28,
+          "critico": 25,
+          "evasion": 35,
+          "mana": 0,
+          "stamina": 90
+        },
+        "experiencia_base": 50,
+        "oro_base": 22,
+        "habilidades": [
+          {
+            "nombre": "Picotazo Real",
+            "tipo": "fisico",
+            "multiplicador": 1.4,
+            "costo": 20,
+            "efecto": "sangrado"
+          },
+          {
+            "nombre": "Torbellino",
+            "tipo": "fisico",
+            "multiplicador": 1.5,
+            "costo": 30,
+            "efecto": "area"
+          },
+          {
+            "nombre": "Ojo de Águila",
+            "tipo": "buff",
+            "multiplicador": 0,
+            "costo": 15,
+            "efecto": "buff_critico"
+          }
+        ],
+        "drops": [
+          {"item_id": "pluma_dorada", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "garra_aguila_real", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "ojo_aguila", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "murcielago_comun",
+        "nombre": "Murciélago Común",
+        "categoria": "bestia",
+        "descripcion": "Pequeño murciélago de cueva.",
+        "stats_base": {"hp": 15, "atk": 4, "def": 1, "velocidad": 22, "critico": 10, "evasion": 35, "mana": 0, "stamina": 50},
+        "experiencia_base": 12,
+        "oro_base": 4,
+        "habilidades": [
+          {"nombre": "Mordisco", "tipo": "fisico", "multiplicador": 0.8, "costo": 5},
+          {"nombre": "Chirrido Aturdidor", "tipo": "fisico", "multiplicador": 0.5, "costo": 10, "efecto": "aturdir"}
+        ],
+        "drops": [
+          {"item_id": "ala_murcielago", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "colmillo_pequeno", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "murcielago_gigante",
+        "nombre": "Murciélago Gigante",
+        "categoria": "bestia",
+        "descripcion": "Murciélago de gran tamaño.",
+        "stats_base": {"hp": 45, "atk": 12, "def": 4, "velocidad": 18, "critico": 15, "evasion": 25, "mana": 0, "stamina": 80},
+        "experiencia_base": 40,
+        "oro_base": 15,
+        "habilidades": [
+          {"nombre": "Embestida Aérea", "tipo": "fisico", "multiplicador": 1.4, "costo": 20},
+          {"nombre": "Chirrido Sónico", "tipo": "magico", "multiplicador": 1.2, "costo": 25, "efecto": "aturdir"}
+        ],
+        "drops": [
+          {"item_id": "ala_murcielago_grande", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "colmillo_murcielago", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_murcielago", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "murcielago_vampiro",
+        "nombre": "Murciélago Vampiro",
+        "categoria": "bestia",
+        "descripcion": "Murciélago que se alimenta de sangre.",
+        "stats_base": {"hp": 35, "atk": 10, "def": 2, "velocidad": 20, "critico": 18, "evasion": 28, "mana": 0, "stamina": 70},
+        "experiencia_base": 35,
+        "oro_base": 12,
+        "habilidades": [
+          {"nombre": "Mordedura Vampírica", "tipo": "fisico", "multiplicador": 1.0, "costo": 15, "efecto": "drenar_hp"},
+          {"nombre": "Niebla", "tipo": "buff", "multiplicador": 0, "costo": 10, "efecto": "buff_evasion"}
+        ],
+        "drops": [
+          {"item_id": "colmillo_vampiro", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "sangre_coagulada", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "ala_vampiro", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "rata_comun",
+        "nombre": "Rata Común",
+        "categoria": "bestia",
+        "descripcion": "Rata pequeña de alcantarillas.",
+        "stats_base": {"hp": 10, "atk": 3, "def": 1, "velocidad": 18, "critico": 5, "evasion": 20, "mana": 0, "stamina": 40},
+        "experiencia_base": 8,
+        "oro_base": 2,
+        "habilidades": [
+          {"nombre": "Mordisco", "tipo": "fisico", "multiplicador": 0.8, "costo": 5, "efecto": "enfermedad"}
+        ],
+        "drops": [
+          {"item_id": "cola_rata", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pelaje_rata", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "rata_gigante",
+        "nombre": "Rata Gigante",
+        "categoria": "bestia",
+        "descripcion": "Rata de tamaño descomunal.",
+        "stats_base": {"hp": 30, "atk": 8, "def": 3, "velocidad": 15, "critico": 8, "evasion": 15, "mana": 0, "stamina": 60},
+        "experiencia_base": 25,
+        "oro_base": 8,
+        "habilidades": [
+          {"nombre": "Mordedura Infecciosa", "tipo": "fisico", "multiplicador": 1.2, "costo": 15, "efecto": "enfermedad"},
+          {"nombre": "Plaga", "tipo": "fisico", "multiplicador": 0.8, "costo": 10, "efecto": "veneno"}
+        ],
+        "drops": [
+          {"item_id": "cola_rata_grande", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "colmillo_rata", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pelaje_rata_grande", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "rata_plaga",
+        "nombre": "Rata de Plaga",
+        "categoria": "bestia",
+        "descripcion": "Rata corrompida por enfermedad mágica.",
+        "stats_base": {"hp": 40, "atk": 10, "def": 4, "velocidad": 14, "critico": 12, "evasion": 18, "mana": 0, "stamina": 70},
+        "experiencia_base": 35,
+        "oro_base": 12,
+        "habilidades": [
+          {"nombre": "Mordedura de Plaga", "tipo": "fisico", "multiplicador": 1.3, "costo": 20, "efecto": "enfermedad"},
+          {"nombre": "Nube de Plaga", "tipo": "magico", "multiplicador": 0.5, "costo": 25, "efecto": "veneno_area"}
+        ],
+        "drops": [
+          {"item_id": "cola_plaga", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_plaga", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "colmillo_infectado", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "escorpion_desierto",
+        "nombre": "Escorpión del Desierto",
+        "categoria": "bestia",
+        "descripcion": "Escorpión de las arenas del desierto.",
+        "stats_base": {"hp": 40, "atk": 12, "def": 8, "velocidad": 12, "critico": 15, "evasion": 10, "mana": 0, "stamina": 80},
+        "experiencia_base": 35,
+        "oro_base": 15,
+        "habilidades": [
+          {"nombre": "Pinza", "tipo": "fisico", "multiplicador": 1.3, "costo": 15, "efecto": "aturdir"},
+          {"nombre": "Aguijonazo", "tipo": "fisico", "multiplicador": 1.2, "costo": 20, "efecto": "veneno"}
+        ],
+        "drops": [
+          {"item_id": "pinza_escorpion", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "aguijon_escorpion", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "caparazon", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "escorpion_venenoso",
+        "nombre": "Escorpión Venenoso",
+        "categoria": "bestia",
+        "descripcion": "Escorpión con veneno mortal.",
+        "stats_base": {"hp": 55, "atk": 15, "def": 6, "velocidad": 14, "critico": 18, "evasion": 12, "mana": 0, "stamina": 90},
+        "experiencia_base": 50,
+        "oro_base": 22,
+        "habilidades": [
+          {"nombre": "Aguijonazo Mortal", "tipo": "fisico", "multiplicador": 1.4, "costo": 25, "efecto": "veneno_fuerte"},
+          {"nombre": "Pinza Venenosa", "tipo": "fisico", "multiplicador": 1.2, "costo": 15, "efecto": "veneno"}
+        ],
+        "drops": [
+          {"item_id": "aguijon_mortal", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "veneno_escorpion", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "caparazon_venenoso", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "escorpion_gigante",
+        "nombre": "Escorpión Gigante",
+        "categoria": "bestia",
+        "descripcion": "Escorpión de tamaño monstruoso.",
+        "stats_base": {"hp": 90, "atk": 18, "def": 12, "velocidad": 10, "critico": 12, "evasion": 8, "mana": 0, "stamina": 120},
+        "experiencia_base": 75,
+        "oro_base": 35,
+        "habilidades": [
+          {"nombre": "Pinza Aplastante", "tipo": "fisico", "multiplicador": 1.6, "costo": 30, "efecto": "inmovilizar"},
+          {"nombre": "Aguijonazo Masivo", "tipo": "fisico", "multiplicador": 1.5, "costo": 35, "efecto": "veneno_fuerte"}
+        ],
+        "drops": [
+          {"item_id": "pinza_gigante", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "aguijon_gigante", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "caparazon_acero", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "ciervo_comun",
+        "nombre": "Ciervo Común",
+        "categoria": "bestia",
+        "descripcion": "Ciervo de bosque tranquilo.",
+        "stats_base": {"hp": 35, "atk": 6, "def": 2, "velocidad": 20, "critico": 5, "evasion": 25, "mana": 0, "stamina": 70},
+        "experiencia_base": 20,
+        "oro_base": 8,
+        "habilidades": [
+          {"nombre": "Coz", "tipo": "fisico", "multiplicador": 1.0, "costo": 10},
+          {"nombre": "Cornada", "tipo": "fisico", "multiplicador": 1.2, "costo": 15}
+        ],
+        "drops": [
+          {"item_id": "asta_ciervo", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_ciervo", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "carne_ciervo", "probabilidad": 0.4, "cantidad_min": 1, "cantidad_max": 2}
+        ]
+      },
+      {
+        "id": "ciervo_corrupto",
+        "nombre": "Ciervo Corrupto",
+        "categoria": "bestia",
+        "descripcion": "Ciervo corrompido por magia oscura.",
+        "stats_base": {"hp": 55, "atk": 14, "def": 5, "velocidad": 18, "critico": 15, "evasion": 15, "mana": 20, "stamina": 80},
+        "experiencia_base": 45,
+        "oro_base": 20,
+        "habilidades": [
+          {"nombre": "Cornada Corrupta", "tipo": "fisico", "multiplicador": 1.5, "costo": 20, "efecto": "enfermedad"},
+          {"nombre": "Bramido Oscuro", "tipo": "magico", "multiplicador": 0.5, "costo": 25, "efecto": "miedo"}
+        ],
+        "drops": [
+          {"item_id": "asta_corrupta", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_ciervo_corrupto", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_oscura", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      }
+    ],
+    "humanoides": [
+      {
+        "id": "bandido_novato",
+        "nombre": "Bandido Novato",
+        "categoria": "humanoide",
+        "descripcion": "Bandido inexperto que asalta viajeros.",
+        "stats_base": {"hp": 35, "atk": 10, "def": 3, "velocidad": 14, "critico": 10, "evasion": 12, "mana": 0, "stamina": 70},
+        "experiencia_base": 30,
+        "oro_base": 15,
+        "habilidades": [
+          {"nombre": "Tajo", "tipo": "fisico", "multiplicador": 1.2, "costo": 10},
+          {"nombre": "Robo", "tipo": "fisico", "multiplicador": 0.5, "costo": 15, "efecto": "robar_oro"}
+        ],
+        "drops": [
+          {"item_id": "daga_oxidada", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pocion_pequena", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "monedas", "probabilidad": 0.5, "cantidad_min": 1, "cantidad_max": 3}
+        ]
+      },
+      {
+        "id": "bandido_experimentado",
+        "nombre": "Bandido Experimentado",
+        "categoria": "humanoide",
+        "descripcion": "Bandido veterano de los caminos.",
+        "stats_base": {"hp": 55, "atk": 14, "def": 5, "velocidad": 16, "critico": 15, "evasion": 15, "mana": 0, "stamina": 90},
+        "experiencia_base": 50,
+        "oro_base": 30,
+        "habilidades": [
+          {"nombre": "Tajo Preciso", "tipo": "fisico", "multiplicador": 1.4, "costo": 20, "efecto": "sangrado"},
+          {"nombre": "Emboscada", "tipo": "fisico", "multiplicador": 1.6, "costo": 25, "efecto": "primer_ataque"}
+        ],
+        "drops": [
+          {"item_id": "daga", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pocion_mediana", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "botin", "probabilidad": 0.4, "cantidad_min": 1, "cantidad_max": 2}
+        ]
+      },
+      {
+        "id": "bandido_lider",
+        "nombre": "Bandido Líder",
+        "categoria": "humanoide",
+        "descripcion": "Líder de una banda de bandidos.",
+        "stats_base": {"hp": 80, "atk": 18, "def": 8, "velocidad": 15, "critico": 18, "evasion": 12, "mana": 0, "stamina": 120},
+        "experiencia_base": 80,
+        "oro_base": 55,
+        "habilidades": [
+          {"nombre": "Tajo de Líder", "tipo": "fisico", "multiplicador": 1.5, "costo": 25},
+          {"nombre": "Orden de Ataque", "tipo": "buff", "multiplicador": 0, "costo": 20, "efecto": "buff_atk_aliados"},
+          {"nombre": "Grito de Guerra", "tipo": "fisico", "multiplicador": 0.5, "costo": 15, "efecto": "miedo"}
+        ],
+        "drops": [
+          {"item_id": "espada_bandido", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pocion_grande", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "tesoro_bandido", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "ladron_callejero",
+        "nombre": "Ladrón Callejero",
+        "categoria": "humanoide",
+        "descripcion": "Ladrón de los bajos fondos.",
+        "stats_base": {"hp": 30, "atk": 8, "def": 2, "velocidad": 20, "critico": 15, "evasion": 25, "mana": 0, "stamina": 60},
+        "experiencia_base": 25,
+        "oro_base": 12,
+        "habilidades": [
+          {"nombre": "Puñalada", "tipo": "fisico", "multiplicador": 1.1, "costo": 10},
+          {"nombre": "Robo de Item", "tipo": "fisico", "multiplicador": 0.5, "costo": 20, "efecto": "robar_item"},
+          {"nombre": "Evasión Rápida", "tipo": "buff", "multiplicador": 0, "costo": 15, "efecto": "buff_evasion"}
+        ],
+        "drops": [
+          {"item_id": "ganzua", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "monedas", "probabilidad": 0.4, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "daga_pequena", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "ladron_sombras",
+        "nombre": "Ladrón de Sombras",
+        "categoria": "humanoide",
+        "descripcion": "Ladrón especializado en el sigilo.",
+        "stats_base": {"hp": 50, "atk": 14, "def": 4, "velocidad": 22, "critico": 20, "evasion": 30, "mana": 0, "stamina": 80},
+        "experiencia_base": 50,
+        "oro_base": 28,
+        "habilidades": [
+          {"nombre": "Puñalada Sombría", "tipo": "fisico", "multiplicador": 1.5, "costo": 20, "efecto": "ignora_def"},
+          {"nombre": "Desaparecer", "tipo": "buff", "multiplicador": 0, "costo": 25, "efecto": "evasion_total"}
+        ],
+        "drops": [
+          {"item_id": "capa_sombras", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "daga_sombras", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "polvo_invisibilidad", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "ladron_maestro",
+        "nombre": "Ladrón Maestro",
+        "categoria": "humanoide",
+        "descripcion": "Maestro del robo y el sigilo.",
+        "stats_base": {"hp": 75, "atk": 18, "def": 6, "velocidad": 25, "critico": 25, "evasion": 35, "mana": 0, "stamina": 100},
+        "experiencia_base": 85,
+        "oro_base": 50,
+        "habilidades": [
+          {"nombre": "Golpe Maestro", "tipo": "fisico", "multiplicador": 1.8, "costo": 30, "efecto": "ignora_def"},
+          {"nombre": "Robo Mayor", "tipo": "fisico", "multiplicador": 0.5, "costo": 25, "efecto": "robar_item_raro"},
+          {"nombre": "Sombra", "tipo": "buff", "multiplicador": 0, "costo": 30, "efecto": "inmune"}
+        ],
+        "drops": [
+          {"item_id": "capa_maestro", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "daga_maestro", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "llave_maestra", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "mercenario_recluta",
+        "nombre": "Mercenario Recluta",
+        "categoria": "humanoide",
+        "descripcion": "Mercenario novato contratado.",
+        "stats_base": {"hp": 45, "atk": 12, "def": 6, "velocidad": 12, "critico": 8, "evasion": 8, "mana": 0, "stamina": 80},
+        "experiencia_base": 35,
+        "oro_base": 18,
+        "habilidades": [
+          {"nombre": "Tajo", "tipo": "fisico", "multiplicador": 1.2, "costo": 10},
+          {"nombre": "Bloqueo con Escudo", "tipo": "buff", "multiplicador": 0, "costo": 15, "efecto": "buff_def"}
+        ],
+        "drops": [
+          {"item_id": "espada_corta", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "escudo_pequeno", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "contrato", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "mercenario_veterano",
+        "nombre": "Mercenario Veterano",
+        "categoria": "humanoide",
+        "descripcion": "Mercenario con experiencia de guerra.",
+        "stats_base": {"hp": 70, "atk": 16, "def": 10, "velocidad": 14, "critico": 12, "evasion": 10, "mana": 0, "stamina": 100},
+        "experiencia_base": 60,
+        "oro_base": 35,
+        "habilidades": [
+          {"nombre": "Tajo de Guerra", "tipo": "fisico", "multiplicador": 1.4, "costo": 20},
+          {"nombre": "Escudo de Guerra", "tipo": "buff", "multiplicador": 0, "costo": 25, "efecto": "buff_def_contraataque"},
+          {"nombre": "Grito", "tipo": "fisico", "multiplicador": 0.5, "costo": 15, "efecto": "aturdir"}
+        ],
+        "drops": [
+          {"item_id": "espada_guerra", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "escudo_guerra", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pocion_mediana", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "mercenario_elite",
+        "nombre": "Mercenario Élite",
+        "categoria": "humanoide",
+        "descripcion": "Mercenario de élite, lo mejor del mercado.",
+        "stats_base": {"hp": 100, "atk": 22, "def": 14, "velocidad": 16, "critico": 18, "evasion": 12, "mana": 0, "stamina": 130},
+        "experiencia_base": 100,
+        "oro_base": 60,
+        "habilidades": [
+          {"nombre": "Tajo Élite", "tipo": "fisico", "multiplicador": 1.6, "costo": 25, "efecto": "sangrado"},
+          {"nombre": "Defensa Perfecta", "tipo": "buff", "multiplicador": 0, "costo": 30, "efecto": "inmune_contraataque"},
+          {"nombre": "Liderazgo", "tipo": "buff", "multiplicador": 0, "costo": 20, "efecto": "buff_atk_aliados"}
+        ],
+        "drops": [
+          {"item_id": "espada_elite", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "armadura_mercenario", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "contrato_elite", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "arquero_aprendiz",
+        "nombre": "Arquero Aprendiz",
+        "categoria": "humanoide",
+        "descripcion": "Arquero en entrenamiento.",
+        "stats_base": {"hp": 25, "atk": 10, "def": 2, "velocidad": 16, "critico": 12, "evasion": 15, "mana": 0, "stamina": 60},
+        "experiencia_base": 25,
+        "oro_base": 10,
+        "habilidades": [
+          {"nombre": "Flecha", "tipo": "fisico", "multiplicador": 1.2, "costo": 10},
+          {"nombre": "Disparo Rápido", "tipo": "fisico", "multiplicador": 0.8, "costo": 15, "efecto": "doble_ataque"}
+        ],
+        "drops": [
+          {"item_id": "arco_pequeno", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "flechas", "probabilidad": 0.4, "cantidad_min": 1, "cantidad_max": 3},
+          {"item_id": "carcaj", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "arquero_cazador",
+        "nombre": "Arquero Cazador",
+        "categoria": "humanoide",
+        "descripcion": "Arquero experimentado de los bosques.",
+        "stats_base": {"hp": 45, "atk": 14, "def": 4, "velocidad": 18, "critico": 18, "evasion": 20, "mana": 0, "stamina": 80},
+        "experiencia_base": 45,
+        "oro_base": 22,
+        "habilidades": [
+          {"nombre": "Flecha Precisa", "tipo": "fisico", "multiplicador": 1.4, "costo": 20, "efecto": "buff_critico"},
+          {"nombre": "Flecha de Fuego", "tipo": "fuego", "multiplicador": 1.3, "costo": 25, "efecto": "quemar"},
+          {"nombre": "Trampa", "tipo": "fisico", "multiplicador": 0.5, "costo": 20, "efecto": "inmovilizar"}
+        ],
+        "drops": [
+          {"item_id": "arco_caza", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "flechas_caza", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "trampa", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "arquero_francotirador",
+        "nombre": "Arquero Francotirador",
+        "categoria": "humanoide",
+        "descripcion": "Arquero de élite, maestro del disparo a distancia.",
+        "stats_base": {"hp": 60, "atk": 20, "def": 5, "velocidad": 20, "critico": 30, "evasion": 22, "mana": 0, "stamina": 100},
+        "experiencia_base": 80,
+        "oro_base": 45,
+        "habilidades": [
+          {"nombre": "Disparo Mortal", "tipo": "fisico", "multiplicador": 2.0, "costo": 35, "efecto": "buff_critico"},
+          {"nombre": "Flecha de Veneno", "tipo": "fisico", "multiplicador": 1.3, "costo": 25, "efecto": "veneno_fuerte"},
+          {"nombre": "Ojo de Águila", "tipo": "buff", "multiplicador": 0, "costo": 20, "efecto": "buff_critico"}
+        ],
+        "drops": [
+          {"item_id": "arco_largo", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "flechas_precision", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "mira", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "guerrero_escudero",
+        "nombre": "Guerrero Escudero",
+        "categoria": "humanoide",
+        "descripcion": "Guerrero en entrenamiento con escudo.",
+        "stats_base": {"hp": 50, "atk": 12, "def": 8, "velocidad": 10, "critico": 8, "evasion": 5, "mana": 0, "stamina": 90},
+        "experiencia_base": 40,
+        "oro_base": 18,
+        "habilidades": [
+          {"nombre": "Tajo de Espada", "tipo": "fisico", "multiplicador": 1.2, "costo": 10},
+          {"nombre": "Bloqueo", "tipo": "buff", "multiplicador": 0, "costo": 15, "efecto": "buff_def"},
+          {"nombre": "Proteger", "tipo": "buff", "multiplicador": 0, "costo": 20, "efecto": "proteger_aliado"}
+        ],
+        "drops": [
+          {"item_id": "espada_basica", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "escudo_basico", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "armadura_ligera", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "guerrero_caballero",
+        "nombre": "Guerrero Caballero",
+        "categoria": "humanoide",
+        "descripcion": "Caballero con armadura completa.",
+        "stats_base": {"hp": 80, "atk": 18, "def": 14, "velocidad": 12, "critico": 12, "evasion": 8, "mana": 0, "stamina": 120},
+        "experiencia_base": 70,
+        "oro_base": 40,
+        "habilidades": [
+          {"nombre": "Tajo de Caballero", "tipo": "fisico", "multiplicador": 1.4, "costo": 20},
+          {"nombre": "Escudo de Caballero", "tipo": "buff", "multiplicador": 0, "costo": 25, "efecto": "buff_def_contraataque"},
+          {"nombre": "Carga", "tipo": "fisico", "multiplicador": 1.6, "costo": 30, "efecto": "aturdir"}
+        ],
+        "drops": [
+          {"item_id": "espada_caballero", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "escudo_caballero", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "armadura_placas", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "guerrero_campeon",
+        "nombre": "Guerrero Campeón",
+        "categoria": "humanoide",
+        "descripcion": "Campeón guerrero, élite del combate.",
+        "stats_base": {"hp": 120, "atk": 25, "def": 18, "velocidad": 14, "critico": 18, "evasion": 10, "mana": 0, "stamina": 150},
+        "experiencia_base": 120,
+        "oro_base": 80,
+        "habilidades": [
+          {"nombre": "Tajo de Campeón", "tipo": "fisico", "multiplicador": 1.8, "costo": 30, "efecto": "sangrado"},
+          {"nombre": "Defensa Impenetrable", "tipo": "buff", "multiplicador": 0, "costo": 35, "efecto": "inmune"},
+          {"nombre": "Grito de Guerra", "tipo": "buff", "multiplicador": 0, "costo": 25, "efecto": "buff_atk_aliados"}
+        ],
+        "drops": [
+          {"item_id": "espada_campeon", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "armadura_campeon", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "medalla_honor", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "mago_oscuro_aprendiz",
+        "nombre": "Mago Oscuro Aprendiz",
+        "categoria": "humanoide",
+        "descripcion": "Aprendiz de las artes oscuras.",
+        "stats_base": {"hp": 30, "atk": 12, "def": 2, "velocidad": 14, "critico": 10, "evasion": 12, "mana": 50, "stamina": 60},
+        "experiencia_base": 30,
+        "oro_base": 15,
+        "habilidades": [
+          {"nombre": "Orbe Oscuro", "tipo": "magico", "multiplicador": 1.3, "costo": 15},
+          {"nombre": "Drenar", "tipo": "magico", "multiplicador": 1.0, "costo": 20, "efecto": "drenar_hp"}
+        ],
+        "drops": [
+          {"item_id": "baston_aprendiz", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "tomo_oscuro", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_oscura", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "mago_oscuro_hechicero",
+        "nombre": "Mago Oscuro Hechicero",
+        "categoria": "humanoide",
+        "descripcion": "Hechicero de magia oscura.",
+        "stats_base": {"hp": 55, "atk": 18, "def": 4, "velocidad": 16, "critico": 15, "evasion": 15, "mana": 80, "stamina": 80},
+        "experiencia_base": 60,
+        "oro_base": 35,
+        "habilidades": [
+          {"nombre": "Orbe de Sombra", "tipo": "magico", "multiplicador": 1.5, "costo": 25},
+          {"nombre": "Drenar Vida", "tipo": "magico", "multiplicador": 1.2, "costo": 30, "efecto": "drenar_hp"},
+          {"nombre": "Maldición", "tipo": "magico", "multiplicador": 0.5, "costo": 20, "efecto": "debuff_atk"}
+        ],
+        "drops": [
+          {"item_id": "baston_hechicero", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "tomo_sombras", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_sombra", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "mago_oscuro_archimago",
+        "nombre": "Mago Oscuro Archimago",
+        "categoria": "humanoide",
+        "descripcion": "Archimago de las artes prohibidas.",
+        "stats_base": {"hp": 90, "atk": 26, "def": 6, "velocidad": 18, "critico": 22, "evasion": 18, "mana": 120, "stamina": 100},
+        "experiencia_base": 110,
+        "oro_base": 70,
+        "habilidades": [
+          {"nombre": "Tormenta Oscura", "tipo": "magico", "multiplicador": 1.8, "costo": 40, "efecto": "area"},
+          {"nombre": "Drenar Alma", "tipo": "magico", "multiplicador": 1.5, "costo": 35, "efecto": "drenar_hp"},
+          {"nombre": "Invocar Sombra", "tipo": "invocacion", "multiplicador": 0, "costo": 50, "efecto": "invocar_sombras"}
+        ],
+        "drops": [
+          {"item_id": "baston_archimago", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "tomo_prohibido", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_abismo", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "asesino_iniciado",
+        "nombre": "Asesino Iniciado",
+        "categoria": "humanoide",
+        "descripcion": "Asesino en entrenamiento.",
+        "stats_base": {"hp": 35, "atk": 14, "def": 3, "velocidad": 20, "critico": 20, "evasion": 25, "mana": 0, "stamina": 70},
+        "experiencia_base": 35,
+        "oro_base": 18,
+        "habilidades": [
+          {"nombre": "Puñalada", "tipo": "fisico", "multiplicador": 1.3, "costo": 10},
+          {"nombre": "Ataque Furtivo", "tipo": "fisico", "multiplicador": 1.8, "costo": 20, "efecto": "por_la_espalda"}
+        ],
+        "drops": [
+          {"item_id": "daga_asesino", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "capa_oscura", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "veneno", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "asesino_profesional",
+        "nombre": "Asesino Profesional",
+        "categoria": "humanoide",
+        "descripcion": "Asesino profesional a sueldo.",
+        "stats_base": {"hp": 60, "atk": 22, "def": 5, "velocidad": 24, "critico": 28, "evasion": 30, "mana": 0, "stamina": 100},
+        "experiencia_base": 75,
+        "oro_base": 45,
+        "habilidades": [
+          {"nombre": "Puñalada Venenosa", "tipo": "fisico", "multiplicador": 1.5, "costo": 20, "efecto": "veneno_fuerte"},
+          {"nombre": "Golpe Mortal", "tipo": "fisico", "multiplicador": 2.2, "costo": 35, "efecto": "por_la_espalda"},
+          {"nombre": "Desvanecerse", "tipo": "buff", "multiplicador": 0, "costo": 25, "efecto": "evasion_total"}
+        ],
+        "drops": [
+          {"item_id": "daga_profesional", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "capa_sombras", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "veneno_potente", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "asesino_sombra",
+        "nombre": "Asesino Sombra",
+        "categoria": "humanoide",
+        "descripcion": "Asesino de élite, una verdadera sombra.",
+        "stats_base": {"hp": 85, "atk": 28, "def": 6, "velocidad": 28, "critico": 35, "evasion": 40, "mana": 0, "stamina": 120},
+        "experiencia_base": 120,
+        "oro_base": 80,
+        "habilidades": [
+          {"nombre": "Ejecución", "tipo": "fisico", "multiplicador": 3.0, "costo": 50, "efecto": "ejecucion"},
+          {"nombre": "Paso de Sombra", "tipo": "buff", "multiplicador": 0, "costo": 30, "efecto": "teleport"},
+          {"nombre": "Marca de Muerte", "tipo": "debuff", "multiplicador": 0, "costo": 25, "efecto": "marca_muerte"}
+        ],
+        "drops": [
+          {"item_id": "daga_sombra", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "capa_vacio", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "veneno_mortal", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "pirata_marinero",
+        "nombre": "Pirata Marinero",
+        "categoria": "humanoide",
+        "descripcion": "Marinero pirata de los mares.",
+        "stats_base": {"hp": 40, "atk": 12, "def": 4, "velocidad": 14, "critico": 12, "evasion": 15, "mana": 0, "stamina": 80},
+        "experiencia_base": 35,
+        "oro_base": 20,
+        "habilidades": [
+          {"nombre": "Tajo de Sable", "tipo": "fisico", "multiplicador": 1.3, "costo": 15},
+          {"nombre": "Pistola", "tipo": "fisico", "multiplicador": 1.4, "costo": 20, "efecto": "rango"},
+          {"nombre": "Grito de Abordaje", "tipo": "buff", "multiplicador": 0, "costo": 15, "efecto": "buff_atk"}
+        ],
+        "drops": [
+          {"item_id": "sable", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pistola_vieja", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "monedas_oro", "probabilidad": 0.4, "cantidad_min": 1, "cantidad_max": 3}
+        ]
+      },
+      {
+        "id": "pirata_corsario",
+        "nombre": "Pirata Corsario",
+        "categoria": "humanoide",
+        "descripcion": "Corsario experimentado.",
+        "stats_base": {"hp": 70, "atk": 18, "def": 8, "velocidad": 16, "critico": 18, "evasion": 18, "mana": 0, "stamina": 100},
+        "experiencia_base": 65,
+        "oro_base": 45,
+        "habilidades": [
+          {"nombre": "Tajo de Corsario", "tipo": "fisico", "multiplicador": 1.5, "costo": 20, "efecto": "sangrado"},
+          {"nombre": "Pistola de Corsario", "tipo": "fisico", "multiplicador": 1.6, "costo": 25, "efecto": "rango"},
+          {"nombre": "Abordaje", "tipo": "fisico", "multiplicador": 1.3, "costo": 25, "efecto": "inmovilizar"}
+        ],
+        "drops": [
+          {"item_id": "sable_corsario", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pistola_corsario", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "mapa_tesoro", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "pirata_capitan",
+        "nombre": "Pirata Capitán",
+        "categoria": "humanoide",
+        "descripcion": "Capitán pirata, líder de los mares.",
+        "stats_base": {"hp": 100, "atk": 24, "def": 12, "velocidad": 18, "critico": 22, "evasion": 15, "mana": 0, "stamina": 130},
+        "experiencia_base": 100,
+        "oro_base": 80,
+        "habilidades": [
+          {"nombre": "Tajo de Capitán", "tipo": "fisico", "multiplicador": 1.7, "costo": 25},
+          {"nombre": "Pistola de Capitán", "tipo": "fisico", "multiplicador": 1.8, "costo": 30, "efecto": "rango"},
+          {"nombre": "Orden de Abordaje", "tipo": "buff", "multiplicador": 0, "costo": 25, "efecto": "buff_atk_aliados"}
+        ],
+        "drops": [
+          {"item_id": "sable_capitan", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "pistola_capitan", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "llave_tesoro", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "barbaro_tribu",
+        "nombre": "Bárbaro de Tribu",
+        "categoria": "humanoide",
+        "descripcion": "Bárbaro de las tribus salvajes.",
+        "stats_base": {"hp": 55, "atk": 16, "def": 6, "velocidad": 14, "critico": 15, "evasion": 10, "mana": 0, "stamina": 90},
+        "experiencia_base": 45,
+        "oro_base": 22,
+        "habilidades": [
+          {"nombre": "Tajo de Hacha", "tipo": "fisico", "multiplicador": 1.4, "costo": 15},
+          {"nombre": "Grito de Guerra", "tipo": "buff", "multiplicador": 0, "costo": 15, "efecto": "buff_atk"},
+          {"nombre": "Furia", "tipo": "buff", "multiplicador": 0, "costo": 20, "efecto": "furia"}
+        ],
+        "drops": [
+          {"item_id": "hacha_barbaro", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_bestia", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "totem", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "barbaro_berserker",
+        "nombre": "Bárbaro Berserker",
+        "categoria": "humanoide",
+        "descripcion": "Bárbaro en estado de furia constante.",
+        "stats_base": {"hp": 80, "atk": 24, "def": 4, "velocidad": 16, "critico": 25, "evasion": 8, "mana": 0, "stamina": 110},
+        "experiencia_base": 80,
+        "oro_base": 50,
+        "habilidades": [
+          {"nombre": "Tajo Berserker", "tipo": "fisico", "multiplicador": 1.8, "costo": 25},
+          {"nombre": "Furia Incontrolable", "tipo": "buff", "multiplicador": 0, "costo": 30, "efecto": "furia_doble_ataque"},
+          {"nombre": "Grito Salvaje", "tipo": "fisico", "multiplicador": 0.5, "costo": 20, "efecto": "aturdir_area"}
+        ],
+        "drops": [
+          {"item_id": "hacha_berserker", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "piel_oso", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "collar_colmillos", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "barbaro_jefe",
+        "nombre": "Bárbaro Jefe",
+        "categoria": "humanoide",
+        "descripcion": "Jefe de una tribu bárbara.",
+        "stats_base": {"hp": 120, "atk": 30, "def": 10, "velocidad": 18, "critico": 28, "evasion": 10, "mana": 0, "stamina": 150},
+        "experiencia_base": 130,
+        "oro_base": 100,
+        "habilidades": [
+          {"nombre": "Tajo de Jefe", "tipo": "fisico", "multiplicador": 2.0, "costo": 35, "efecto": "sangrado"},
+          {"nombre": "Grito de Jefe", "tipo": "buff", "multiplicador": 0, "costo": 25, "efecto": "buff_atk_aliados"},
+          {"nombre": "Invocar Tribu", "tipo": "invocacion", "multiplicador": 0, "costo": 40, "efecto": "invocar_barbaros"}
+        ],
+        "drops": [
+          {"item_id": "hacha_jefe", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "corona_huesos", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "totem_mayor", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "nigromante_aprendiz",
+        "nombre": "Nigromante Aprendiz",
+        "categoria": "humanoide",
+        "descripcion": "Aprendiz de nigromancia.",
+        "stats_base": {"hp": 35, "atk": 14, "def": 3, "velocidad": 14, "critico": 10, "evasion": 12, "mana": 60, "stamina": 60},
+        "experiencia_base": 40,
+        "oro_base": 20,
+        "habilidades": [
+          {"nombre": "Orbe de Muerte", "tipo": "magico", "multiplicador": 1.3, "costo": 20},
+          {"nombre": "Invocar Esqueleto", "tipo": "invocacion", "multiplicador": 0, "costo": 30, "efecto": "invocar_esqueleto"}
+        ],
+        "drops": [
+          {"item_id": "baston_nigromante", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "hueso", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "tomo_muerte", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "nigromante_oscuro",
+        "nombre": "Nigromante Oscuro",
+        "categoria": "humanoide",
+        "descripcion": "Nigromante con poder oscuro.",
+        "stats_base": {"hp": 65, "atk": 20, "def": 5, "velocidad": 16, "critico": 15, "evasion": 15, "mana": 100, "stamina": 80},
+        "experiencia_base": 70,
+        "oro_base": 45,
+        "habilidades": [
+          {"nombre": "Orbe de Oscuridad", "tipo": "magico", "multiplicador": 1.6, "costo": 30},
+          {"nombre": "Invocar Muertos", "tipo": "invocacion", "multiplicador": 0, "costo": 40, "efecto": "invocar_esqueletos"},
+          {"nombre": "Drenar Vida", "tipo": "magico", "multiplicador": 1.2, "costo": 25, "efecto": "drenar_hp"}
+        ],
+        "drops": [
+          {"item_id": "baston_oscuro", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "tomo_oscuridad", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "esencia_muerte", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      },
+      {
+        "id": "nigromante_mayor",
+        "nombre": "Nigromante Mayor",
+        "categoria": "humanoide",
+        "descripcion": "Maestro nigromante de gran poder.",
+        "stats_base": {"hp": 100, "atk": 28, "def": 8, "velocidad": 18, "critico": 20, "evasion": 18, "mana": 150, "stamina": 100},
+        "experiencia_base": 120,
+        "oro_base": 90,
+        "habilidades": [
+          {"nombre": "Tormenta de Muerte", "tipo": "magico", "multiplicador": 1.8, "costo": 50, "efecto": "area"},
+          {"nombre": "Levantar Ejército", "tipo": "invocacion", "multiplicador": 0, "costo": 60, "efecto": "invocar_ejercicio"},
+          {"nombre": "Drenar Alma", "tipo": "magico", "multiplicador": 1.5, "costo": 40, "efecto": "drenar_hp"}
+        ],
+        "drops": [
+          {"item_id": "baston_mayor", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "tomo_nigromancia", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "filacteria", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1}
+        ]
+      }
+    ],
+    "no_muertos"

@@ -98,15 +98,79 @@ export interface Personaje {
   habilidades: Habilidades;
 }
 
+// ============== TIPOS DE INVENTARIO ==============
+
+export type RarezaItem = "comun" | "poco_comun" | "raro" | "epico" | "legendario" | "unico";
+export type TipoItem = "arma" | "armadura" | "consumible" | "material" | "herramienta" | "misc" | "mision";
+export type SlotEquipamiento = "casco" | "peto" | "guantes" | "botas";
+export type SlotMano = "izquierda" | "derecha";
+
+export interface ItemStats {
+  dano_min?: number;
+  dano_max?: number;
+  defensa?: number;
+  velocidad?: number;
+  critico?: number;
+  evasion?: number;
+  mana?: number;
+  stamina?: number;
+  hp?: number;
+  [key: string]: number | undefined;
+}
+
+export interface Item {
+  id: string;
+  base_id: string;
+  nombre: string;
+  descripcion: string;
+  tipo: TipoItem;
+  subtipo?: string;
+  rareza: RarezaItem;
+  cantidad: number;
+  slot?: number;
+  stats: ItemStats;
+  peso: number;
+  valor: number;
+  favorito: boolean;
+  identificado: boolean;
+  durabilidad?: number;
+  durabilidad_max?: number;
+  requisitos?: {
+    nivel?: number;
+    fuerza?: number;
+    destreza?: number;
+    inteligencia?: number;
+  };
+  efectos?: string[];
+  encantamiento?: string;
+}
+
 export interface ItemInventario {
   id: string;
   cantidad: number;
 }
 
+export interface Equipamiento {
+  casco: Item | null;
+  peto: Item | null;
+  guantes: Item | null;
+  botas: Item | null;
+}
+
+export interface Manos {
+  izquierda: Item | null;
+  derecha: Item | null;
+}
+
 export interface Inventario {
   oro: number;
-  slots_maximos: number;
-  items: ItemInventario[];
+  alforjas: {
+    slots_maximos: number;
+    items: Item[];
+  };
+  equipamiento: Equipamiento;
+  manos: Manos;
+  herramienta_activa: Item | null;
 }
 
 export interface DatosJuego {
