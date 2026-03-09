@@ -7,7 +7,7 @@ class SaveManager:
 
     SLOTS_DIR = "saves"
     NUM_SLOTS = 3
-    VERSION = "1.1"  # Actualizado para incluir exploracion
+    VERSION = "1.2"  # Actualizado para incluir mapa
 
     def __init__(self):
         self._asegurar_directorio()
@@ -123,6 +123,52 @@ class SaveManager:
             seed = init_global_seed()
             data["exploracion"] = crear_exploracion_inicial(str(seed)).to_dict()
 
+        # Migración de 1.1 a 1.2: añadir mapa
+        if version_guardada in ["1.0", "1.1"] and "mapa" not in data:
+            from systems.mapa import MapaMundo
+            from systems.seed import init_global_seed
+            
+            # Crear semilla si no existe
+            seed = init_global_seed()
+            mapa = MapaMundo(seed=seed)
+            # Generar mundo inicial con ubicaciones
+            mapa.generar_mundo_inicial()
+            data["mapa"] = mapa.to_dict()
+
+        # Migración de stats: añadir aliases para frontend
+        if "personaje" in data and "stats" in data["personaje"]:
+            stats = data["personaje"]["stats"]
+            
+            # Añadir aliases si no existen
+            if "hp" not in stats:
+                stats["hp"] = stats.get("hp_actual", stats.get("hp_base", 100))
+            if "hp_max" not in stats:
+                stats["hp_max"] = stats.get("hp_base", 100)
+            if "mana" not in stats:
+                stats["mana"] = stats.get("mana_actual", stats.get("mana_base", 50))
+            if "mana_max" not in stats:
+                stats["mana_max"] = stats.get("mana_base", 50)
+            if "stamina" not in stats:
+                stats["stamina"] = stats.get("stamina_actual", stats.get("stamina_base", 100))
+            if "stamina_max" not in stats:
+                stats["stamina_max"] = stats.get("stamina_base", 100)
+            if "ataque" not in stats:
+                stats["ataque"] = stats.get("atk_base", 10)
+            if "defensa" not in stats:
+                stats["defensa"] = stats.get("def_base", 5)
+            if "velocidad" not in stats:
+                stats["velocidad"] = stats.get("velocidad_base", 10)
+            if "critico" not in stats:
+                stats["critico"] = stats.get("critico_base", 5)
+            if "evasion" not in stats:
+                stats["evasion"] = stats.get("evasion_base", 5)
+            if "experiencia_necesaria" not in stats:
+                # Calcular experiencia necesaria para el nivel actual
+                nivel = stats.get("nivel", 1)
+                stats["experiencia_necesaria"] = int(nivel * 100 * (1 + nivel * 0.1))
+            if "puntos_distribuibles" not in stats:
+                stats["puntos_distribuibles"] = stats.get("puntos_disponibles", 0)
+
         return data
 
     def crear_save_vacio(self, nombre="", genero="no_especificar", dificultad="normal"):
@@ -130,6 +176,7 @@ class SaveManager:
         from models.stats import Stats
         from models.experiencia import SistemaHabilidades
         from systems.exploracion_state import crear_exploracion_inicial
+        from systems.mapa import MapaMundo
         from systems.seed import init_global_seed
 
         stats = Stats(dificultad=dificultad)
@@ -138,6 +185,10 @@ class SaveManager:
         # Crear semilla y estado de exploracion
         seed = init_global_seed()
         exploracion = crear_exploracion_inicial(str(seed))
+        
+        # Crear mapa del mundo
+        mapa = MapaMundo(seed=seed)
+        mapa.generar_mundo_inicial()
 
         return {
             "personaje": {
@@ -165,5 +216,6 @@ class SaveManager:
                 "zonas_visitadas": ["pueblo_inicio"],
                 "npcs_conocidos": []
             },
-            "exploracion": exploracion.to_dict()
+            "exploracion": exploracion.to_dict(),
+            "mapa": mapa.to_dict()
         }
