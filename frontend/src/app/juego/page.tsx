@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useGame } from "@/lib/GameContext";
+import { ExploracionProvider } from "@/lib/ExploracionContext";
 import {
   LoadingScreen,
   GameHeader,
@@ -13,6 +14,7 @@ import {
   ExplorarPanel,
   InventarioPanel,
   CombatePanel,
+  MapaPanel,
   type Tab,
 } from "@/components/juego";
 
@@ -62,71 +64,83 @@ export default function JuegoPage() {
   };
 
   return (
-    <div className="flex bg-[#0a0a0f] min-h-screen">
-      {/* Sidebar de Personaje */}
-      <CharacterSidebar
-        isOpen={sidebarAbierto}
-        onClose={() => sidebarAbiertoSet(false)}
-      />
-
-      {/* Contenido Principal */}
-      <main className="flex-1 flex flex-col selection:bg-[#d4a843]/30 transition-all duration-500 ease-out">
-        {/* Header */}
-        <GameHeader
-          personaje={personaje}
-          guardando={guardando}
-          onGuardar={handleGuardar}
-          onSalir={handleSalir}
-          onOpenSidebar={() => sidebarAbiertoSet(true)}
+    <ExploracionProvider slot={slotActual || 1}>
+      <div className="flex bg-[#0a0a0f] min-h-screen">
+        {/* Sidebar de Personaje */}
+        <CharacterSidebar
+          isOpen={sidebarAbierto}
+          onClose={() => sidebarAbiertoSet(false)}
         />
 
-        {/* Navegación de Tabs */}
-        <GameNav
-          tabActiva={tabActiva}
-          onTabChange={tabActivaSet}
-        />
+        {/* Contenido Principal */}
+        <main className="flex-1 flex flex-col selection:bg-[#d4a843]/30 transition-all duration-500 ease-out">
+          {/* Header */}
+          <GameHeader
+            personaje={personaje}
+            guardando={guardando}
+            onGuardar={handleGuardar}
+            onSalir={handleSalir}
+            onOpenSidebar={() => sidebarAbiertoSet(true)}
+          />
 
-        {/* Contenido de Tabs */}
-        <div className="flex-1 bg-[radial-gradient(circle_at_center,_#12121a_0%,_#0a0a0f_100%)] overflow-y-auto custom-scrollbar">
-          <div className="max-w-7xl mx-auto p-12">
+          {/* Navegación de Tabs */}
+          <GameNav
+            tabActiva={tabActiva}
+            onTabChange={tabActivaSet}
+          />
 
-            <AnimatePresence mode="wait">
-              {tabActiva === "explorar" ? (
-                <motion.div
-                  key="panel-explorar"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <ExplorarPanel slot={slotActual || 1} />
-                </motion.div>
-              ) : tabActiva === "inventario" ? (
-                <motion.div
-                  key="panel-inventario"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <InventarioPanel datos={datos} />
-                </motion.div>
-              ) : tabActiva === "combate" ? (
-                <motion.div
-                  key="panel-combate"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <CombatePanel />
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
+          {/* Contenido de Tabs */}
+          <div className="flex-1 bg-[radial-gradient(circle_at_center,_#12121a_0%,_#0a0a0f_100%)] overflow-y-auto custom-scrollbar">
+            <div className="max-w-7xl mx-auto p-12">
 
+              <AnimatePresence mode="wait">
+                {tabActiva === "explorar" ? (
+                  <motion.div
+                    key="panel-explorar"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ExplorarPanel />
+                  </motion.div>
+                ) : tabActiva === "inventario" ? (
+                  <motion.div
+                    key="panel-inventario"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <InventarioPanel datos={datos} />
+                  </motion.div>
+                ) : tabActiva === "mapa" ? (
+                  <motion.div
+                    key="panel-mapa"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <MapaPanel slot={slotActual || 1} />
+                  </motion.div>
+                ) : tabActiva === "combate" ? (
+                  <motion.div
+                    key="panel-combate"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <CombatePanel />
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </ExploracionProvider>
   );
 }

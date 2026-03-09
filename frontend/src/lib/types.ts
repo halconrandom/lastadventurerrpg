@@ -262,3 +262,97 @@ export interface EnemigoTemplate {
   categoria: string;
   nivel_sugerido: number;
 }
+
+// ============== TIPOS DE MAPA ==============
+
+export interface Tile {
+  x: number;
+  y: number;
+  bioma: string;
+  terreno: string;
+  visibilidad: "no_descubierto" | "descubierto" | "explorado" | "actual";
+  ubicacion_id: string | null;
+  recursos: string[];
+  enemigos_potenciales: string[];
+  eventos: string[];
+  rutas: string[];
+  costo_movimiento: number;
+}
+
+export interface Ubicacion {
+  id: string;
+  nombre: string;
+  tipo: "pueblo" | "ciudad" | "capital" | "mazmorra" | "poi";
+  x: number;
+  y: number;
+  bioma: string;
+  npcs: string[];
+  servicios: string[];
+  eventos: string[];
+  rutas: string[];
+  descubierta: boolean;
+  visitada: boolean;
+  segura: boolean;
+  tamanio: [number, number];
+}
+
+export interface Ruta {
+  id: string;
+  origen: string;
+  destino: string;
+  tipo: "camino" | "sendero" | "carretera" | "rio" | "maritima" | "secreta";
+  distancia: number;
+  tiempo_base: number;
+  dificultad: number;
+  tiles: [number, number][];
+  eventos_posibles: string[];
+  descubierta: boolean;
+}
+
+export interface EstadoMapa {
+  posicion_jugador: [number, number];
+  ubicacion_actual: string | null;
+  tiles_explorados: number;
+  ubicaciones_descubiertas: number;
+  ubicaciones_visitadas: number;
+  total_ubicaciones: number;
+  rutas_descubiertas: number;
+}
+
+export interface DestinoCercano {
+  ubicacion: Ubicacion;
+  distancia: number;
+  ruta: Ruta | null;
+  descubierta: boolean;
+}
+
+export interface MapaVisual {
+  mapa: string[][];
+  posicion: [number, number];
+  leyenda: Record<string, string>;
+}
+
+export interface HabilidadCartografia {
+  nivel: number;
+  nombre_nivel: string;
+  experiencia: number;
+  tiles_explorados: number;
+  ubicaciones_descubiertas: number;
+  mapas_creados: number;
+  precision: number;
+  radio_vision: number;
+}
+
+export interface MapaItem {
+  id: string;
+  nombre: string;
+  tipo: "regional" | "local" | "dungeon" | "tesoro" | "antiguo";
+  calidad: "borroso" | "normal" | "detallado" | "preciso" | "maestro";
+  centro_x: number;
+  centro_y: number;
+  radio: number;
+  ubicaciones_reveladas: string[];
+  rutas_reveladas: string[];
+  notas: string;
+  usado: boolean;
+}
