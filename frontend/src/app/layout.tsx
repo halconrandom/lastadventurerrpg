@@ -1,26 +1,27 @@
-import type { Metadata } from "next";
-import { Cinzel, Inter, Geist } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Cinzel, Lora } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const cinzel = Cinzel({
-  variable: "--font-cinzel",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-cinzel",
+  display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const lora = Lora({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  variable: "--font-lora",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Last Adventurer",
-  description: "Un juego RPG de aventuras medievales",
+  title: "Last Adventurer | RPG de Mundo Abierto",
+  description: "Un RPG basado en texto con un vasto mundo abierto lleno de aventuras, misterios y combates épicos",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1a1a2e",
 };
 
 export default function RootLayout({
@@ -29,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={cn("font-sans", geist.variable)}>
-      <body className={`${cinzel.variable} ${inter.variable} antialiased`}>
+    <html lang="es" className="dark">
+      <body className={`${cinzel.variable} ${lora.variable} font-serif antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

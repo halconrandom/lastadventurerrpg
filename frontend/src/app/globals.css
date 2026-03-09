@@ -1,36 +1,14 @@
-/* Google Fonts - Cinzel para títulos, Inter para UI */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+/* Google Fonts - Cinzel para títulos, Lora para texto */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
 @import "tailwindcss";
 
 @import "tw-animate-css";
 
-@import "shadcn/tailwind.css";
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Colores base - Tema medieval oscuro */
-  --background-secondary: #12121a;
-  --foreground-muted: #9a978a;
-
-  /* Colores de acento - Dorado y rojo */
-  --gold: #d4a843;
-  --gold-light: #f0c654;
-  --gold-dark: #a67c00;
-  --red: #8b2942;
-  --red-light: #c44536;
-
-  /* Colores de estado */
-  --hp: #c44536;
-  --mana: #3b82f6;
-  --stamina: #22c55e;
-  --exp: #d4a843;
-
-  /* Bordes y sombras */
-  --border: oklch(0.922 0 0);
-  --border-gold: #d4a843;
-  --shadow: rgba(0, 0, 0, 0.5);
+  /* Colores base - Tema claro */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -45,334 +23,86 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.58 0.22 27);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  
+  /* Colores de juego - Tema claro */
+  --health: oklch(0.55 0.22 25);
+  --mana: oklch(0.55 0.2 250);
+  --stamina: oklch(0.6 0.18 145);
+  --gold: oklch(0.75 0.15 85);
+  --exp: oklch(0.75 0.15 85);
 }
 
 @theme inline {
+  --font-cinzel: 'Cinzel', serif;
+  --font-lora: 'Lora', serif;
+  --font-sans: 'Lora', serif;
+  
   --color-background: var(--background);
-  --color-background-secondary: var(--background-secondary);
   --color-foreground: var(--foreground);
-  --color-foreground-muted: var(--foreground-muted);
-  --color-gold: var(--gold);
-  --color-gold-light: var(--gold-light);
-  --color-gold-dark: var(--gold-dark);
-  --color-red: var(--red);
-  --color-red-light: var(--red-light);
-  --color-hp: var(--hp);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  /* Colores de juego */
+  --color-health: var(--health);
   --color-mana: var(--mana);
   --color-stamina: var(--stamina);
+  --color-gold: var(--gold);
   --color-exp: var(--exp);
-  --color-border: var(--border);
-  --color-border-gold: var(--border-gold);
-
-  --font-cinzel: 'Cinzel', serif;
-  --font-inter: 'Inter', sans-serif;
-  --font-sans: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-/* Reset y estilos base */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  line-height: 1.6;
-}
-
-/* Tipografía medieval para títulos */
-.font-medieval {
-  font-family: 'Cinzel', serif;
-  letter-spacing: 0.05em;
-}
-
-/* Contenedor principal del juego */
-.game-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%);
-}
-
-/* Animación de antorcha - efecto de fuego */
-@keyframes torch-flicker {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  25% {
-    opacity: 1;
-    transform: scale(1.02);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(0.98);
-  }
-  75% {
-    opacity: 0.9;
-    transform: scale(1.01);
-  }
-}
-
-@keyframes torch-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px 10px rgba(212, 168, 67, 0.3),
-                0 0 40px 20px rgba(212, 168, 67, 0.2),
-                0 0 60px 30px rgba(212, 168, 67, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 30px 15px rgba(212, 168, 67, 0.4),
-                0 0 60px 30px rgba(212, 168, 67, 0.25),
-                0 0 90px 45px rgba(212, 168, 67, 0.15);
-  }
-}
-
-.torch {
-  animation: torch-flicker 0.5s ease-in-out infinite,
-             torch-glow 2s ease-in-out infinite;
-}
-
-/* Animación de entrada */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
-}
-
-/* Animación de pulso para elementos importantes */
-@keyframes pulse-gold {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 10px rgba(212, 168, 67, 0);
-  }
-}
-
-.animate-pulse-gold {
-  animation: pulse-gold 2s ease-in-out infinite;
-}
-
-/* Estilos de botones medievales */
-.btn-medieval {
-  font-family: 'Cinzel', serif;
-  background: linear-gradient(180deg, #1a1a25 0%, #12121a 100%);
-  border: 2px solid var(--gold-dark);
-  color: var(--gold);
-  padding: 12px 32px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-medieval::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(212, 168, 67, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-medieval:hover {
-  border-color: var(--gold);
-  color: var(--gold-light);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(212, 168, 67, 0.3);
-}
-
-.btn-medieval:hover::before {
-  left: 100%;
-}
-
-.btn-medieval:active {
-  transform: translateY(0);
-}
-
-/* Cards medievales */
-.card-medieval {
-  background: linear-gradient(180deg, #1a1a25 0%, #12121a 100%);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 24px;
-  position: relative;
-}
-
-.card-medieval::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
-}
-
-/* Barras de estado */
-.stat-bar {
-  height: 20px;
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-  position: relative;
-}
-
-.stat-bar-fill {
-  height: 100%;
-  transition: width 0.3s ease;
-  position: relative;
-}
-
-.stat-bar-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
-}
-
-.stat-bar-hp .stat-bar-fill {
-  background: linear-gradient(180deg, #c44536 0%, #8b2942 100%);
-}
-
-.stat-bar-mana .stat-bar-fill {
-  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
-}
-
-.stat-bar-stamina .stat-bar-fill {
-  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
-}
-
-.stat-bar-exp .stat-bar-fill {
-  background: linear-gradient(180deg, #d4a843 0%, #a67c00 100%);
-}
-
-/* Scrollbar personalizado */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--gold-dark);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.145 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.87 0.00 0);
+  --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
+  --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  
+  /* Colores de juego - Tema oscuro */
+  --health: oklch(0.55 0.22 25);
+  --mana: oklch(0.6 0.2 250);
+  --stamina: oklch(0.65 0.18 145);
+  --gold: oklch(0.8 0.15 85);
+  --exp: oklch(0.8 0.15 85);
 }
 
 @layer base {
@@ -381,8 +111,18 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Lora', serif;
   }
-  html {
-    @apply font-sans;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
   }
+}
+
+/* Utilidades personalizadas */
+.font-serif {
+  font-family: 'Lora', serif;
+}
+
+.font-display {
+  font-family: 'Cinzel', serif;
 }
