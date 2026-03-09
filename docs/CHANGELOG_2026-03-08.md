@@ -59,3 +59,55 @@ Tiles descubiertos: 5
 ### Próximos Pasos Discutidos
 - Crear carpeta `experiments/` como playground para nuevos sistemas
 - Sistemas pendientes: Mapa, Tiempo, NPCs, Relaciones, LLM
+
+---
+
+## Sesión: Documentación de Sistemas (Tiempo y Mapa)
+
+### SISTEMA_TIEMPO.md - Completado
+
+**Decisiones finales:**
+- Escala: 2 min real = 1 hora juego (48 min = 1 día)
+- Estaciones: 4 estaciones de 30 días con variación por bioma
+- Avance: Por acción (no tiempo real)
+- Tiempo inicial: Aleatorio (safe start, siempre de día)
+- Pausas: Total (combate, diálogos, menús)
+- Costos de tiempo: 5 min moverse, 15 min explorar, 1-8 horas viajes
+- Dependencia: Requiere sistema de mapa para distancias
+
+### SISTEMA_MAPA.md - Completado
+
+**Decisiones finales:**
+- Escala: 1 tile = 1 km² = 1 hora de viaje
+- Mundo: Infinito con chunks (1 chunk = 9 tiles, 30 chunks cargados)
+- Transiciones: Suaves (Perlin noise)
+- Ubicaciones: 10-20 pueblos, 3-5 ciudades, 1-2 capitales, 20-40 mazmorras, 30-50 POIs
+- Distancias: Pathfinding A* considerando terreno
+- Revelado: 3 tiles alrededor
+- Spawn: Ubicación aleatoria (pueblo/ciudad)
+- **Sub-tiles**: 1 tile = 100 sub-tiles (10x10), cada sub-tile = 100m = 10 min viaje
+
+### Integración Tiempo + Mapa
+
+| Nivel | Escala | Tiempo de Viaje |
+|-------|--------|-----------------|
+| Tile macro | 1 km | 1 hora |
+| Sub-tile | 100 m | 10 minutos |
+
+### Archivos Creados/Modificados
+- `docs/SISTEMA_TIEMPO.md` - Documento finalizado
+- `docs/SISTEMA_MAPA.md` - Documento finalizado
+- `experiments/README.md` - Playground para prototipos
+
+### Commits Realizados
+- `63a39ca` - SISTEMA_TIEMPO.md finalizado
+- `4dd345c` - SISTEMA_MAPA.md primera iteración
+- `1b464ea` - SISTEMA_MAPA.md segunda iteración
+- `37d7034` - SISTEMA_MAPA.md finalizado con sub-tiles
+
+### Próximos Pasos
+1. Implementar sistema de mapa en `experiments/mapa/`
+2. Implementar sistema de tiempo en `experiments/tiempo/`
+3. Documentar sistema de NPCs
+4. Documentar sistema de Relaciones
+5. Documentar sistema de LLM
