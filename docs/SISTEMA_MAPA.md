@@ -6,7 +6,7 @@ El sistema de mapa gestiona el mundo del juego: tiles con coordenadas X/Y, gener
 
 ---
 
-## Decisiones Tomadas (Iteración 1)
+## Decisiones Finales
 
 | Aspecto | Decisión | Notas |
 |---------|----------|-------|
@@ -17,6 +17,7 @@ El sistema de mapa gestiona el mundo del juego: tiles con coordenadas X/Y, gener
 | Distancias | Pathfinding A* | Considerando terreno |
 | Revelado | 3 tiles alrededor | Radio de visión base |
 | Spawn | Ubicación aleatoria | Cualquier pueblo/ciudad |
+| Mapa de ubicaciones | Sub-tiles | 1 tile = 100 sub-tiles (10x10) |
 
 ---
 
@@ -56,13 +57,69 @@ class Tile:
     enemigos: list            # Enemigos potenciales
     eventos: list             # Eventos disponibles
     
+    # Sub-tiles (si tiene ubicación)
+    sub_tiles: list           # 100 sub-tiles (10x10) si hay ubicación
+    
     # Conectividad
     rutas: list               # Rutas que pasan por este tile
 ```
 
 ---
 
-### 2. Sistema de Chunks
+### 2. Sistema de Sub-Tiles
+
+Cada tile del mapa mundial puede contener **100 sub-tiles** (10x10) para ubicaciones.
+
+#### Escala de Sub-Tiles
+
+| Nivel | Escala | Tiempo de Viaje |
+|-------|--------|-----------------|
+| Tile macro | 1 km | 1 hora |
+| Sub-tile | 100 m | 10 minutos |
+
+#### Estructura de Sub-Tiles
+
+```python
+class SubTile:
+    x: int                    # Coordenada X dentro del tile (0-9)
+    y: int                    # Coordenada Y dentro del tile (0-9)
+    tipo: str                 # calle/edificio/plaza/muro/etc
+    contenido: dict           # NPCs, objetos, eventos
+    
+    # Coordenada global
+    @property
+    def coordenada_global(self) -> tuple:
+        return (self.tile_x * 10 + self.x, self.tile_y * 10 + self.y)
+```
+
+#### Visualización
+
+```
+Tile Macro (1 km²):
+┌─────────────────────────────┐
+│  Sub-tiles 10x10            │
+│  ┌──┬──┬──┬──┬──┬──┬──┬──┬──┬──┐
+│  │  │  │  │  │  │  │  │  │  │  │  Cada sub-tile
+│  ├──┼──┼──┼──┼──┼──┼──┼──┼──┼──┤  = 100m x 100m
+│  │  │  │  │  │  │  │  │  │  │  │  = 10 min viaje
+│  ├──┼──┼──┼──┼──┼──┼──┼──┼──┼──┤
+│  │  │  │  │  │  │  │  │  │  │  │
+│  └──┴──┴──┴──┴──┴──┴──┴──┴──┴──┘
+└─────────────────────────────┘
+```
+
+#### Tiempos de Viaje Unificados
+
+| Acción | Distancia | Tiempo |
+|--------|-----------|--------|
+| Mover 1 tile macro | 1 km | 1 hora |
+| Mover 1 sub-tile | 100 m | 10 minutos |
+| Cruzar ciudad pequeña | ~5 sub-tiles | ~50 minutos |
+| Cruzar ciudad grande | ~10 sub-tiles | ~1.5 horas |
+
+---
+
+### 3. Sistema de Chunks
 
 El mundo es infinito pero se gestiona por chunks para optimizar rendimiento.
 
@@ -112,7 +169,7 @@ Chunk 3x3 tiles:
 
 ---
 
-### 3. Generación Procedural
+### 4. Generación Procedural
 
 El mundo se genera proceduralmente al crear una nueva partida.
 
@@ -124,18 +181,20 @@ class SemillaMundo:
     bioma_seed: int           # Semilla para distribución de biomas
     ubicaciones_seed: int     # Semilla para ubicaciones
     rutas_seed: int           # Semilla para rutas
+    sub_tiles_seed: int       # Semilla para sub-tiles de ubicaciones
 ```
 
 #### Proceso de Generación
 
 1. **Generar biomas**: Usar Perlin noise para distribución natural con transiciones suaves
 2. **Generar ubicaciones**: Pueblos, ciudades, puntos de interés
-3. **Generar rutas**: Conexiones entre ubicaciones usando A*
-4. **Generar contenido**: Recursos, enemigos, eventos por tile
+3. **Generar sub-tiles**: Mapa interno de cada ubicación
+4. **Generar rutas**: Conexiones entre ubicaciones usando A*
+5. **Generar contenido**: Recursos, enemigos, eventos por tile
 
 ---
 
-### 4. Biomas
+### 5. Biomas
 
 Los biomas definen el tipo de terreno y afectan clima, recursos y enemigos.
 
@@ -158,19 +217,19 @@ Los biomas usan Perlin noise para transiciones naturales sin bordes abruptos.
 
 ---
 
-### 5. Ubicaciones
+### 6. Ubicaciones
 
 Las ubicaciones son puntos de interés en el mapa.
 
 #### Cantidad de Ubicaciones (Opción B)
 
-| Tipo | Cantidad | NPCs | Servicios |
-|------|----------|------|-----------|
-| Pueblos | 10-20 | 10-50 | Básicos (tienda, posada) |
-| Ciudades | 3-5 | 50-200 | Completos (tienda, herrero, posada, templo) |
-| Capitales | 1-2 | 200+ | Especiales + servicios completos |
-| Mazmorras | 20-40 | 0 | Combate, tesoros |
-| POIs | 30-50 | 0-5 | Eventos especiales |
+| Tipo | Cantidad | NPCs | Servicios | Sub-tiles |
+|------|----------|------|-----------|-----------|
+| Pueblos | 10-20 | 10-50 | Básicos | 5x5 - 8x8 |
+| Ciudades | 3-5 | 50-200 | Completos | 8x8 - 10x10 |
+| Capitales | 1-2 | 200+ | Especiales | 10x10 (usa múltiples tiles) |
+| Mazmorras | 20-40 | 0 | Combate | Variable |
+| POIs | 30-50 | 0-5 | Eventos | 3x3 - 5x5 |
 
 #### Estructura de Ubicación
 
@@ -179,31 +238,21 @@ class Ubicacion:
     id: str                   # Identificador único
     nombre: str               # Nombre generado
     tipo: str                 # pueblo/ciudad/capital/mazmorra/poi
-    x: int                    # Coordenada X
-    y: int                    # Coordenada Y
+    x: int                    # Coordenada X del tile
+    y: int                    # Coordenada Y del tile
     bioma: str                # Bioma donde está ubicada
+    
+    # Sub-tiles
+    sub_tiles: list           # Matriz de sub-tiles
+    
+    # Contenido
     npcs: list                # NPCs en la ubicación
     servicios: list           # Tiendas, herreros, etc.
     eventos: list             # Eventos disponibles
+    
+    # Conexiones
     rutas: list               # Rutas hacia otras ubicaciones
 ```
-
----
-
-### 6. Mapa de Ubicación (Pregunta Pendiente)
-
-**Pregunta 8**: ¿Cómo funciona el mapa DENTRO de una ubicación?
-
-Si un tile del mapa mundial = 1 km², ¿cómo se mueve el jugador dentro de una ciudad?
-
-#### Opciones
-
-| Opción | Descripción | Ventajas | Desventajas |
-|--------|-------------|----------|-------------|
-| **A) Mapa de ubicación** | Cada ubicación tiene su propio mapa con tiles pequeños (10m/tile) | Exploración detallada | Doble sistema de mapas |
-| **B) Sub-tiles** | Un tile mundial se subdivide en 100 sub-tiles (10x10) | Sistema unificado | Complejo |
-| **C) Instancias** | Ubicaciones son escenas separadas, sin tiles | Simple | Menos inmersión |
-| **D) Escala variable** | Dentro de ubicaciones, tiempo por acción sin mapa visual | Muy simple | Sin exploración visual |
 
 ---
 
@@ -300,24 +349,10 @@ def generar_spawn_aleatorio(ubicaciones: list) -> Ubicacion:
     ],
     "ubicaciones_conocidas": ["pueblo_1", "ciudad_1"],
     "rutas_conocidas": ["ruta_1", "ruta_2"],
-    "posicion_actual": {"x": 5, "y": 3}
+    "posicion_actual": {"x": 5, "y": 3, "sub_x": 2, "sub_y": 5}
   }
 }
 ```
-
----
-
-## Preguntas para la Segunda Iteración
-
-### Pregunta 8: Mapa dentro de Ubicaciones
-¿Cómo funciona el mapa DENTRO de una ubicación (ciudad, pueblo)?
-
-| Opción | Descripción |
-|--------|-------------|
-| A | Mapa de ubicación con tiles pequeños (10m/tile) |
-| B | Sub-tiles (1 tile mundial = 100 sub-tiles) |
-| C | Instancias separadas sin tiles |
-| D | Sin mapa visual, solo menús/diálogos |
 
 ---
 
@@ -327,6 +362,7 @@ def generar_spawn_aleatorio(ubicaciones: list) -> Ubicacion:
 backend/src/systems/
 ├── mapa.py                # Sistema principal de mapa
 ├── chunks.py              # Gestión de chunks
+├── sub_tiles.py           # Sistema de sub-tiles
 ├── generacion_mundo.py    # Generación procedural
 ├── biomas.py              # Definición de biomas
 ├── ubicaciones.py         # Gestión de ubicaciones
@@ -352,7 +388,7 @@ frontend/src/components/
 
 | Sistema | Relación |
 |---------|----------|
-| **Tiempo** | Consume distancias para calcular viajes |
+| **Tiempo** | Consume distancias para calcular viajes (1 tile = 1 hora, 1 sub-tile = 10 min) |
 | Clima | Recibe bioma para clima base |
 | NPCs | Recibe ubicación para spawn |
 | Exploración | Consume tiles y visibilidad |
@@ -362,8 +398,7 @@ frontend/src/components/
 
 ## Próximos Pasos
 
-1. ✅ Primera iteración completada
-2. ⏳ Segunda iteración (pregunta 8)
-3. 🔜 Implementación en `experiments/mapa/`
-4. 🔜 Tests de validación
-5. 🔜 Integración al backend principal
+1. ✅ Documento completado
+2. 🔜 Implementación en `experiments/mapa/`
+3. 🔜 Tests de validación
+4. 🔜 Integración al backend principal
