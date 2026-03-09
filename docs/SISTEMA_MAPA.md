@@ -396,9 +396,142 @@ frontend/src/components/
 
 ---
 
+---
+
+## 11. Sistema de Mapa Progresivo (Cartografía)
+
+El mapa no está disponible desde el inicio. El jugador debe obtenerlo y mejorarlo.
+
+### Fases del Mapa
+
+| Fase | Cómo obtener | Funcionalidad |
+|------|--------------|---------------|
+| **Sin Mapa** | Inicio del juego | Solo descripciones textuales |
+| **Mapa Básico** | Comprar (100 oro) o encontrar | Muestra tiles explorados como símbolos |
+| **Mapa Detallado** | Cartógrafo (500 oro) | Muestra biomas, rutas, nombres |
+| **Mapa Maestro** | Quest especial | Muestra POIs, enemigos, recursos |
+
+### Interfaz del Mapa
+
+#### Sin Mapa (Fase 1)
+
+El jugador solo ve descripciones direccionales:
+
+```
+┌─────────────────────────────────────────┐
+│  📍 Bosque Ancestral                    │
+│                                         │
+│  "El claro está bañado por luz tenue.  │
+│   Un roble centenario te observa."     │
+│                                         │
+│  🚶 DESTINOS:                          │
+│  ↑ Norte → Monte Gris (3 días)         │
+│  → Este → Río Plateado (1 día)         │
+│  ↓ Sur → Ciudad de Plata (2 días)     │
+│  ← Oeste → Bosque Profundo [???]       │
+│                                         │
+│  [EXPLORAR] [ACAMPAR] [INVENTARIO]     │
+└─────────────────────────────────────────┘
+```
+
+#### Con Mapa (Fase 2+)
+
+El jugador puede abrir un panel de mapa visual:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    MAPA DEL REINO                       │
+├─────────────────────────────────────────────────────────┤
+│  ╔═══════════════════════════════════════════════════╗ │
+│  ║  ???  ???  🏔️   ???  ???  ???  ???  ???  ???  ??? ║ │
+│  ║  ???  ???  ???  ???  ???  ???  ???  ???  ???  ??? ║ │
+│  ║  🌲  🌲  🌲  🌲  🌲  🌲  ???  ???  ???  ???  ???  ??? ║ │
+│  ║  🌲  🏘️  🛤️  🌲  ???  ???  ???  ???  ???  ???  ??? ║ │
+│  ║  🌲  🌲  🌲  🏛️  🌲  ???  ???  ???  ???  ???  ??? ║ │
+│  ║  🌊  🌲  🌲  🌲  🌲  ???  ???  ???  ???  ???  ??? ║ │
+│  ║  ???  ???  ???  ???  ???  ???  ???  ???  ???  ??? ║ │
+│  ╚═══════════════════════════════════════════════════╝ │
+│                                                         │
+│  📍 Estás aquí: Bosque Ancestral (12, 45)              │
+│  🗺️ Explorado: 23% | 📋 Ubicaciones: 3/50              │
+│                                                         │
+│  [Zoom +] [Zoom -] [Leyenda] [Cerrar]                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Leyenda de Símbolos
+
+| Símbolo | Significado | Se revela con |
+|---------|-------------|---------------|
+| `???` | No explorado | - |
+| `🌲` | Bosque | Explorar tile |
+| `🏔️` | Montaña | Explorar tile |
+| `🏜️` | Desierto | Explorar tile |
+| `🌊` | Agua/Costa | Explorar tile |
+| `🏘️` | Pueblo | Explorar tile o Mapa Detallado |
+| `🏛️` | Ruinas/POI | Explorar tile o Mapa Maestro |
+| `🛤️` | Camino/Ruta | Mapa Detallado |
+| `⚠️` | Peligro | Mapa Maestro |
+| `💎` | Recurso | Mapa Maestro |
+
+### Skill de Cartografía
+
+```python
+class SkillCartografia:
+    nivel: int              # 1-5
+    experiencia: int        # Acumulada al explorar
+    
+    beneficios = {
+        1: "Mapa básico disponible",
+        2: "Revela biomas de tiles adyacentes",
+        3: "Revela POIs cercanos",
+        4: "Marca enemigos en el mapa",
+        5: "Revela rutas ocultas"
+    }
+    
+    def ganar_experiencia(self, tiles_explorados: int):
+        # Gana XP por explorar tiles nuevos
+        self.experiencia += tiles_explorados * 10
+        self._subir_nivel()
+```
+
+### Items de Cartografía
+
+| Item | Efecto | Cómo obtener |
+|------|--------|--------------|
+| **Mapa Básico** | Desbloquea panel de mapa | Comprar (100 oro) |
+| **Mapa Detallado** | Muestra biomas y rutas | Cartógrafo (500 oro) |
+| **Mapa Maestro** | Muestra todo | Quest especial |
+| **Brújula Mágica** | Dirección a ubicaciones conocidas | Encontrar/Comprar |
+| **Telescopio** | Revela tiles adyacentes | Encontrar/Comprar |
+| **Kit de Cartógrafo** | +50% XP cartografía | Comprar |
+
+### Integración con Exploración
+
+El mapa se revela automáticamente al explorar:
+
+```python
+def explorar_tile(jugador, x, y):
+    # Revelar tile en el mapa
+    if jugador.tiene_mapa:
+        jugador.mapa.revelar_tile(x, y)
+        
+        # Si tiene skill de cartografía
+        if jugador.skill_cartografia >= 2:
+            # Revelar tiles adyacentes (solo bioma)
+            for dx, dy in [(-1,0), (1,0), (0,-1), (0,1)]:
+                jugador.mapa.revelar_bioma(x+dx, y+dy)
+        
+        # Ganar experiencia de cartografía
+        jugador.skill_cartografia.ganar_experiencia(1)
+```
+
+---
+
 ## Próximos Pasos
 
 1. ✅ Documento completado
-2. 🔜 Implementación en `experiments/mapa/`
-3. 🔜 Tests de validación
-4. 🔜 Integración al backend principal
+2. ✅ Sistema de mapa progresivo añadido
+3. 🔜 Implementación en `experiments/mapa/`
+4. 🔜 Tests de validación
+5. 🔜 Integración al backend principal
