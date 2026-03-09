@@ -14,7 +14,6 @@ import {
   ExplorarPanel,
   InventarioPanel,
   CombatePanel,
-  MapaPanel,
   type Tab,
 } from "@/components/juego";
 
@@ -113,16 +112,6 @@ export default function JuegoPage() {
                     transition={{ duration: 0.3 }}
                   >
                     <InventarioPanel datos={datos} />
-                  </motion.div>
-                ) : tabActiva === "mapa" ? (
-                  <motion.div
-                    key="panel-mapa"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <MapaPanel slot={slotActual || 1} />
                   </motion.div>
                 ) : tabActiva === "combate" ? (
                   <motion.div

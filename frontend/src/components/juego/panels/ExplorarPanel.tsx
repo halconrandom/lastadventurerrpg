@@ -5,12 +5,10 @@ import { Map, ScrollText, Cloud, Sun, Moon, Sunrise, Sunset, Sparkles, AlertTria
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useExploracion } from "@/hooks/useExploracion";
+import { useExploracion } from "@/lib/ExploracionContext";
+import { useGame } from "@/lib/GameContext";
 import { useState, useEffect } from "react";
-
-interface ExplorarPanelProps {
-  slot: number;
-}
+import { Minimapa } from "./Minimapa";
 
 type FaseKey = "madrugada" | "amanecer" | "dia" | "atardecer" | "anochecer" | "noche";
 
@@ -32,7 +30,7 @@ const FASE_COLORS: Record<FaseKey, string> = {
   noche: "text-blue-300",
 };
 
-export function ExplorarPanel({ slot }: ExplorarPanelProps) {
+export function ExplorarPanel() {
   const {
     zona,
     clima,
@@ -42,12 +40,15 @@ export function ExplorarPanel({ slot }: ExplorarPanelProps) {
     resultadoEvento,
     loading,
     log,
+    inicializado,
     iniciarExploracion,
     explorar,
     obtenerEvento,
     resolverEvento,
     clearEvento,
-  } = useExploracion(slot);
+  } = useExploracion();
+
+  const { slotActual } = useGame();
 
   const [showEventoModal, setShowEventoModal] = useState(false);
 
@@ -58,11 +59,11 @@ export function ExplorarPanel({ slot }: ExplorarPanelProps) {
   }, [evento]);
 
   useEffect(() => {
-    // Iniciar exploracion al montar
-    if (!zona) {
+    // Iniciar exploracion solo una vez
+    if (!inicializado && !zona) {
       iniciarExploracion(0, 0);
     }
-  }, [zona, iniciarExploracion]);
+  }, [inicializado, zona, iniciarExploracion]);
 
   const handleExplorar = async () => {
     await explorar();
@@ -83,15 +84,17 @@ export function ExplorarPanel({ slot }: ExplorarPanelProps) {
   const faseColor = FASE_COLORS[faseKey] || "text-yellow-400";
 
   return (
-    <motion.div
-      key="explorar"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className="max-w-4xl mx-auto"
-    >
-      <Card className="border-[#d4a843]/10 bg-card/60 backdrop-blur-md relative overflow-hidden group shadow-2xl">
-        <CardContent className="p-10 md:p-14">
+    <div className="flex gap-6 max-w-6xl mx-auto">
+      {/* Panel principal de exploracion - 2/3 del ancho */}
+      <motion.div
+        key="explorar"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="flex-1"
+      >
+        <Card className="border-[#d4a843]/10 bg-card/60 backdrop-blur-md relative overflow-hidden group shadow-2xl">
+          <CardContent className="p-10 md:p-12">
           {/* Decorative background */}
           <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
             <Map className="w-64 h-64" />
@@ -163,7 +166,7 @@ export function ExplorarPanel({ slot }: ExplorarPanelProps) {
                       key={i}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
+                      transition={{ delay: i * 0.02 }}
                       className="text-[#9a978a] text-sm"
                     >
                       {mensaje}
@@ -239,6 +242,16 @@ export function ExplorarPanel({ slot }: ExplorarPanelProps) {
           </div>
         </CardContent>
       </Card>
+    </motion.div>
+
+      {/* Panel lateral - Minimapa */}
+      <div className="w-72 flex-shrink-0">
+        <Card className="border-[#d4a843]/10 bg-card/60 backdrop-blur-md sticky top-4">
+          <CardContent className="p-4">
+            <Minimapa slot={slotActual || 1} />
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Modal de Evento */}
       <AnimatePresence>
@@ -358,6 +371,6 @@ export function ExplorarPanel({ slot }: ExplorarPanelProps) {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

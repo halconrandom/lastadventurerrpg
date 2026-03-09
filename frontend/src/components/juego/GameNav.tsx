@@ -1,11 +1,11 @@
 "use client";
 
-import { Map, Package, Swords, Compass } from "lucide-react";
+import { Map, Package, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 
-export type Tab = "inventario" | "explorar" | "combate" | "mapa";
+export type Tab = "inventario" | "explorar" | "combate";
 
 interface TabItem {
   id: Tab;
@@ -15,7 +15,6 @@ interface TabItem {
 
 const tabs: TabItem[] = [
   { id: "explorar", nombre: "Explorar", icono: <Map className="w-5 h-5" /> },
-  { id: "mapa", nombre: "Mapa", icono: <Compass className="w-5 h-5" /> },
   { id: "inventario", nombre: "Inventario", icono: <Package className="w-5 h-5" /> },
   { id: "combate", nombre: "Combate", icono: <Swords className="w-5 h-5" /> },
 ];
