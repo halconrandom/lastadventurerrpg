@@ -106,8 +106,91 @@ Tiles descubiertos: 5
 - `37d7034` - SISTEMA_MAPA.md finalizado con sub-tiles
 
 ### Próximos Pasos
-1. Implementar sistema de mapa en `experiments/mapa/`
+1. ~~Implementar sistema de mapa en `experiments/mapa/`~~ ✅ Completado
 2. Implementar sistema de tiempo en `experiments/tiempo/`
 3. Documentar sistema de NPCs
 4. Documentar sistema de Relaciones
 5. Documentar sistema de LLM
+
+---
+
+## Sesión: Implementación del Sistema de Mapa
+
+### Resumen
+Implementación completa del sistema de mapa global en `experiments/mapa/` siguiendo la documentación de `SISTEMA_MAPA.md`.
+
+### Archivos Creados
+
+| Archivo | Descripción |
+|---------|-------------|
+| `experiments/mapa/__init__.py` | Exports del módulo |
+| `experiments/mapa/tile.py` | Sistema de tiles (1 km²) y sub-tiles (100m) |
+| `experiments/mapa/chunk.py` | Gestión de chunks (3x3 tiles) con carga/descarga |
+| `experiments/mapa/ubicacion.py` | Ubicaciones: pueblos, ciudades, capitales, mazmorras, POIs |
+| `experiments/mapa/ruta.py` | Rutas entre ubicaciones con A* pathfinding |
+| `experiments/mapa/mapa.py` | Clase principal `MapaMundo` que integra todo |
+| `experiments/mapa/cartografia.py` | Habilidad de cartografía y mapas como items |
+| `experiments/mapa/demo.py` | Demo interactivo para probar el sistema |
+| `experiments/mapa/tests/test_mapa.py` | Tests completos (7/7 pasados) |
+
+### Características Implementadas
+
+**Sistema de Tiles:**
+- Tiles de 1 km² con biomas y tipos de terreno
+- Estados de visibilidad: no_descubierto, descubierto, explorado, actual
+- Costos de movimiento por terreno (carretera: 0.8x, montaña: 2.5x)
+- Sub-tiles 10x10 para ubicaciones (100m cada uno)
+
+**Sistema de Chunks:**
+- Chunks de 3x3 tiles (9 km²)
+- Carga dinámica de chunks cercanos al jugador (radio 30)
+- Descarga de chunks lejanos para optimizar memoria
+
+**Sistema de Ubicaciones:**
+- 5 tipos: pueblo, ciudad, capital, mazmorra, poi
+- Generación procedural de nombres únicos
+- Tamaños variables según tipo (pueblo: 5x5, capital: 10x10)
+- Servicios y NPCs configurables
+
+**Sistema de Rutas:**
+- 6 tipos: camino, sendero, carretera, río, marítima, secreta
+- Cálculo de tiempo de viaje basado en distancia y terreno
+- Dificultad variable (1-10) para eventos de viaje
+
+**Sistema de Cartografía:**
+- 8 niveles de habilidad (Novato → Legendario)
+- Mapas como items con tipos y calidades
+- Experiencia por explorar y descubrir
+- Revelado progresivo del mapa
+
+### Tests Ejecutados
+```
+Total: 7/7 tests pasados
+- Tiles: ✅
+- Chunks: ✅
+- Ubicaciones: ✅
+- Rutas: ✅
+- Mapa Mundial: ✅
+- Cartografía: ✅
+- Integración: ✅
+```
+
+### Demo Interactivo
+```bash
+python experiments/mapa/demo.py
+```
+Comandos: WASD (mover), E (explorar), M (mapa), U (ubicaciones), I (inventario), C (crear mapa), V (usar mapa), T (teleportar)
+
+### Integración Pendiente
+El sistema usa `MockSeed` para tests. Para integrar con el backend:
+```python
+from backend.src.systems.seed import WorldSeed
+from experiments.mapa import MapaMundo
+
+seed = WorldSeed(semilla=12345)
+mapa = MapaMundo(seed=seed)
+mapa.generar_mundo_inicial()
+```
+
+### Commit
+- `6e0200f` - feat: Implementar sistema de mapa global en experiments/mapa/
