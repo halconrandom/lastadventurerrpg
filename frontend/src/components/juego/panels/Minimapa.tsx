@@ -2,15 +2,16 @@
 
 import { motion } from "framer-motion";
 import { Map, Compass, MapPin, Navigation, Eye, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Globe, Layers } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState, useEffect, useCallback } from "react";
 import {
   getEstadoMapa,
   getMapaVisual,
+  getMapaLocalVisual,
   getUbicacionesCercanas,
   moverJugador,
+  moverJugadorLocal,
   viajarAUbicacion,
 } from "@/lib/api";
 import type { EstadoMapa, MapaVisual, DestinoCercano, Ubicacion } from "@/lib/types";
@@ -22,18 +23,6 @@ const UBICACION_ICONS: Record<string, string> = {
   capital: "👑",
   mazmorra: "⚔️",
   poi: "✨",
-};
-
-// Iconos para biomas (modo local)
-const BIOMA_ICONS: Record<string, string> = {
-  bosque: "🌲",
-  desierto: "🏜️",
-  montaña: "⛰️",
-  pradera: "🌿",
-  pantano: "🍄",
-  nieve: "❄️",
-  oceano: "🌊",
-  ciudad: "🏠",
 };
 
 type MapMode = "mundial" | "local";
@@ -50,31 +39,42 @@ export function Minimapa({ slot }: MinimapaProps) {
   const [selectedUbicacion, setSelectedUbicacion] = useState<Ubicacion | null>(null);
   const [mapMode, setMapMode] = useState<MapMode>("mundial");
 
-  // Cargar datos del mapa
+  // Cargar datos del mapa según el modo
   const cargarMapa = useCallback(async () => {
     if (!slot) return;
     
     try {
-      const [estadoData, visualData, ubicacionesData] = await Promise.all([
+      const [estadoData, ubicacionesData] = await Promise.all([
         getEstadoMapa(slot),
-        getMapaVisual(slot, 6),
         getUbicacionesCercanas(slot, 20),
       ]);
       
       setEstado(estadoData);
-      setVisual(visualData);
       setUbicaciones(ubicacionesData.ubicaciones);
+      
+      if (mapMode === "mundial") {
+        const visualData = await getMapaVisual(slot, 6);
+        setVisual(visualData);
+      } else {
+        const visualData = await getMapaLocalVisual(slot, 6);
+        setVisual(visualData);
+      }
     } catch (err) {
       console.error("Error cargando mapa:", err);
     }
-  }, [slot]);
+  }, [slot, mapMode]);
 
   useEffect(() => {
     cargarMapa();
   }, [cargarMapa]);
 
-  // Mover a una posicion
-  const handleMover = async (x: number, y: number) => {
+  // Cambiar modo de mapa
+  const handleToggleMode = (mode: MapMode) => {
+    setMapMode(mode);
+  };
+
+  // Mover en mapa MUNDIAL
+  const handleMoverMundial = async (x: number, y: number) => {
     if (!slot || loading) return;
     
     setLoading(true);
@@ -88,22 +88,74 @@ export function Minimapa({ slot }: MinimapaProps) {
     }
   };
 
-  // Mover direccionalmente
+  // Mover en mapa LOCAL
+  const handleMoverLocal = async (x: number, y: number) => {
+    if (!slot || loading) return;
+    
+    setLoading(true);
+    try {
+      await moverJugadorLocal(slot, x, y);
+      await cargarMapa();
+    } catch (err) {
+      console.error("Error al mover local:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Mover direccionalmente según el modo
   const handleMoverDireccion = async (direccion: "N" | "S" | "E" | "W") => {
     if (!estado || loading) return;
     
-    const [x, y] = estado.posicion_jugador;
-    let newX = x;
-    let newY = y;
-    
-    switch (direccion) {
-      case "N": newY = y - 1; break;
-      case "S": newY = y + 1; break;
-      case "E": newX = x + 1; break;
-      case "W": newX = x - 1; break;
+    if (mapMode === "mundial") {
+      const [x, y] = estado.posicion_jugador;
+      let newX = x;
+      let newY = y;
+      
+      switch (direccion) {
+        case "N": newY = y - 1; break;
+        case "S": newY = y + 1; break;
+        case "E": newX = x + 1; break;
+        case "W": newX = x - 1; break;
+      }
+      
+      await handleMoverMundial(newX, newY);
+    } else {
+      const [x, y] = estado.posicion_local || [5, 5];
+      let newX = x;
+      let newY = y;
+      
+      switch (direccion) {
+        case "N": newY = y - 1; break;
+        case "S": newY = y + 1; break;
+        case "E": newX = x + 1; break;
+        case "W": newX = x - 1; break;
+      }
+      
+      if (newX < 0 || newX > 9 || newY < 0 || newY > 9) {
+        return;
+      }
+      
+      await handleMoverLocal(newX, newY);
     }
+  };
+
+  // Click en celda
+  const handleCeldaClick = (dx: number, dy: number) => {
+    if (loading) return;
     
-    await handleMover(newX, newY);
+    if (mapMode === "mundial") {
+      const [x, y] = estado?.posicion_jugador || [0, 0];
+      handleMoverMundial(x + dx, y + dy);
+    } else {
+      const [x, y] = estado?.posicion_local || [5, 5];
+      const newX = x + dx;
+      const newY = y + dy;
+      
+      if (newX >= 0 && newX <= 9 && newY >= 0 && newY <= 9) {
+        handleMoverLocal(newX, newY);
+      }
+    }
   };
 
   // Viajar a ubicacion
@@ -128,16 +180,19 @@ export function Minimapa({ slot }: MinimapaProps) {
       const isJugador = celda === "📍";
       const isDescubierto = celda === "·";
       const isNoDescubierto = celda === "?";
+      const isFuera = celda === "⬛";
       const isUbicacion = Object.values(UBICACION_ICONS).includes(celda);
+      
+      const radio = 6;
+      const dx = x - radio;
+      const dy = y - radio;
       
       return (
         <div
           key={`${x}-${y}`}
           onClick={() => {
-            if (!isJugador && !isNoDescubierto && !loading) {
-              const posX = (visual?.posicion[0] || 0) - 6 + x;
-              const posY = (visual?.posicion[1] || 0) - 6 + y;
-              handleMover(posX, posY);
+            if (!isJugador && !isNoDescubierto && !isFuera && !loading) {
+              handleCeldaClick(dx, dy);
             }
           }}
           className={cn(
@@ -145,8 +200,9 @@ export function Minimapa({ slot }: MinimapaProps) {
             isJugador && "bg-[#d4a843]/30 border border-[#d4a843] animate-pulse",
             isDescubierto && "bg-[#1a1a24] hover:bg-[#2a2a35]",
             isNoDescubierto && "bg-[#0a0a0f] text-[#1a1a24] cursor-not-allowed",
+            isFuera && "bg-[#0a0a0f] cursor-not-allowed opacity-50",
             isUbicacion && "bg-[#1a1a24] hover:bg-[#2a2a35] hover:scale-110",
-            !isJugador && !isNoDescubierto && "hover:ring-1 hover:ring-[#d4a843]/30"
+            !isJugador && !isNoDescubierto && !isFuera && "hover:ring-1 hover:ring-[#d4a843]/30"
           )}
         >
           {celda}
@@ -164,10 +220,9 @@ export function Minimapa({ slot }: MinimapaProps) {
           <span className="font-medieval text-lg text-[#d4a843]">Mapa</span>
         </div>
         
-        {/* Toggle Local/Mundial */}
         <div className="flex bg-[#0a0a0f] rounded-lg p-0.5 border border-[#2a2a35]">
           <button
-            onClick={() => setMapMode("mundial")}
+            onClick={() => handleToggleMode("mundial")}
             className={cn(
               "flex items-center gap-1 px-2 py-1 rounded text-xs transition-all",
               mapMode === "mundial"
@@ -179,7 +234,7 @@ export function Minimapa({ slot }: MinimapaProps) {
             Mundial
           </button>
           <button
-            onClick={() => setMapMode("local")}
+            onClick={() => handleToggleMode("local")}
             className={cn(
               "flex items-center gap-1 px-2 py-1 rounded text-xs transition-all",
               mapMode === "local"
@@ -259,73 +314,88 @@ export function Minimapa({ slot }: MinimapaProps) {
         <div className="p-3 rounded-lg bg-[#0a0a0f]/40 border border-[#2a2a35]">
           <div className="flex items-center gap-2 text-sm">
             <Compass className="w-4 h-4 text-[#d4a843]" />
-            <span className="text-[#e8e4d9]">
-              ({estado.posicion_jugador[0]}, {estado.posicion_jugador[1]})
-            </span>
+            {mapMode === "mundial" ? (
+              <span className="text-[#e8e4d9]">
+                ({estado.posicion_jugador[0]}, {estado.posicion_jugador[1]}) km
+              </span>
+            ) : (
+              <span className="text-[#e8e4d9]">
+                ({estado.posicion_local?.[0] || 5}, {estado.posicion_local?.[1] || 5}) x 10m
+              </span>
+            )}
             {estado.ubicacion_actual && (
               <span className="text-[#9a978a] text-xs">
                 - {estado.ubicacion_actual}
               </span>
             )}
           </div>
-          {estado && (
-            <div className="flex items-center gap-2 text-xs text-[#9a978a] mt-1">
+          <div className="flex items-center gap-2 text-xs text-[#9a978a] mt-1">
+            {mapMode === "mundial" ? (
+              <>
+                <span className="flex items-center gap-1">
+                  <Eye className="w-3 h-3" />
+                  {estado.tiles_explorados} tiles
+                </span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  {estado.ubicaciones_descubiertas}/{estado.total_ubicaciones}
+                </span>
+              </>
+            ) : (
               <span className="flex items-center gap-1">
                 <Eye className="w-3 h-3" />
-                {estado.tiles_explorados} tiles
+                {estado.sub_tiles_descubiertos || 0}/100 sub-tiles
               </span>
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                {estado.ubicaciones_descubiertas}/{estado.total_ubicaciones}
-              </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
-      {/* Ubicaciones cercanas */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-sm text-[#9a978a]">
-          <Navigation className="w-4 h-4" />
-          <span>Cercanos</span>
-        </div>
-        
-        <div className="space-y-1 max-h-32 overflow-y-auto custom-scrollbar">
-          {ubicaciones.length === 0 ? (
-            <p className="text-xs text-[#9a978a]/60 text-center py-2">
-              Sin ubicaciones cercanas
-            </p>
-          ) : (
-            ubicaciones.slice(0, 5).map((destino) => (
-              <div
-                key={destino.ubicacion.id}
-                onClick={() => destino.descubierta && setSelectedUbicacion(destino.ubicacion)}
-                className={cn(
-                  "flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all text-sm",
-                  destino.descubierta
-                    ? "bg-[#1a1a24] hover:bg-[#2a2a35]"
-                    : "bg-[#0a0a0f] opacity-50"
-                )}
-              >
-                <span className="text-base">
-                  {UBICACION_ICONS[destino.ubicacion.tipo] || "❓"}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className={cn(
-                    "truncate",
-                    destino.descubierta ? "text-[#e8e4d9]" : "text-[#9a978a]"
-                  )}>
-                    {destino.descubierta ? destino.ubicacion.nombre : "???"}
-                  </p>
-                  <p className="text-xs text-[#9a978a]">
-                    {destino.distancia} km
-                  </p>
+      {/* Ubicaciones cercanas - solo en modo mundial */}
+      {mapMode === "mundial" && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm text-[#9a978a]">
+            <Navigation className="w-4 h-4" />
+            <span>Cercanos</span>
+          </div>
+          
+          <div className="space-y-1 max-h-32 overflow-y-auto custom-scrollbar">
+            {ubicaciones.length === 0 ? (
+              <p className="text-xs text-[#9a978a]/60 text-center py-2">
+                Sin ubicaciones cercanas
+              </p>
+            ) : (
+              ubicaciones.slice(0, 5).map((destino) => (
+                <div
+                  key={destino.ubicacion.id}
+                  onClick={() => destino.descubierta && setSelectedUbicacion(destino.ubicacion)}
+                  className={cn(
+                    "flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all text-sm",
+                    destino.descubierta
+                      ? "bg-[#1a1a24] hover:bg-[#2a2a35]"
+                      : "bg-[#0a0a0f] opacity-50"
+                  )}
+                >
+                  <span className="text-base">
+                    {UBICACION_ICONS[destino.ubicacion.tipo] || "❓"}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn(
+                      "truncate",
+                      destino.descubierta ? "text-[#e8e4d9]" : "text-[#9a978a]"
+                    )}>
+                      {destino.descubierta ? destino.ubicacion.nombre : "???"}
+                    </p>
+                    <p className="text-xs text-[#9a978a]">
+                      {destino.distancia} km
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Leyenda de iconos */}
       <div className="space-y-2 pt-2 border-t border-[#2a2a35]">
@@ -343,26 +413,26 @@ export function Minimapa({ slot }: MinimapaProps) {
             <span className="text-sm">?</span>
             <span className="text-[#9a978a]">Sin explorar</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm">🏘️</span>
-            <span className="text-[#9a978a]">Pueblo</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm">🏰</span>
-            <span className="text-[#9a978a]">Ciudad</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm">👑</span>
-            <span className="text-[#9a978a]">Capital</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm">⚔️</span>
-            <span className="text-[#9a978a]">Mazmorra</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm">✨</span>
-            <span className="text-[#9a978a]">Punto de interés</span>
-          </div>
+          {mapMode === "mundial" && (
+            <>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm">🏘️</span>
+                <span className="text-[#9a978a]">Pueblo</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm">🏰</span>
+                <span className="text-[#9a978a]">Ciudad</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm">⚔️</span>
+                <span className="text-[#9a978a]">Mazmorra</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm">✨</span>
+                <span className="text-[#9a978a]">Punto de interés</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -397,7 +467,7 @@ export function Minimapa({ slot }: MinimapaProps) {
             <div className="space-y-2 mb-4 text-xs text-[#9a978a]">
               <p><span className="text-[#e8e4d9]">Bioma:</span> {selectedUbicacion.bioma}</p>
               <p><span className="text-[#e8e4d9]">Segura:</span> {selectedUbicacion.segura ? "Si" : "No"}</p>
-              {selectedUbicacion.servicios.length > 0 && (
+              {selectedUbicacion.servicios && selectedUbicacion.servicios.length > 0 && (
                 <p><span className="text-[#e8e4d9]">Servicios:</span> {selectedUbicacion.servicios.join(", ")}</p>
               )}
             </div>

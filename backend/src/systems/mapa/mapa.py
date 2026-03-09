@@ -37,8 +37,12 @@ class MapaMundo:
     ruta_gen: RutaGenerator = None
     
     # Estado
-    posicion_jugador: Tuple[int, int] = (0, 0)
+    posicion_jugador: Tuple[int, int] = (0, 0)  # Posición MUNDAL (tiles de 1km)
+    posicion_local: Tuple[int, int] = (5, 5)   # Posición LOCAL dentro del tile actual (subtiles de 10m, 0-9)
     ubicacion_actual: Optional[str] = None  # ID de ubicación actual
+    
+    # Modo de mapa actual
+    modo_mapa: str = "mundial"  # "mundial" o "local"
     
     def __post_init__(self):
         """Inicializa los generadores."""
@@ -188,17 +192,23 @@ class MapaMundo:
     
     def mover_jugador(self, x: int, y: int) -> Dict:
         """
-        Mueve al jugador a una nueva posición.
+        Mueve al jugador a una nueva posición MUNDIAL.
+        
+        IMPORTANTE: Este movimiento es en el mapa mundial (tiles de 1km).
+        NO afecta los sub-tiles locales.
         
         Args:
-            x: Nueva coordenada X
-            y: Nueva coordenada Y
+            x: Nueva coordenada X (tiles)
+            y: Nueva coordenada Y (tiles)
         
         Returns:
             Diccionario con información del movimiento
         """
         posicion_anterior = self.posicion_jugador
         self.posicion_jugador = (x, y)
+        
+        # Resetear posición local al cambiar de tile mundial
+        self.posicion_local = (5, 5)
         
         # Actualizar chunks
         chunks_a_cargar = self.gestor_chunks.actualizar_posicion_jugador(x, y)
@@ -207,7 +217,7 @@ class MapaMundo:
         for chunk_x, chunk_y in chunks_a_cargar:
             self.generar_chunk(chunk_x, chunk_y)
         
-        # Descubrir tile
+        # Descubrir tile MUNDIAL
         tile = self.gestor_chunks.get_tile(x, y)
         if tile:
             tile.descubrir()
@@ -231,6 +241,55 @@ class MapaMundo:
             "tiempo_horas": tiempo_horas,
             "tile": tile.to_dict() if tile else None,
             "chunks_cargados": len(chunks_a_cargar)
+        }
+    
+    def mover_jugador_local(self, x: int, y: int) -> Dict:
+        """
+        Mueve al jugador dentro del tile actual (sub-tiles de 10m).
+        
+        IMPORTANTE: Este movimiento es LOCAL dentro del tile mundial.
+        NO descubre tiles mundiales adyacentes.
+        
+        Args:
+            x: Coordenada X local (0-9)
+            y: Coordenada Y local (0-9)
+        
+        Returns:
+            Diccionario con información del movimiento
+        """
+        if not (0 <= x <= 9 and 0 <= y <= 9):
+            return {"error": "Coordenadas locales inválidas (deben ser 0-9)"}
+        
+        posicion_anterior = self.posicion_local
+        self.posicion_local = (x, y)
+        
+        # Obtener tile actual y generar sub-tiles si es necesario
+        tile = self.gestor_chunks.get_tile(*self.posicion_jugador)
+        if not tile:
+            return {"error": "Tile no encontrado"}
+        
+        # Generar sub-tiles lazy
+        if not tile.sub_tiles_generados:
+            tile.generar_sub_tiles()
+        
+        # Descubrir sub-tile LOCAL
+        sub_tile = tile.get_sub_tile(x, y)
+        if sub_tile:
+            sub_tile.explorar()
+        
+        # Calcular tiempo de viaje (1 minuto por sub-tile)
+        dx = abs(x - posicion_anterior[0])
+        dy = abs(y - posicion_anterior[1])
+        distancia = dx + dy
+        tiempo_minutos = distancia  # 1 minuto por sub-tile
+        
+        return {
+            "posicion_anterior": posicion_anterior,
+            "posicion_nueva": (x, y),
+            "distancia": distancia,
+            "tiempo_minutos": tiempo_minutos,
+            "sub_tile": sub_tile.to_dict() if sub_tile else None,
+            "tile_mundial": tile.to_dict()
         }
     
     def mover_a_ubicacion(self, ubicacion_id: str) -> Dict:
@@ -367,10 +426,22 @@ class MapaMundo:
         ubicaciones_descubiertas = sum(1 for u in self.ubicaciones.values() if u.descubierta)
         ubicaciones_visitadas = sum(1 for u in self.ubicaciones.values() if u.visitada)
         
+        # Contar sub-tiles descubiertos en el tile actual
+        sub_tiles_descubiertos = 0
+        tile_actual = self.gestor_chunks.get_tile(*self.posicion_jugador)
+        if tile_actual and tile_actual.sub_tiles_generados:
+            for fila in tile_actual.sub_tiles:
+                for sub_tile in fila:
+                    if sub_tile.descubierto:
+                        sub_tiles_descubiertos += 1
+        
         return {
             "posicion_jugador": list(self.posicion_jugador),
+            "posicion_local": list(self.posicion_local),
             "ubicacion_actual": self.ubicacion_actual,
+            "modo_mapa": self.modo_mapa,
             "tiles_explorados": tiles_explorados,
+            "sub_tiles_descubiertos": sub_tiles_descubiertos,
             "ubicaciones_descubiertas": ubicaciones_descubiertas,
             "ubicaciones_visitadas": ubicaciones_visitadas,
             "total_ubicaciones": len(self.ubicaciones),
@@ -379,7 +450,7 @@ class MapaMundo:
     
     def get_mapa_visual(self, radio: int = 10) -> List[List[str]]:
         """
-        Obtiene una representación visual del mapa.
+        Obtiene una representación visual del mapa MUNDIAL.
         
         Args:
             radio: Radio de tiles a mostrar
@@ -446,6 +517,87 @@ class MapaMundo:
         
         return mapa
     
+    def get_mapa_local_visual(self, radio: int = 6) -> List[List[str]]:
+        """
+        Obtiene una representación visual del mapa LOCAL (sub-tiles).
+        
+        Args:
+            radio: Radio de sub-tiles a mostrar (default 6 = 13x13 grid)
+        
+        Returns:
+            Matriz de caracteres representando el mapa local
+        """
+        tile = self.gestor_chunks.get_tile(*self.posicion_jugador)
+        if not tile:
+            return [["?" for _ in range(radio * 2 + 1)] for _ in range(radio * 2 + 1)]
+        
+        # Generar sub-tiles si no existen
+        if not tile.sub_tiles_generados:
+            tile.generar_sub_tiles()
+        
+        x_local, y_local = self.posicion_local
+        mapa = []
+        
+        # Símbolos por tipo de sub-tile
+        simbolos_subtile = {
+            "bosque_denso": "🌲",
+            "claro": "🌿",
+            "arbol_grande": "🌳",
+            "arbustos": "🪴",
+            "tierra_yerma": "🟫",
+            "roca": "🪨",
+            "hierba_seca": "🌾",
+            "ruinas": "🏛️",
+            "cienaga": "🌫️",
+            "tierra_firme": "🟫",
+            "niebla": "🌫️",
+            "agua_estancada": "💧",
+            "nieve": "❄️",
+            "cueva": "🕳️",
+            "pico": "🏔️",
+            "arena": "🏜️",
+            "duna": "🏜️",
+            "oasis": "🌴",
+            "hierba": "🌿",
+            "flores": "🌸",
+            "arbol": "🌳",
+            "rio": "🌊",
+            "playa": "🏖️",
+            "acantilado": "🪨",
+            "agua": "🌊",
+            "terreno": "·",
+            "vacio": "·",
+        }
+        
+        for dy in range(-radio, radio + 1):
+            fila = []
+            for dx in range(-radio, radio + 1):
+                sub_x, sub_y = x_local + dx, y_local + dy
+                
+                # Posición del jugador
+                if dx == 0 and dy == 0:
+                    fila.append("📍")
+                    continue
+                
+                # Fuera del tile
+                if not (0 <= sub_x <= 9 and 0 <= sub_y <= 9):
+                    fila.append("⬛")
+                    continue
+                
+                sub_tile = tile.get_sub_tile(sub_x, sub_y)
+                if sub_tile:
+                    if sub_tile.descubierto:
+                        simbolo = simbolos_subtile.get(sub_tile.tipo, "·")
+                        fila.append(simbolo)
+                    else:
+                        fila.append("?")
+                else:
+                    fila.append("?")
+            
+            mapa.append(fila)
+        
+        return mapa
+    
     # ==================== PERSISTENCIA ====================
     
     def to_dict(self) -> dict:
@@ -455,7 +607,9 @@ class MapaMundo:
             "ubicaciones": {id: u.to_dict() for id, u in self.ubicaciones.items()},
             "rutas": {id: r.to_dict() for id, r in self.rutas.items()},
             "posicion_jugador": list(self.posicion_jugador),
-            "ubicacion_actual": self.ubicacion_actual
+            "posicion_local": list(self.posicion_local),
+            "ubicacion_actual": self.ubicacion_actual,
+            "modo_mapa": self.modo_mapa
         }
     
     @classmethod
@@ -473,7 +627,9 @@ class MapaMundo:
             for id, r in data.get("rutas", {}).items()
         }
         mapa.posicion_jugador = tuple(data.get("posicion_jugador", [0, 0]))
+        mapa.posicion_local = tuple(data.get("posicion_local", [5, 5]))
         mapa.ubicacion_actual = data.get("ubicacion_actual")
+        mapa.modo_mapa = data.get("modo_mapa", "mundial")
         
         return mapa
     

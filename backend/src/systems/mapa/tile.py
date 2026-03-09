@@ -35,16 +35,22 @@ class EstadoVisibilidad(Enum):
 @dataclass
 class SubTile:
     """
-    Sub-tile para ubicaciones (ciudades, pueblos, mazmorras).
+    Sub-tile para exploración local dentro de un tile mundial.
     
-    Cada sub-tile representa 100m x 100m (10,000 m²).
-    Tiempo de viaje: 10 minutos entre sub-tiles adyacentes.
+    Cada sub-tile representa 10m x 10m (100 m²).
+    1 Tile mundial = 10x10 = 100 SubTiles.
+    
+    Tiempo de viaje: 1 minuto entre sub-tiles adyacentes.
+    
+    El descubrimiento de sub-tiles es INDEPENDIENTE del mapa mundial.
     """
     x: int                          # Coordenada X dentro del tile (0-9)
     y: int                          # Coordenada Y dentro del tile (0-9)
     tipo: str = "vacio"             # calle, edificio, plaza, muro, etc.
     contenido: Dict[str, Any] = field(default_factory=dict)
     transitivo: bool = True         # Si se puede caminar sobre él
+    descubierto: bool = False       # Estado de descubrimiento LOCAL
+    veces_explorado: int = 0        # Cuántas veces se ha explorado
     
     def to_dict(self) -> dict:
         return {
@@ -52,16 +58,31 @@ class SubTile:
             "y": self.y,
             "tipo": self.tipo,
             "contenido": self.contenido,
-            "transitivo": self.transitivo
+            "transitivo": self.transitivo,
+            "descubierto": self.descubierto,
+            "veces_explorado": self.veces_explorado
         }
     
     @classmethod
     def from_dict(cls, data: dict) -> 'SubTile':
-        return cls(**data)
+        return cls(
+            x=data["x"],
+            y=data["y"],
+            tipo=data.get("tipo", "vacio"),
+            contenido=data.get("contenido", {}),
+            transitivo=data.get("transitivo", True),
+            descubierto=data.get("descubierto", False),
+            veces_explorado=data.get("veces_explorado", 0)
+        )
     
     def coordenada_global(self, tile_x: int, tile_y: int) -> tuple:
         """Retorna la coordenada global del sub-tile."""
         return (tile_x * 10 + self.x, tile_y * 10 + self.y)
+    
+    def explorar(self) -> None:
+        """Marca el sub-tile como descubierto y aumenta el contador."""
+        self.descubierto = True
+        self.veces_explorado += 1
 
 
 @dataclass
@@ -72,8 +93,13 @@ class Tile:
     Cada tile representa 1 km².
     Tiempo de viaje: 1 hora entre tiles adyacentes.
     
-    Puede contener:
-    - Una ubicación (pueblo, ciudad, mazmorra, POI)
+    IMPORTANTE: El descubrimiento de tiles es INDEPENDIENTE de los sub-tiles.
+    - Descubrir un tile mundial NO descubre sus sub-tiles automáticamente.
+    - Moverse en sub-tiles NO descubre tiles mundiales adyacentes.
+    
+    Contiene:
+    - 10x10 sub-tiles para exploración local (cada uno 10m x 10m)
+    - Posible ubicación (pueblo, ciudad, mazmorra, POI)
     - Recursos naturales
     - Enemigos potenciales
     - Eventos
@@ -90,8 +116,10 @@ class Tile:
     enemigos_potenciales: List[str] = field(default_factory=list)
     eventos: List[str] = field(default_factory=list)
     
-    # Sub-tiles (solo si tiene ubicación)
+    # Sub-tiles SIEMPRE existen (10x10 = 100 subtiles de 10m cada uno)
+    # Se generan lazy cuando el jugador entra al tile por primera vez
     sub_tiles: List[List[SubTile]] = field(default_factory=list)
+    sub_tiles_generados: bool = False           # Flag para saber si ya se generaron
     
     # Conectividad
     rutas: List[str] = field(default_factory=list)  # IDs de rutas que pasan por aquí
@@ -103,34 +131,47 @@ class Tile:
         """Verifica si el tile tiene una ubicación."""
         return self.ubicacion_id is not None
     
-    def generar_sub_tiles(self, tipo_ubicacion: str) -> None:
+    def generar_sub_tiles(self) -> None:
         """
-        Genera la grilla de sub-tiles para una ubicación.
+        Genera la grilla de 10x10 sub-tiles para exploración local.
         
-        Args:
-            tipo_ubicacion: Tipo de ubicación (pueblo, ciudad, capital, etc.)
+        Cada sub-tile representa 10m x 10m.
+        Se genera lazy cuando el jugador entra al tile.
         """
-        # Tamaño según tipo de ubicación
-        tamanos = {
-            "pueblo": (5, 5),
-            "ciudad": (8, 8),
-            "capital": (10, 10),
-            "mazmorra": (10, 10),
-            "poi": (3, 3)
-        }
-        
-        ancho, alto = tamanos.get(tipo_ubicacion, (5, 5))
+        if self.sub_tiles_generados:
+            return
         
         self.sub_tiles = []
-        for y in range(alto):
+        for y in range(10):
             fila = []
-            for x in range(ancho):
-                sub_tile = SubTile(x=x, y=y, tipo="vacio")
+            for x in range(10):
+                sub_tile = SubTile(x=x, y=y, tipo=self._determinar_tipo_subtile(x, y))
                 fila.append(sub_tile)
             self.sub_tiles.append(fila)
+        
+        self.sub_tiles_generados = True
+    
+    def _determinar_tipo_subtile(self, x: int, y: int) -> str:
+        """Determina el tipo de sub-tile basado en el bioma y posición."""
+        # Tipos base por bioma
+        tipos_por_bioma = {
+            "bosque_ancestral": ["bosque_denso", "claro", "arbol_grande", "arbustos"],
+            "paramo_marchito": ["tierra_yerma", "roca", "hierba_seca", "ruinas"],
+            "pantano_sombrio": ["cienaga", "tierra_firme", "niebla", "agua_estancada"],
+            "montanas_heladas": ["roca", "nieve", "cueva", "pico"],
+            "desierto_ceniza": ["arena", "duna", "oasis", "ruinas"],
+            "pradera": ["hierba", "flores", "arbol", "rio"],
+            "costa": ["playa", "acantilado", "roca", "agua"],
+        }
+        
+        import random
+        tipos = tipos_por_bioma.get(self.bioma, ["terreno", "terreno", "terreno", "especial"])
+        return random.choice(tipos[:3])  # 75% terreno normal, 25% especial
     
     def get_sub_tile(self, x: int, y: int) -> Optional[SubTile]:
         """Obtiene un sub-tile específico."""
+        if not self.sub_tiles_generados:
+            self.generar_sub_tiles()
         if 0 <= y < len(self.sub_tiles) and 0 <= x < len(self.sub_tiles[0]):
             return self.sub_tiles[y][x]
         return None
@@ -156,6 +197,7 @@ class Tile:
             "enemigos_potenciales": self.enemigos_potenciales,
             "eventos": self.eventos,
             "sub_tiles": [[st.to_dict() for st in fila] for fila in self.sub_tiles] if self.sub_tiles else [],
+            "sub_tiles_generados": self.sub_tiles_generados,
             "rutas": self.rutas,
             "costo_movimiento": self.costo_movimiento
         }
@@ -173,7 +215,8 @@ class Tile:
             enemigos_potenciales=data.get("enemigos_potenciales", []),
             eventos=data.get("eventos", []),
             rutas=data.get("rutas", []),
-            costo_movimiento=data.get("costo_movimiento", 1.0)
+            costo_movimiento=data.get("costo_movimiento", 1.0),
+            sub_tiles_generados=data.get("sub_tiles_generados", False)
         )
         
         # Reconstruir sub-tiles

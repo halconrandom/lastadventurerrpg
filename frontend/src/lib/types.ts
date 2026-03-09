@@ -311,8 +311,11 @@ export interface Ruta {
 
 export interface EstadoMapa {
   posicion_jugador: [number, number];
+  posicion_local: [number, number];
   ubicacion_actual: string | null;
+  modo_mapa: "mundial" | "local";
   tiles_explorados: number;
+  sub_tiles_descubiertos: number;
   ubicaciones_descubiertas: number;
   ubicaciones_visitadas: number;
   total_ubicaciones: number;

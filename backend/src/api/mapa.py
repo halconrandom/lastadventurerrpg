@@ -130,7 +130,7 @@ def obtener_estado():
 @mapa_bp.route('/visual', methods=['GET'])
 def obtener_visual():
     """
-    Obtiene una representación visual del mapa.
+    Obtiene una representación visual del mapa MUNDIAL.
     
     Query params:
         - slot: Número de slot (requerido)
@@ -158,6 +158,7 @@ def obtener_visual():
             "data": {
                 "mapa": visual,
                 "posicion": list(mapa.posicion_jugador),
+                "modo": "mundial",
                 "leyenda": {
                     "jugador": "📍",
                     "pueblo": "🏘️",
@@ -178,15 +179,60 @@ def obtener_visual():
         }), 500
 
 
+@mapa_bp.route('/local', methods=['GET'])
+def obtener_local():
+    """
+    Obtiene una representación visual del mapa LOCAL (sub-tiles).
+    
+    Query params:
+        - slot: Número de slot (requerido)
+        - radio: Radio de visión (default: 6)
+    
+    Returns:
+        - mapa: Matriz de caracteres representando el mapa local
+        - posicion_local: Posición dentro del tile (0-9, 0-9)
+        - tile_mundial: Coordenadas del tile mundial actual
+    """
+    try:
+        slot_num = request.args.get('slot', type=int)
+        radio = request.args.get('radio', default=6, type=int)
+        
+        if not slot_num:
+            return jsonify({
+                "success": False,
+                "message": "Falta el slot"
+            }), 400
+        
+        mapa = get_or_create_mapa(slot_num)
+        visual = mapa.get_mapa_local_visual(radio)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "mapa": visual,
+                "posicion": list(mapa.posicion_local),
+                "posicion_mundial": list(mapa.posicion_jugador),
+                "modo": "local",
+                "escala": "1 tile = 10m"
+            }
+        })
+    except Exception as e:
+        logger.error(f"Error en obtener_local: {str(e)}\n{traceback.format_exc()}")
+        return jsonify({
+            "success": False,
+            "message": f"Error al obtener mapa local: {str(e)}"
+        }), 500
+
+
 @mapa_bp.route('/mover', methods=['POST'])
 def mover_jugador():
     """
-    Mueve al jugador a una nueva posición.
+    Mueve al jugador a una nueva posición MUNDIAL.
     
     Body:
         - slot: Número de slot (requerido)
-        - x: Coordenada X destino
-        - y: Coordenada Y destino
+        - x: Coordenada X destino (tiles de 1km)
+        - y: Coordenada Y destino (tiles de 1km)
     
     Returns:
         - posicion_anterior: Posición anterior
@@ -221,6 +267,60 @@ def mover_jugador():
         return jsonify({
             "success": False,
             "message": f"Error al mover: {str(e)}"
+        }), 500
+
+
+@mapa_bp.route('/mover-local', methods=['POST'])
+def mover_jugador_local():
+    """
+    Mueve al jugador dentro del tile actual (sub-tiles de 10m).
+    
+    IMPORTANTE: Este movimiento es LOCAL y NO afecta el mapa mundial.
+    
+    Body:
+        - slot: Número de slot (requerido)
+        - x: Coordenada X local (0-9)
+        - y: Coordenada Y local (0-9)
+    
+    Returns:
+        - posicion_anterior: Posición local anterior
+        - posicion_nueva: Nueva posición local
+        - distancia: Distancia recorrida en sub-tiles
+        - tiempo_minutos: Tiempo de viaje
+        - sub_tile: Información del sub-tile destino
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'slot' not in data:
+            return jsonify({
+                "success": False,
+                "message": "Falta el slot"
+            }), 400
+        
+        slot_num = data['slot']
+        x = data.get('x', 5)
+        y = data.get('y', 5)
+        
+        mapa = get_or_create_mapa(slot_num)
+        resultado = mapa.mover_jugador_local(x, y)
+        
+        if "error" in resultado:
+            return jsonify({
+                "success": False,
+                "message": resultado["error"]
+            }), 400
+        
+        return jsonify({
+            "success": True,
+            "message": f"Movido localmente a ({x}, {y})",
+            "data": resultado
+        })
+    except Exception as e:
+        logger.error(f"Error en mover_jugador_local: {str(e)}\n{traceback.format_exc()}")
+        return jsonify({
+            "success": False,
+            "message": f"Error al mover localmente: {str(e)}"
         }), 500
 
 

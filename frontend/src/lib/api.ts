@@ -445,3 +445,44 @@ export async function getMapasDisponibles(
   }>(`/api/mapa/cartografia/mapas?slot=${slot}`);
   return response.data;
 }
+
+// ============== MAPA LOCAL ==============
+
+export async function getMapaLocalVisual(
+  slot: number,
+  radio: number = 6
+): Promise<MapaVisual> {
+  const response = await fetchApi<{
+    success: boolean;
+    data: MapaVisual;
+  }>(`/api/mapa/local?slot=${slot}&radio=${radio}`);
+  return response.data;
+}
+
+export async function moverJugadorLocal(
+  slot: number,
+  x: number,
+  y: number
+): Promise<{
+  posicion_anterior: [number, number];
+  posicion_nueva: [number, number];
+  distancia: number;
+  tiempo_minutos: number;
+  sub_tile: any;
+}> {
+  const response = await fetchApi<{
+    success: boolean;
+    message: string;
+    data: {
+      posicion_anterior: [number, number];
+      posicion_nueva: [number, number];
+      distancia: number;
+      tiempo_minutos: number;
+      sub_tile: any;
+    };
+  }>("/api/mapa/mover-local", {
+    method: "POST",
+    body: JSON.stringify({ slot, x, y }),
+  });
+  return response.data;
+}
