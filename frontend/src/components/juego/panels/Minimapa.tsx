@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Map, Compass, MapPin, Navigation, Eye } from "lucide-react";
+import { Map, Compass, MapPin, Navigation, Eye, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Globe, Layers } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,20 @@ const UBICACION_ICONS: Record<string, string> = {
   poi: "✨",
 };
 
+// Iconos para biomas (modo local)
+const BIOMA_ICONS: Record<string, string> = {
+  bosque: "🌲",
+  desierto: "🏜️",
+  montaña: "⛰️",
+  pradera: "🌿",
+  pantano: "🍄",
+  nieve: "❄️",
+  oceano: "🌊",
+  ciudad: "🏠",
+};
+
+type MapMode = "mundial" | "local";
+
 interface MinimapaProps {
   slot: number;
 }
@@ -34,6 +48,7 @@ export function Minimapa({ slot }: MinimapaProps) {
   const [ubicaciones, setUbicaciones] = useState<DestinoCercano[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedUbicacion, setSelectedUbicacion] = useState<Ubicacion | null>(null);
+  const [mapMode, setMapMode] = useState<MapMode>("mundial");
 
   // Cargar datos del mapa
   const cargarMapa = useCallback(async () => {
@@ -73,6 +88,24 @@ export function Minimapa({ slot }: MinimapaProps) {
     }
   };
 
+  // Mover direccionalmente
+  const handleMoverDireccion = async (direccion: "N" | "S" | "E" | "W") => {
+    if (!estado || loading) return;
+    
+    const [x, y] = estado.posicion_jugador;
+    let newX = x;
+    let newY = y;
+    
+    switch (direccion) {
+      case "N": newY = y - 1; break;
+      case "S": newY = y + 1; break;
+      case "E": newX = x + 1; break;
+      case "W": newX = x - 1; break;
+    }
+    
+    await handleMover(newX, newY);
+  };
+
   // Viajar a ubicacion
   const handleViajar = async (ubicacionId: string) => {
     if (!slot || loading) return;
@@ -108,7 +141,7 @@ export function Minimapa({ slot }: MinimapaProps) {
             }
           }}
           className={cn(
-            "w-6 h-6 flex items-center justify-center text-sm transition-all cursor-pointer rounded-sm",
+            "w-7 h-7 flex items-center justify-center text-base transition-all cursor-pointer rounded-sm",
             isJugador && "bg-[#d4a843]/30 border border-[#d4a843] animate-pulse",
             isDescubierto && "bg-[#1a1a24] hover:bg-[#2a2a35]",
             isNoDescubierto && "bg-[#0a0a0f] text-[#1a1a24] cursor-not-allowed",
@@ -124,24 +157,45 @@ export function Minimapa({ slot }: MinimapaProps) {
 
   return (
     <div className="space-y-4">
-      {/* Header del minimapa */}
+      {/* Header con toggle de modo */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Map className="w-5 h-5 text-[#d4a843]" />
           <span className="font-medieval text-lg text-[#d4a843]">Mapa</span>
         </div>
-        {estado && (
-          <div className="flex items-center gap-3 text-xs text-[#9a978a]">
-            <span className="flex items-center gap-1">
-              <Eye className="w-3 h-3" />
-              {estado.tiles_explorados}
-            </span>
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3 h-3" />
-              {estado.ubicaciones_descubiertas}/{estado.total_ubicaciones}
-            </span>
-          </div>
-        )}
+        
+        {/* Toggle Local/Mundial */}
+        <div className="flex bg-[#0a0a0f] rounded-lg p-0.5 border border-[#2a2a35]">
+          <button
+            onClick={() => setMapMode("mundial")}
+            className={cn(
+              "flex items-center gap-1 px-2 py-1 rounded text-xs transition-all",
+              mapMode === "mundial"
+                ? "bg-[#d4a843] text-black"
+                : "text-[#9a978a] hover:text-[#e8e4d9]"
+            )}
+          >
+            <Globe className="w-3 h-3" />
+            Mundial
+          </button>
+          <button
+            onClick={() => setMapMode("local")}
+            className={cn(
+              "flex items-center gap-1 px-2 py-1 rounded text-xs transition-all",
+              mapMode === "local"
+                ? "bg-[#d4a843] text-black"
+                : "text-[#9a978a] hover:text-[#e8e4d9]"
+            )}
+          >
+            <Layers className="w-3 h-3" />
+            Local
+          </button>
+        </div>
+      </div>
+
+      {/* Indicador de modo */}
+      <div className="text-xs text-[#9a978a] text-center">
+        {mapMode === "mundial" ? "Escala: 1 tile = 1 km" : "Escala: 1 tile = 10 m"}
       </div>
 
       {/* Grid del Minimapa */}
@@ -154,6 +208,51 @@ export function Minimapa({ slot }: MinimapaProps) {
           </div>
         </div>
       )}
+
+      {/* Controles de movimiento */}
+      <div className="flex flex-col items-center gap-1">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleMoverDireccion("N")}
+          disabled={loading}
+          className="w-10 h-8 p-0 border-[#2a2a35] hover:border-[#d4a843]/50"
+        >
+          <ChevronUp className="w-4 h-4" />
+        </Button>
+        <div className="flex gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleMoverDireccion("W")}
+            disabled={loading}
+            className="w-10 h-8 p-0 border-[#2a2a35] hover:border-[#d4a843]/50"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <div className="w-10 h-8 flex items-center justify-center text-[#9a978a] text-xs">
+            {mapMode === "mundial" ? "1km" : "10m"}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleMoverDireccion("E")}
+            disabled={loading}
+            className="w-10 h-8 p-0 border-[#2a2a35] hover:border-[#d4a843]/50"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleMoverDireccion("S")}
+          disabled={loading}
+          className="w-10 h-8 p-0 border-[#2a2a35] hover:border-[#d4a843]/50"
+        >
+          <ChevronDown className="w-4 h-4" />
+        </Button>
+      </div>
 
       {/* Posicion actual */}
       {estado && (
@@ -169,6 +268,18 @@ export function Minimapa({ slot }: MinimapaProps) {
               </span>
             )}
           </div>
+          {estado && (
+            <div className="flex items-center gap-2 text-xs text-[#9a978a] mt-1">
+              <span className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                {estado.tiles_explorados} tiles
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                {estado.ubicaciones_descubiertas}/{estado.total_ubicaciones}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -179,13 +290,13 @@ export function Minimapa({ slot }: MinimapaProps) {
           <span>Cercanos</span>
         </div>
         
-        <div className="space-y-1 max-h-40 overflow-y-auto custom-scrollbar">
+        <div className="space-y-1 max-h-32 overflow-y-auto custom-scrollbar">
           {ubicaciones.length === 0 ? (
             <p className="text-xs text-[#9a978a]/60 text-center py-2">
               Sin ubicaciones cercanas
             </p>
           ) : (
-            ubicaciones.slice(0, 6).map((destino) => (
+            ubicaciones.slice(0, 5).map((destino) => (
               <div
                 key={destino.ubicacion.id}
                 onClick={() => destino.descubierta && setSelectedUbicacion(destino.ubicacion)}

@@ -245,7 +245,7 @@ export function ExplorarPanel() {
     </motion.div>
 
       {/* Panel lateral - Minimapa */}
-      <div className="w-72 flex-shrink-0">
+      <div className="w-96 flex-shrink-0">
         <Card className="border-[#d4a843]/10 bg-card/60 backdrop-blur-md sticky top-4">
           <CardContent className="p-4">
             <Minimapa slot={slotActual || 1} />
