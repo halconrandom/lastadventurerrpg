@@ -327,6 +327,45 @@ export function Minimapa({ slot }: MinimapaProps) {
         </div>
       </div>
 
+      {/* Leyenda de iconos */}
+      <div className="space-y-2 pt-2 border-t border-[#2a2a35]">
+        <p className="text-xs text-[#9a978a] font-medium">Leyenda</p>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">📍</span>
+            <span className="text-[#9a978a]">Tu posición</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">·</span>
+            <span className="text-[#9a978a]">Descubierto</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">?</span>
+            <span className="text-[#9a978a]">Sin explorar</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">🏘️</span>
+            <span className="text-[#9a978a]">Pueblo</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">🏰</span>
+            <span className="text-[#9a978a]">Ciudad</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">👑</span>
+            <span className="text-[#9a978a]">Capital</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">⚔️</span>
+            <span className="text-[#9a978a]">Mazmorra</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">✨</span>
+            <span className="text-[#9a978a]">Punto de interés</span>
+          </div>
+        </div>
+      </div>
+
       {/* Modal de ubicacion seleccionada */}
       {selectedUbicacion && (
         <motion.div
