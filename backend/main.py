@@ -19,13 +19,14 @@ from systems.save_manager import SaveManager
 from game_manager import crear_nuevo_personaje, calcular_recompensa_exploracion
 from models.personaje import Personaje
 from api.exploracion import exploracion_bp
+from api.combate import combate_bp
 
 # Crear la aplicación Flask
 app = Flask(__name__)
 
 # Configurar CORS para permitir requests del frontend
 CORS(app, resources={
-    r"/api/*": {
+    r"/api/.*": {
         "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type"]
@@ -34,6 +35,7 @@ CORS(app, resources={
 
 # Registrar blueprints
 app.register_blueprint(exploracion_bp, url_prefix="/api/exploracion")
+app.register_blueprint(combate_bp, url_prefix="/api/combate")
 
 # Instancia global del SaveManager
 save_manager = SaveManager()

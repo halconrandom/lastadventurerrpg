@@ -71,27 +71,27 @@ DEF = DEF Base × (1 + Nivel × 0.03)
   - Por nivel del jugador
   - Por zona del mapa
   - Ambos
-  - Respuesta:
+  - Respuesta: Ambos
 
 - [ ] **¿Enemigos únicos?**
   - Enemigos que solo aparecen una vez
   - Jefes de zona
-  - Respuesta:
+  - Respuesta: Si
 
 - [ ] **¿Sistema de agro?**
   - Enemigos te persiguen
   - Zonas seguras
-  - Respuesta:
+  - Respuesta: Enemigos te persiguen
 
 - [ ] **¿Respawn de enemigos?**
   - Aparecen de nuevo después de un tiempo
   - No reaparecen
-  - Respuesta:
+  - Respuesta: aparecen de nuevo despues de un tiempo
 
 - [ ] **¿Experiencia por matar?**
   - Fija por tipo de enemigo
   - Escala con nivel del jugador
-  - Respuesta:
+  - Respuesta: fija por tipo de enemigo, nivel y demas
 
 ---
 

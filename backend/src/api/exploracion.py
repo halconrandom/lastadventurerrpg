@@ -11,12 +11,18 @@ Endpoints:
 
 from flask import Blueprint, request, jsonify
 from typing import Dict, Any, Optional
+import traceback
+import logging
 
 from systems.seed import WorldSeed, init_global_seed, get_global_seed
 from systems.biomas import BiomaGenerator
 from systems.zonas import Zona, ZonaGenerator
 from systems.eventos import EventoGenerator
 from systems.clima import ClimaGenerator
+
+# Configurar logging
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
 
 
 # Blueprint para exploracion
@@ -59,48 +65,55 @@ def iniciar_exploracion():
         - bioma: Informacion del bioma
         - clima: Clima actual
     """
-    data = request.get_json()
-    
-    if not data or 'slot' not in data:
+    try:
+        data = request.get_json()
+        
+        if not data or 'slot' not in data:
+            return jsonify({
+                "success": False,
+                "message": "Falta el slot"
+            }), 400
+        
+        slot_num = data['slot']
+        x = data.get('x', 0)
+        y = data.get('y', 0)
+        seed_string = data.get('seed')
+        
+        # Obtener o crear semilla
+        seed = get_or_create_seed(seed_string)
+        
+        # Generar zona
+        zona_gen = ZonaGenerator(seed)
+        zona = zona_gen.generar_zona((x, y))
+        
+        # Generar clima
+        clima_gen = ClimaGenerator(seed)
+        clima = clima_gen.generar_clima(zona.bioma.key, f"{x}_{y}")
+        
+        # Obtener ciclo dia/noche (usar hora del juego o default)
+        hora = data.get('hora', 12)
+        ciclo = clima_gen.get_ciclo_dia_noche(hora)
+        
+        # Guardar en cache
+        cache_key = get_zona_cache_key(slot_num, x, y)
+        _zonas_cache[cache_key] = zona
+        
+        return jsonify({
+            "success": True,
+            "message": f"Exploracion iniciada en {zona.nombre}",
+            "data": {
+                "zona": zona.to_dict(),
+                "clima": clima.to_dict(),
+                "ciclo": ciclo.to_dict(),
+                "descripcion": zona.bioma.get_descripcion()
+            }
+        })
+    except Exception as e:
+        logger.error(f"Error en iniciar_exploracion: {str(e)}\n{traceback.format_exc()}")
         return jsonify({
             "success": False,
-            "message": "Falta el slot"
-        }), 400
-    
-    slot_num = data['slot']
-    x = data.get('x', 0)
-    y = data.get('y', 0)
-    seed_string = data.get('seed')
-    
-    # Obtener o crear semilla
-    seed = get_or_create_seed(seed_string)
-    
-    # Generar zona
-    zona_gen = ZonaGenerator(seed)
-    zona = zona_gen.generar_zona((x, y))
-    
-    # Generar clima
-    clima_gen = ClimaGenerator(seed)
-    clima = clima_gen.generar_clima(zona.bioma.key, f"{x}_{y}")
-    
-    # Obtener ciclo dia/noche (usar hora del juego o default)
-    hora = data.get('hora', 12)
-    ciclo = clima_gen.get_ciclo_dia_noche(hora)
-    
-    # Guardar en cache
-    cache_key = get_zona_cache_key(slot_num, x, y)
-    _zonas_cache[cache_key] = zona
-    
-    return jsonify({
-        "success": True,
-        "message": f"Exploracion iniciada en {zona.nombre}",
-        "data": {
-            "zona": zona.to_dict(),
-            "clima": clima.to_dict(),
-            "ciclo": ciclo.to_dict(),
-            "descripcion": zona.bioma.get_descripcion()
-        }
-    })
+            "message": f"Error al iniciar exploracion: {str(e)}"
+        }), 500
 
 
 @exploracion_bp.route('/zona/<int:x>/<int:y>', methods=['GET'])
@@ -162,37 +175,44 @@ def ejecutar_exploracion():
         - encuentros: Encuentros generados
         - poi_descubierto: POI descubierto (si hay)
     """
-    data = request.get_json()
-    
-    if not data or 'slot' not in data:
+    try:
+        data = request.get_json()
+        
+        if not data or 'slot' not in data:
+            return jsonify({
+                "success": False,
+                "message": "Falta el slot"
+            }), 400
+        
+        slot_num = data['slot']
+        x = data.get('x', 0)
+        y = data.get('y', 0)
+        
+        cache_key = get_zona_cache_key(slot_num, x, y)
+        
+        # Obtener zona del cache o generar
+        if cache_key in _zonas_cache:
+            zona = _zonas_cache[cache_key]
+        else:
+            seed = get_global_seed() or init_global_seed()
+            zona_gen = ZonaGenerator(seed)
+            zona = zona_gen.generar_zona((x, y))
+            _zonas_cache[cache_key] = zona
+        
+        # Ejecutar exploracion
+        resultado = zona.explorar()
+        
+        return jsonify({
+            "success": True,
+            "message": f"Exploracion completada en {zona.nombre}",
+            "data": resultado
+        })
+    except Exception as e:
+        logger.error(f"Error en ejecutar_exploracion: {str(e)}\n{traceback.format_exc()}")
         return jsonify({
             "success": False,
-            "message": "Falta el slot"
-        }), 400
-    
-    slot_num = data['slot']
-    x = data.get('x', 0)
-    y = data.get('y', 0)
-    
-    cache_key = get_zona_cache_key(slot_num, x, y)
-    
-    # Obtener zona del cache o generar
-    if cache_key in _zonas_cache:
-        zona = _zonas_cache[cache_key]
-    else:
-        seed = get_global_seed() or init_global_seed()
-        zona_gen = ZonaGenerator(seed)
-        zona = zona_gen.generar_zona((x, y))
-        _zonas_cache[cache_key] = zona
-    
-    # Ejecutar exploracion
-    resultado = zona.explorar()
-    
-    return jsonify({
-        "success": True,
-        "message": f"Exploracion completada en {zona.nombre}",
-        "data": resultado
-    })
+            "message": f"Error al explorar: {str(e)}"
+        }), 500
 
 
 @exploracion_bp.route('/clima/<int:x>/<int:y>', methods=['GET'])
@@ -250,32 +270,39 @@ def obtener_evento():
     Returns:
         - evento: Evento generado
     """
-    slot_num = request.args.get('slot', type=int)
-    x = request.args.get('x', default=0, type=int)
-    y = request.args.get('y', default=0, type=int)
-    
-    seed = get_global_seed() or init_global_seed()
-    evento_gen = EventoGenerator(seed)
-    
-    # Obtener bioma de la zona
-    bioma_key = None
-    cache_key = get_zona_cache_key(slot_num, x, y) if slot_num else None
-    
-    if cache_key and cache_key in _zonas_cache:
-        bioma_key = _zonas_cache[cache_key].bioma.key
-    
-    evento = evento_gen.generar_evento(f"{x}_{y}", bioma_key)
-    
-    if not evento:
+    try:
+        slot_num = request.args.get('slot', type=int)
+        x = request.args.get('x', default=0, type=int)
+        y = request.args.get('y', default=0, type=int)
+        
+        seed = get_global_seed() or init_global_seed()
+        evento_gen = EventoGenerator(seed)
+        
+        # Obtener bioma de la zona
+        bioma_key = None
+        cache_key = get_zona_cache_key(slot_num, x, y) if slot_num else None
+        
+        if cache_key and cache_key in _zonas_cache:
+            bioma_key = _zonas_cache[cache_key].bioma.key
+        
+        evento = evento_gen.generar_evento(f"{x}_{y}", bioma_key)
+        
+        if not evento:
+            return jsonify({
+                "success": False,
+                "message": "No hay eventos disponibles"
+            }), 404
+        
+        return jsonify({
+            "success": True,
+            "data": evento.to_dict()
+        })
+    except Exception as e:
+        logger.error(f"Error en obtener_evento: {str(e)}\n{traceback.format_exc()}")
         return jsonify({
             "success": False,
-            "message": "No hay eventos disponibles"
-        }), 404
-    
-    return jsonify({
-        "success": True,
-        "data": evento.to_dict()
-    })
+            "message": f"Error al obtener evento: {str(e)}"
+        }), 500
 
 
 @exploracion_bp.route('/evento/resolver', methods=['POST'])
@@ -291,36 +318,43 @@ def resolver_evento():
     Returns:
         - resultado: Resultado del evento
     """
-    data = request.get_json()
-    
-    if not data or 'evento_id' not in data or 'opcion' not in data:
+    try:
+        data = request.get_json()
+        
+        if not data or 'evento_id' not in data or 'opcion' not in data:
+            return jsonify({
+                "success": False,
+                "message": "Faltan datos (evento_id, opcion)"
+            }), 400
+        
+        evento_id = data['evento_id']
+        opcion = data['opcion']
+        contexto = data.get('contexto', 'default')
+        
+        seed = get_global_seed() or init_global_seed()
+        evento_gen = EventoGenerator(seed)
+        
+        evento = evento_gen.get_evento_by_id(evento_id)
+        
+        if not evento:
+            return jsonify({
+                "success": False,
+                "message": f"Evento no encontrado: {evento_id}"
+            }), 404
+        
+        resultado = evento_gen.resolver_evento(evento, opcion, contexto)
+        
+        return jsonify({
+            "success": True,
+            "message": "Evento resuelto",
+            "data": resultado
+        })
+    except Exception as e:
+        logger.error(f"Error en resolver_evento: {str(e)}\n{traceback.format_exc()}")
         return jsonify({
             "success": False,
-            "message": "Faltan datos (evento_id, opcion)"
-        }), 400
-    
-    evento_id = data['evento_id']
-    opcion = data['opcion']
-    contexto = data.get('contexto', 'default')
-    
-    seed = get_global_seed() or init_global_seed()
-    evento_gen = EventoGenerator(seed)
-    
-    evento = evento_gen.get_evento_by_id(evento_id)
-    
-    if not evento:
-        return jsonify({
-            "success": False,
-            "message": f"Evento no encontrado: {evento_id}"
-        }), 404
-    
-    resultado = evento_gen.resolver_evento(evento, opcion, contexto)
-    
-    return jsonify({
-        "success": True,
-        "message": "Evento resuelto",
-        "data": resultado
-    })
+            "message": f"Error al resolver evento: {str(e)}"
+        }), 500
 
 
 @exploracion_bp.route('/seed', methods=['POST'])

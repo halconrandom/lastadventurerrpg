@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { useGame } from "@/lib/GameContext";
 import {
@@ -91,23 +91,37 @@ export default function JuegoPage() {
           <div className="max-w-7xl mx-auto p-12">
 
             <AnimatePresence mode="wait">
-              {tabActiva === "explorar" && (
-                <div key="panel-explorar">
+              {tabActiva === "explorar" ? (
+                <motion.div
+                  key="panel-explorar"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <ExplorarPanel slot={slotActual || 1} />
-                </div>
-              )}
-
-              {tabActiva === "inventario" && (
-                <div key="panel-inventario">
+                </motion.div>
+              ) : tabActiva === "inventario" ? (
+                <motion.div
+                  key="panel-inventario"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <InventarioPanel datos={datos} />
-                </div>
-              )}
-
-              {tabActiva === "combate" && (
-                <div key="panel-combate">
+                </motion.div>
+              ) : tabActiva === "combate" ? (
+                <motion.div
+                  key="panel-combate"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <CombatePanel />
-                </div>
-              )}
+                </motion.div>
+              ) : null}
             </AnimatePresence>
 
           </div>

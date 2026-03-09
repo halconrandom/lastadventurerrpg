@@ -76,6 +76,8 @@ interface ExploracionState {
   loading: boolean;
   error: string | null;
   log: string[];
+  // Coordenadas actuales de exploración
+  coordenadas: { x: number; y: number };
 }
 
 export function useExploracion(slot: number) {
@@ -89,6 +91,7 @@ export function useExploracion(slot: number) {
     loading: false,
     error: null,
     log: [],
+    coordenadas: { x: 0, y: 0 },
   });
 
   const addLog = useCallback((mensaje: string) => {
@@ -120,6 +123,7 @@ export function useExploracion(slot: number) {
           zona: data.data.zona,
           clima: data.data.clima,
           ciclo: data.data.ciclo,
+          coordenadas: { x, y },
           loading: false,
         }));
 
@@ -146,9 +150,8 @@ export function useExploracion(slot: number) {
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
-      const coords = state.zona.bioma.key.split("_");
-      const x = parseInt(coords[0] || "0");
-      const y = parseInt(coords[1] || "0");
+      // Usar las coordenadas guardadas en el estado
+      const { x, y } = state.coordenadas;
 
       const response = await fetch(`${API_BASE}/explorar`, {
         method: "POST",
@@ -192,7 +195,7 @@ export function useExploracion(slot: number) {
       addLog(`Error: ${mensaje}`);
       return null;
     }
-  }, [slot, state.zona, addLog]);
+  }, [slot, state.zona, state.coordenadas, addLog]);
 
   const obtenerEvento = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true }));

@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from systems.save_manager import SaveManager
-from game_manager import crear_personaje
+from game_manager import crear_nuevo_personaje
 from models.stats import Stats
 
 class Juego:
@@ -76,7 +76,7 @@ class Juego:
             return
 
         # Crear personaje con el nuevo flujo
-        personaje = crear_personaje()
+        personaje = crear_nuevo_personaje()
 
         if personaje:
             # Crear datos iniciales usando el personaje creado

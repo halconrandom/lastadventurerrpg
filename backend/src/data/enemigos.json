@@ -1,0 +1,365 @@
+{
+  "version": "1.0",
+  "descripcion": "Templates de enemigos para Last Adventurer",
+  "enemigos": {
+    "bestias": [
+      {
+        "id": "lobo",
+        "nombre": "Lobo",
+        "categoria": "bestia",
+        "descripcion": "Un lobo salvaje de pelaje gris",
+        "stats_base": {
+          "hp": 30,
+          "atk": 8,
+          "def": 2,
+          "velocidad": 15,
+          "critico": 8,
+          "evasion": 10,
+          "mana": 0,
+          "stamina": 80
+        },
+        "experiencia_base": 25,
+        "oro_base": 8,
+        "drops": [
+          {"item_id": "colmillo_lobo", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "piel_lobo", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Mordisco", "tipo": "fisico", "multiplicador": 1.2, "costo": 15}
+        ]
+      },
+      {
+        "id": "oso",
+        "nombre": "Oso Pardo",
+        "categoria": "bestia",
+        "descripcion": "Un oso grande y poderoso",
+        "stats_base": {
+          "hp": 80,
+          "atk": 15,
+          "def": 8,
+          "velocidad": 8,
+          "critico": 5,
+          "evasion": 3,
+          "mana": 0,
+          "stamina": 120
+        },
+        "experiencia_base": 60,
+        "oro_base": 20,
+        "drops": [
+          {"item_id": "garra_oso", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "piel_oso", "probabilidad": 0.15, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Zarpazo", "tipo": "fisico", "multiplicador": 1.4, "costo": 20}
+        ]
+      },
+      {
+        "id": "serpiente",
+        "nombre": "Serpiente Venenosa",
+        "categoria": "bestia",
+        "descripcion": "Una serpiente con colmillos venenosos",
+        "stats_base": {
+          "hp": 20,
+          "atk": 6,
+          "def": 1,
+          "velocidad": 20,
+          "critico": 15,
+          "evasion": 25,
+          "mana": 0,
+          "stamina": 60
+        },
+        "experiencia_base": 20,
+        "oro_base": 5,
+        "drops": [
+          {"item_id": "colmillo_serpiente", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "veneno", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Mordedura Venenosa", "tipo": "fisico", "multiplicador": 1.0, "costo": 20, "efecto": "veneno"}
+        ]
+      }
+    ],
+    "humanoides": [
+      {
+        "id": "bandido",
+        "nombre": "Bandido",
+        "categoria": "humanoide",
+        "descripcion": "Un forajido que asalta viajeros",
+        "stats_base": {
+          "hp": 45,
+          "atk": 12,
+          "def": 5,
+          "velocidad": 12,
+          "critico": 10,
+          "evasion": 12,
+          "mana": 20,
+          "stamina": 100
+        },
+        "experiencia_base": 40,
+        "oro_base": 25,
+        "drops": [
+          {"item_id": "daga_oxidada", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Puñalada", "tipo": "fisico", "multiplicador": 1.3, "costo": 15}
+        ]
+      },
+      {
+        "id": "orco",
+        "nombre": "Orco",
+        "categoria": "humanoide",
+        "descripcion": "Un orco fuerte y agresivo",
+        "stats_base": {
+          "hp": 70,
+          "atk": 18,
+          "def": 10,
+          "velocidad": 8,
+          "critico": 8,
+          "evasion": 5,
+          "mana": 0,
+          "stamina": 110
+        },
+        "experiencia_base": 55,
+        "oro_base": 18,
+        "drops": [
+          {"item_id": "hacha_orco", "probabilidad": 0.08, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "colmillo_orco", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 2}
+        ],
+        "habilidades": [
+          {"nombre": "Golpe Brutal", "tipo": "fisico", "multiplicador": 1.5, "costo": 25}
+        ]
+      },
+      {
+        "id": "goblin",
+        "nombre": "Goblin",
+        "categoria": "humanoide",
+        "descripcion": "Una pequeña criatura traviesa",
+        "stats_base": {
+          "hp": 25,
+          "atk": 8,
+          "def": 2,
+          "velocidad": 18,
+          "critico": 12,
+          "evasion": 20,
+          "mana": 10,
+          "stamina": 80
+        },
+        "experiencia_base": 20,
+        "oro_base": 15,
+        "drops": [
+          {"item_id": "daga_goblin", "probabilidad": 0.12, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Lanzar Piedra", "tipo": "fisico", "multiplicador": 0.8, "costo": 5}
+        ]
+      }
+    ],
+    "no_muertos": [
+      {
+        "id": "esqueleto",
+        "nombre": "Esqueleto",
+        "categoria": "no_muerto",
+        "descripcion": "Restos óseos reanimados",
+        "stats_base": {
+          "hp": 35,
+          "atk": 10,
+          "def": 3,
+          "velocidad": 10,
+          "critico": 8,
+          "evasion": 8,
+          "mana": 0,
+          "stamina": 90
+        },
+        "experiencia_base": 30,
+        "oro_base": 10,
+        "drops": [
+          {"item_id": "hueso", "probabilidad": 0.5, "cantidad_min": 1, "cantidad_max": 3}
+        ],
+        "habilidades": [
+          {"nombre": "Tajo Óseo", "tipo": "fisico", "multiplicador": 1.1, "costo": 10}
+        ]
+      },
+      {
+        "id": "zombi",
+        "nombre": "Zombi",
+        "categoria": "no_muerto",
+        "descripcion": "Un cadáver ambulante",
+        "stats_base": {
+          "hp": 50,
+          "atk": 12,
+          "def": 5,
+          "velocidad": 5,
+          "critico": 3,
+          "evasion": 2,
+          "mana": 0,
+          "stamina": 80
+        },
+        "experiencia_base": 35,
+        "oro_base": 8,
+        "drops": [
+          {"item_id": "carne_podrida", "probabilidad": 0.4, "cantidad_min": 1, "cantidad_max": 2}
+        ],
+        "habilidades": [
+          {"nombre": "Mordisco", "tipo": "fisico", "multiplicador": 1.0, "costo": 10, "efecto": "enfermedad"}
+        ]
+      },
+      {
+        "id": "espectro",
+        "nombre": "Espectro",
+        "categoria": "no_muerto",
+        "descripcion": "Un espíritu atormentado",
+        "stats_base": {
+          "hp": 40,
+          "atk": 14,
+          "def": 0,
+          "velocidad": 15,
+          "critico": 15,
+          "evasion": 30,
+          "mana": 50,
+          "stamina": 60
+        },
+        "experiencia_base": 45,
+        "oro_base": 15,
+        "drops": [
+          {"item_id": "esencia_espectral", "probabilidad": 0.2, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Toque Espectral", "tipo": "magico", "multiplicador": 1.3, "costo": 20}
+        ]
+      }
+    ],
+    "magicos": [
+      {
+        "id": "elemental_fuego",
+        "nombre": "Elemental de Fuego",
+        "categoria": "magico",
+        "descripcion": "Una entidad de llamas vivientes",
+        "stats_base": {
+          "hp": 55,
+          "atk": 16,
+          "def": 2,
+          "velocidad": 12,
+          "critico": 12,
+          "evasion": 10,
+          "mana": 80,
+          "stamina": 70
+        },
+        "experiencia_base": 55,
+        "oro_base": 22,
+        "drops": [
+          {"item_id": "esencia_fuego", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 2}
+        ],
+        "habilidades": [
+          {"nombre": "Bola de Fuego", "tipo": "fuego", "multiplicador": 1.5, "costo": 25}
+        ]
+      },
+      {
+        "id": "elemental_hielo",
+        "nombre": "Elemental de Hielo",
+        "categoria": "magico",
+        "descripcion": "Una entidad de hielo cristalino",
+        "stats_base": {
+          "hp": 60,
+          "atk": 14,
+          "def": 8,
+          "velocidad": 10,
+          "critico": 10,
+          "evasion": 8,
+          "mana": 80,
+          "stamina": 70
+        },
+        "experiencia_base": 55,
+        "oro_base": 22,
+        "drops": [
+          {"item_id": "esencia_hielo", "probabilidad": 0.25, "cantidad_min": 1, "cantidad_max": 2}
+        ],
+        "habilidades": [
+          {"nombre": "Rayo de Hielo", "tipo": "hielo", "multiplicador": 1.3, "costo": 20, "efecto": "congelar"}
+        ]
+      },
+      {
+        "id": "golem",
+        "nombre": "Golem de Piedra",
+        "categoria": "magico",
+        "descripcion": "Una estatua de piedra animada",
+        "stats_base": {
+          "hp": 100,
+          "atk": 20,
+          "def": 20,
+          "velocidad": 4,
+          "critico": 3,
+          "evasion": 0,
+          "mana": 30,
+          "stamina": 150
+        },
+        "experiencia_base": 70,
+        "oro_base": 30,
+        "drops": [
+          {"item_id": "piedra_runa", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Golpe Sísmico", "tipo": "fisico", "multiplicador": 1.6, "costo": 30}
+        ]
+      }
+    ],
+    "jefes": [
+      {
+        "id": "dragon_joven",
+        "nombre": "Dragón Joven",
+        "categoria": "jefe",
+        "es_jefe": true,
+        "descripcion": "Un dragón joven pero mortal",
+        "stats_base": {
+          "hp": 300,
+          "atk": 40,
+          "def": 25,
+          "velocidad": 15,
+          "critico": 20,
+          "evasion": 10,
+          "mana": 150,
+          "stamina": 200
+        },
+        "experiencia_base": 500,
+        "oro_base": 200,
+        "drops": [
+          {"item_id": "escama_dragon", "probabilidad": 0.5, "cantidad_min": 1, "cantidad_max": 3},
+          {"item_id": "garras_dragon", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 2},
+          {"item_id": "corazon_dragon", "probabilidad": 0.05, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Aliento de Fuego", "tipo": "fuego", "multiplicador": 2.0, "costo": 50},
+          {"nombre": "Zarpazo", "tipo": "fisico", "multiplicador": 1.5, "costo": 20},
+          {"nombre": "Rugido Aterrador", "tipo": "fisico", "multiplicador": 0.5, "costo": 30, "efecto": "miedo"}
+        ]
+      },
+      {
+        "id": "rey_esqueletos",
+        "nombre": "Rey de los Esqueletos",
+        "categoria": "jefe",
+        "es_jefe": true,
+        "descripcion": "Un antiguo rey convertido en no-muerto",
+        "stats_base": {
+          "hp": 250,
+          "atk": 35,
+          "def": 20,
+          "velocidad": 12,
+          "critico": 25,
+          "evasion": 15,
+          "mana": 100,
+          "stamina": 150
+        },
+        "experiencia_base": 400,
+        "oro_base": 150,
+        "drops": [
+          {"item_id": "corona_rota", "probabilidad": 0.3, "cantidad_min": 1, "cantidad_max": 1},
+          {"item_id": "espada_ancestral", "probabilidad": 0.1, "cantidad_min": 1, "cantidad_max": 1}
+        ],
+        "habilidades": [
+          {"nombre": "Tajo Real", "tipo": "fisico", "multiplicador": 1.8, "costo": 25},
+          {"nombre": "Invocar Esqueletos", "tipo": "magico", "multiplicador": 0.0, "costo": 40, "efecto": "invocar"},
+          {"nombre": "Maldición", "tipo": "magico", "multiplicador": 0.5, "costo": 30, "efecto": "maldicion"}
+        ]
+      }
+    ]
+  }
+}

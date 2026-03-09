@@ -90,35 +90,31 @@ Experiencia Defensa = Nivel Enemigo × 2
 
 ## Preguntas a Definir
 
-> **Nota:** Las preguntas sobre enemigos están en [SISTEMA_ENEMIGOS.md](./SISTEMA_ENEMIGOS.md)
-
-### Mecánicas de Combate
-
 - [ ] **¿Usar item consume turno?**
   - Sí
   - No
-  - Respuesta:
+  - Respuesta: Si
 
 - [ ] **¿Orden de turnos?**
   - Por velocidad
   - Jugador siempre primero
   - Aleatorio
-  - Respuesta:
+  - Respuesta: Por velocidad
 
 - [ ] **¿Combate en grupo?**
   - Solo 1v1
   - Múltiples enemigos
-  - Respuesta:
+  - Respuesta: Grupo completo
 
 - [ ] **¿Críticos?**
   - Probabilidad fija (5%)
   - Basado en habilidad
-  - Respuesta:
+  - Respuesta: Basado en habilidad
 
-- [ ] **¿Evasión?**
+- [ ] **¿Esvasión?**
   - Probabilidad de esquivar
   - Basado en armadura ligera
-  - Respuesta:
+  - Respuesta: Probabilidad de esquivar ataque completo (basado en stat evasion)
 
 ---
 
@@ -149,4 +145,56 @@ Experiencia Defensa = Nivel Enemigo × 2
 
 ## Notas Adicionales
 
-<!-- Agrega aquí cualquier idea o comentario adicional sobre el sistema de combate -->
+<!-- Agrega aquí cualquier idea o comentario adicional sobre el sistema de combate -->  
+
+Preguntas de Diseño
+
+  Antes de implementar, necesito que definas:
+
+  1. ¿Usar item consume turno?
+   - A) Sí, consume turno
+   - B) No, es acción gratuita
+   - C) Solo pociones de curación son gratuitas
+
+  Respuesta: Consumen un turno.
+
+  2. ¿Orden de turnos?
+   - A) Jugador siempre primero
+   - B) Por velocidad (stat existente)
+   - C) Aleatorio cada turno
+Respuesta: por velocidad
+
+  3. ¿Combate en grupo?
+   - A) Solo 1v1 (jugador vs 1 enemigo)
+   - B) 1 vs múltiples enemigos (el jugador ataca a uno por turno)
+   - C) Grupo completo (múltiples aliados y enemigos)
+
+Respuesta:  Grupo completo
+
+  4. ¿Cómo funcionan los críticos?
+   - A) Probabilidad fija 5%
+   - B) Basado en stat critico (ya existe en Stats)
+   - C) Ambos: base 5% + stat crítico
+
+Respuesta:  basado en stat critico
+
+  5. ¿Cómo funciona la evasión?
+   - A) No hay evasión
+   - B) Probabilidad de esquivar ataque completo (basado en stat evasion)
+   - C) Reduce daño en lugar de esquivar
+
+Respuesta:  Probabilidad de esquivar ataque completo (basado en stat evasion)
+
+  6. ¿Qué pasa al huir?
+   - A) Probabilidad basada en nivel (jugador vs enemigo)
+   - B) Siempre funciona pero pierdes oro/experiencia
+   - C) Solo funciona si el enemigo está por debajo de 50% HP
+
+Respuesta:  Probabilidad basada en nivel (jugador vs enemigo)
+
+  7. ¿Recompensas al ganar?
+   - A) Solo experiencia
+   - B) Experiencia + oro
+   - C) Experiencia + oro + posible drop de item
+
+Respuesta: Depende del tipo de monstruo, su nivel y demas, pero seria la C
