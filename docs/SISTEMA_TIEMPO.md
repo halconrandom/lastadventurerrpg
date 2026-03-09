@@ -6,14 +6,17 @@ El sistema de tiempo gestiona el ciclo día/noche, las estaciones y el tiempo tr
 
 ---
 
-## Decisiones Tomadas (Iteración 1)
+## Decisiones Finales
 
 | Aspecto | Decisión | Notas |
 |---------|----------|-------|
 | Escala de tiempo | 2 min real = 1 hora juego | 48 min = 1 día completo |
 | Estaciones | 4 estaciones de 30 días | Variación por bioma |
 | Avance del tiempo | Por acción | No es tiempo real |
-| Eventos | Todos los tipos | Generados por LLM según NPC |
+| Eventos | Todos los tipos | Generados por LLM dinámicamente |
+| Tiempo inicial | Aleatorio (safe start) | Siempre de día, hora aleatoria |
+| Pausas | Pausa total | Combate, diálogos, menús |
+| Dependencia | Requiere sistema de mapa | Para distancias entre lugares |
 
 ---
 
@@ -41,39 +44,43 @@ El tiempo del mundo avanza **por acción del jugador**, afectando:
 
 ---
 
-### 2. Tiempo por Acción (Detalle Técnico)
+### 2. Tiempo por Acción
 
-**Problema identificado**: Si el tiempo avanza por acción, ¿cuánto tiempo pasa por cada tipo de acción?
+El tiempo avanza según la acción que realice el jugador.
 
-#### Propuesta de Costos de Tiempo por Acción
+#### Costos de Tiempo por Acción
 
 | Acción | Tiempo que Avanza | Justificación |
 |--------|-------------------|----------------|
 | **Exploración** | | |
-| Moverse a tile adyacente | 15 min | Caminar un tile |
-| Explorar tile (revelar) | 30 min | Buscar, investigar |
-| Descansar corto | 1 hora | Recuperar stamina |
-| Descansar largo | 8 horas | Dormir hasta mañana |
-| **Combate** | | |
-| Iniciar combate | 5 min | Preparativos |
-| Cada turno de combate | 10 seg | Acción rápida |
-| Combate completo (promedio) | 5-15 min | Dependiendo duración |
-| **Interacción** | | |
-| Hablar con NPC | 15 min | Conversación corta |
-| Negociar/Comerciar | 30 min | Intercambio |
-| Leer libro/documento | 30 min | Estudiar información |
+| Moverse a tile adyacente | 5 min | Caminar un tile |
+| Explorar tile (revelar) | 15 min | Buscar, investigar |
+| **Descanso** | | |
+| Descanso corto | 1 hora | Recuperar stamina (+20%) |
+| Dormir | 8 horas | Recuperar todo (+100% stamina, +salud) |
 | **Viaje** | | |
-| Viaje corto (misma zona) | 1-2 horas | Dentro de un área |
-| Viaje largo (otra zona) | 4-8 horas | Entre zonas |
-| Viaje muy largo (otra región) | 1-3 días | Entre regiones |
+| Viaje corto | 1-2 horas | Dentro de un área |
+| Viaje largo | 4-8 horas | Entre zonas |
+| Viaje muy largo | 1-3 días | Entre regiones |
 
-**Pregunta 7**: ¿Estos tiempos te parecen correctos? ¿Quieres ajustar alguno?
+**Nota**: Los tiempos de viaje se calculan proceduralmente según distancias y rutas definidas por el sistema de mapa.
+
+> Ejemplo: *"De pueblo A a B son 2 días por Bosque X, pero 4 días por Colinas X"*
+
+#### Sistema de Descanso
+
+El jugador puede dormir a cualquier hora:
+
+- **Dormir siempre avanza 8 horas** de tiempo
+- Si te acuestas a las 2 PM, despiertas a las 10 PM (de noche)
+- No hay penalizaciones por dormir de día, pero el tiempo avanza igual
+- El jugador decide cuándo descansar según su estrategia
 
 ---
 
 ### 3. Sistema de Estaciones por Bioma
 
-**Decisión**: 4 estaciones base de 30 días, pero variación según bioma.
+**Estructura**: 4 estaciones base de 30 días, con variación según bioma.
 
 #### Tabla de Estaciones por Bioma
 
@@ -87,82 +94,64 @@ El tiempo del mundo avanza **por acción del jugador**, afectando:
 | **Montaña** | Las 4 estaciones | 30 días c/u | Invierno más largo |
 | **Costa** | Las 4 estaciones | 30 días c/u | Clima moderado |
 
-**Pregunta 8**: ¿Quieres añadir más biomas o modificar los existentes?
-
 ---
 
 ### 4. Tiempo Inicial del Jugador
 
-**Pregunta 5 (pendiente)**: ¿Cuándo empieza el jugador?
+**Decisión**: Safe start con hora aleatoria.
 
-#### Opciones
+| Aspecto | Valor |
+|---------|-------|
+| Hora inicial | Aleatoria entre 8:00 y 17:00 (siempre de día) |
+| Día inicial | 1 |
+| Estación inicial | Primavera |
+| Año inicial | 1 |
 
-| Opción | Descripción | Ventajas | Desventajas |
-|--------|-------------|----------|-------------|
-| A | Mañana del día 1, primavera, año 1 | Predecible, tutorial amigable | Menos variedad |
-| B | Aleatorio (hora, día, estación) | Cada partida es única | Puede empezar de noche (difícil) |
-| C | Según zona de spawn | Coherencia con el mundo | Requiere sistema de spawn |
-| D | Configurable al crear partida | El jugador elige | Más complejo |
-
-**Pregunta 9**: ¿Cuál prefieres?
+**Justificación**: El jugador siempre empieza con luz, pero la hora varía para dar variedad a cada partida.
 
 ---
 
 ### 5. Pausas del Tiempo
 
-**Pregunta 6 (pendiente)**: ¿El tiempo se pausa?
+**Decisión**: Pausa total.
 
-#### Opciones
+| Situación | Tiempo |
+|-----------|--------|
+| Combate | Pausado |
+| Diálogos | Pausado |
+| Menús | Pausado |
+| Exploración | Avanza por acción |
 
-| Opción | Combate | Diálogos | Menús | Descripción |
-|--------|---------|----------|-------|-------------|
-| A | Pausa | Pausa | Pausa | Tiempo nunca avanza sin input |
-| B | No pausa | No pausa | No pausa | Tiempo siempre avanza |
-| C | No pausa | Pausa | Pausa | Combate toma tiempo real |
-| D | Pausa | No pausa | Pausa | Diálogos toman tiempo |
-
-**Mi recomendación**: Opción A. Si el tiempo avanza por acción, pausar en menús/diálogos es natural. El combate ya tiene su propio costo de tiempo.
-
-**Pregunta 10**: ¿Cuál prefieres?
+**Justificación**: Si el tiempo avanza por acción, pausar en menús/diálogos es natural y consistente.
 
 ---
 
 ### 6. Eventos Temporales
 
-**Decisión**: Todos los tipos, generados por LLM según NPC.
+**Decisión**: Generados dinámicamente por el LLM.
 
 #### Estructura de Eventos Temporales
 
 ```python
 class EventoTemporal:
     id: str                    # Identificador único
-    nombre: str                 # Nombre del evento
-    tipo: str                   # horario/diario/semanal/estacional/unico
-    trigger: dict               # Condiciones de activación
-    duracion: int               # Duración en minutos (0 = instantáneo)
-    efectos: list               # Efectos al activarse
-    repite: bool                # Si se repite
-    intervalo: int              # Intervalo de repetición (días)
-    
-    # Ejemplo: Tienda
-    # {
-    #   "tipo": "horario",
-    #   "trigger": {"hora_inicio": 8, "hora_fin": 20},
-    #   "duracion": 0,
-    #   "efectos": [{"tipo": "tienda_abierta", "npc_id": "comerciante_1"}]
-    # }
+    nombre: str                # Nombre del evento
+    tipo: str                  # horario/diario/semanal/estacional/unico
+    trigger: dict              # Condiciones de activación
+    duracion: int              # Duración en minutos (0 = instantáneo)
+    efectos: list              # Efectos al activarse
+    repite: bool               # Si se repite
+    intervalo: int             # Intervalo de repetición (días)
 ```
 
 #### Generación por LLM
 
-El LLM generará eventos basándose en:
+El LLM genera eventos dinámicamente basándose en:
 
 1. **NPC**: Personalidad, trabajo, relaciones
 2. **Ubicación**: Zona, bioma, tipo de asentamiento
 3. **Tiempo actual**: Hora, día, estación
 4. **Historia**: Eventos pasados, relaciones previas
-
-**Pregunta 11**: ¿El LLM debe generar eventos al crear el NPC o dinámicamente durante el juego?
 
 ---
 
@@ -198,17 +187,22 @@ El LLM generará eventos basándose en:
 
 ### 8. Integración con Otros Sistemas
 
-#### Clima
+#### Sistema de Mapa (Dependencia)
 
-El sistema de tiempo afecta el clima:
+El sistema de mapa define:
+- Distancias entre ubicaciones
+- Rutas disponibles
+- Tiempos de viaje
+
+El sistema de tiempo consume estos datos para calcular el tiempo de viaje.
+
+#### Clima
 
 - **Hora**: Algunos climas son más probables de noche
 - **Estación**: Invierno = más nieve, Verano = más calor
 - **Bioma**: Cada bioma tiene sus propias reglas
 
 #### NPCs
-
-Los NPCs tienen horarios:
 
 - **Sueño**: Horas de descanso
 - **Trabajo**: Horas de actividad
@@ -223,31 +217,12 @@ Los NPCs tienen horarios:
 
 #### Combate
 
-- **Costo de tiempo**: Cada combate avanza el reloj
+- **Costo de tiempo**: Cada combate avanza el reloj (5 min inicio + turnos)
 - **Condiciones**: Noche = más peligros, menos visibilidad
 
 ---
 
-## Preguntas para la Segunda Iteración
-
-### Pregunta 7: Costos de Tiempo por Acción
-¿Los tiempos propuestos (15 min moverse, 30 min explorar, etc.) te parecen correctos?
-
-### Pregunta 8: Biomas y Estaciones
-¿Quieres añadir más biomas o modificar los existentes?
-
-### Pregunta 9: Tiempo Inicial
-¿Cuándo empieza el jugador? (Mañana día 1 / Aleatorio / Según zona / Configurable)
-
-### Pregunta 10: Pausas del Tiempo
-¿El tiempo se pausa en combate/diálogos/menús?
-
-### Pregunta 11: Generación de Eventos por LLM
-¿El LLM genera eventos al crear el NPC o dinámicamente durante el juego?
-
----
-
-## Estructura de Archivos Propuesta
+## Estructura de Archivos
 
 ```
 backend/src/systems/
@@ -271,10 +246,23 @@ frontend/src/components/
 
 ---
 
+## Dependencias
+
+| Sistema | Relación |
+|---------|----------|
+| **Mapa** | Requerido para distancias y rutas |
+| Clima | Recibe hora y estación |
+| NPCs | Recibe hora para horarios |
+| Exploración | Recibe hora para visibilidad |
+| Combate | Recibe hora para condiciones |
+| LLM | Genera eventos dinámicos |
+
+---
+
 ## Próximos Pasos
 
-1. ✅ Primera iteración completada
-2. ⏳ Segunda iteración (preguntas 7-11)
-3. 🔜 Implementación en `experiments/tiempo/`
+1. ✅ Documento completado
+2. 🔜 Implementar sistema de mapa primero
+3. 🔜 Implementar sistema de tiempo en `experiments/tiempo/`
 4. 🔜 Tests de validación
 5. 🔜 Integración al backend principal
