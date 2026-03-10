@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Tuple, Any
 from enum import Enum
+from systems.npcs.emotion_engine import EstadoEmocional
 
 class EstadoVital(Enum):
     VIVO = "vivo"
@@ -253,6 +254,9 @@ class NPC:
     
     # Memoria
     memoria: MemoriaNPC = field(default_factory=MemoriaNPC)
+
+    # Emoción (gestionada por EmotionEngine)
+    estado_emocional: EstadoEmocional = field(default_factory=EstadoEmocional)
     
     # Flags
     conocido_por_jugador: bool = False
@@ -295,6 +299,7 @@ class NPC:
                 "tabla_precios": {"multiplicador": self.multiplicador_precios}
             },
             "memoria": self.memoria.to_dict(),
+            "estado_emocional": self.estado_emocional.to_dict(),
             "flags": {
                 "conocido_por_jugador": self.conocido_por_jugador,
                 "importante": self.importante,
@@ -336,6 +341,7 @@ class NPC:
             stock=inv.get("stock", []),
             multiplicador_precios=inv.get("tabla_precios", {}).get("multiplicador", 1.0),
             memoria=MemoriaNPC.from_dict(data.get("memoria", {})),
+            estado_emocional=EstadoEmocional.from_dict(data.get("estado_emocional", {})),
             conocido_por_jugador=flags.get("conocido_por_jugador", False),
             importante=flags.get("importante", False),
             es_unico=flags.get("es_unico", False),
