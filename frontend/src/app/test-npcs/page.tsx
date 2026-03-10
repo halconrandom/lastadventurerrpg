@@ -12,6 +12,7 @@ export default function TestNPCsPage() {
   const [chat, setChat] = useState<{ role: string, text: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [tiempo, setTiempo] = useState<any>(null);
+  const [lastDebug, setLastDebug] = useState<any>(null);
 
   useEffect(() => {
     fetchSlots();
@@ -70,10 +71,7 @@ export default function TestNPCsPage() {
       
       if (data.success) {
         setChat([...nuevoChat, { role: 'npc', text: data.data.respuesta }]);
-        // Si hay datos de debug, podrías mostrarlos en la consola o en un panel
-        console.log("NPC Thought:", data.data.debug.pensamiento);
-        console.log("NPC Decision:", data.data.debug.decision);
-        console.log("Animo Delta:", data.data.debug.animo_delta);
+        setLastDebug(data.data.debug || null);
       } else {
         setChat([...nuevoChat, { role: 'error', text: data.message }]);
       }
@@ -150,6 +148,42 @@ export default function TestNPCsPage() {
                   ))}
                   {loading && <div className="text-zinc-500 animate-pulse text-xs">Procesando respuesta...</div>}
                 </div>
+
+                {/* Panel de debug del nuevo pipeline cognitivo */}
+                {lastDebug && (
+                  <div className="mb-3 p-3 bg-zinc-900 border border-zinc-700 text-[11px] font-mono grid grid-cols-3 gap-x-4 gap-y-1">
+                    <div>
+                      <span className="text-zinc-500">INTENT </span>
+                      <span className="text-cyan-400">{lastDebug.intent ?? '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500">AGRESIÓN </span>
+                      <span className={lastDebug.agresion > 0.5 ? 'text-red-400' : 'text-green-400'}>
+                        {lastDebug.agresion?.toFixed(2) ?? '—'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500">META </span>
+                      <span className="text-yellow-400">{lastDebug.meta_activa ?? '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500">EMOCIÓN </span>
+                      <span className="text-purple-400">{lastDebug.emocion ?? '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500">INTENSIDAD </span>
+                      <span className="text-purple-300">{lastDebug.emocion_intensidad?.toFixed(2) ?? '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500">EFECTO </span>
+                      <span className={
+                        lastDebug.efecto_jugador === 'ayuda' ? 'text-green-400' :
+                        lastDebug.efecto_jugador === 'obstaculiza' ? 'text-red-400' :
+                        'text-zinc-400'
+                      }>{lastDebug.efecto_jugador ?? '—'}</span>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex gap-2">
                   <input 
