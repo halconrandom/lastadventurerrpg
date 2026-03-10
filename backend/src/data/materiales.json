@@ -1,0 +1,252 @@
+[
+    {
+        "id": "hierro",
+        "nombre": "Hierro",
+        "tipo": "metal",
+        "rareza": "comun",
+        "fuente": ["mina", "enemigo", "tienda"],
+        "valor": 5,
+        "uso": ["herreria"],
+        "descripcion": "Mineral de hierro básico para forja."
+    },
+    {
+        "id": "carbon",
+        "nombre": "Carbón",
+        "tipo": "combustible",
+        "rareza": "comun",
+        "fuente": ["mina", "tienda"],
+        "valor": 2,
+        "uso": ["herreria"],
+        "descripcion": "Carbón para la forja."
+    },
+    {
+        "id": "acero",
+        "nombre": "Acero",
+        "tipo": "metal",
+        "rareza": "raro",
+        "fuente": ["forja", "tienda_especializada", "enemigo_elite"],
+        "valor": 15,
+        "uso": ["herreria"],
+        "descripcion": "Acero refinado. Mejor que el hierro."
+    },
+    {
+        "id": "madera",
+        "nombre": "Madera",
+        "tipo": "material_base",
+        "rareza": "comun",
+        "fuente": ["bosque", "enemigo", "tienda"],
+        "valor": 3,
+        "uso": ["herreria", "construccion"],
+        "descripcion": "Madera básica de construcción."
+    },
+    {
+        "id": "cuero",
+        "nombre": "Cuero",
+        "tipo": "material_base",
+        "rareza": "comun",
+        "fuente": ["caza", "enemigo", "tienda"],
+        "valor": 8,
+        "uso": ["armadura", "crafteo"],
+        "descripcion": "Cuero de animal para armaduras ligeras."
+    },
+    {
+        "id": "tela",
+        "nombre": "Tela",
+        "tipo": "material_base",
+        "rareza": "comun",
+        "fuente": ["tienda", "enemigo"],
+        "valor": 5,
+        "uso": ["armadura", "crafteo"],
+        "descripcion": "Tela básica."
+    },
+    {
+        "id": "gema_ruby",
+        "nombre": "Rubí",
+        "tipo": "gema",
+        "rareza": "raro",
+        "fuente": ["mina_profunda", "jefe", "tienda_especializada"],
+        "valor": 50,
+        "uso": ["encantamiento", "herreria"],
+        "descripcion": "Gema roja que canaliza energía de fuego."
+    },
+    {
+        "id": "gema_zafiro",
+        "nombre": "Zafiro",
+        "tipo": "gema",
+        "rareza": "raro",
+        "fuente": ["mina_profunda", "jefe", "tienda_especializada"],
+        "valor": 50,
+        "uso": ["encantamiento", "herreria"],
+        "descripcion": "Gema azul que canaliza energía de hielo."
+    },
+    {
+        "id": "gema_esmeralda",
+        "nombre": "Esmeralda",
+        "tipo": "gema",
+        "rareza": "raro",
+        "fuente": ["mina_profunda", "jefe", "tienda_especializada"],
+        "valor": 50,
+        "uso": ["encantamiento", "herreria"],
+        "descripcion": "Gema verde que canaliza energía venenosa."
+    },
+    {
+        "id": "gema_topacio",
+        "nombre": "Topacio",
+        "tipo": "gema",
+        "rareza": "raro",
+        "fuente": ["mina_profunda", "jefe", "tienda_especializada"],
+        "valor": 50,
+        "uso": ["encantamiento", "herreria"],
+        "descripcion": "Gema amarilla que canaliza energía eléctrica."
+    },
+    {
+        "id": "mithril",
+        "nombre": "Mithril",
+        "tipo": "metal_magico",
+        "rareza": "epico",
+        "fuente": ["mina_profunda", "mazmorra", "jefe_epico"],
+        "valor": 100,
+        "uso": ["herreria"],
+        "descripcion": "Metal mágico ligero y resistente."
+    },
+    {
+        "id": "escama_dragon",
+        "nombre": "Escama de Dragón",
+        "tipo": "material_especial",
+        "rareza": "legendario",
+        "fuente": ["jefe_dragón", "mazmorra_final"],
+        "valor": 500,
+        "uso": ["herreria"],
+        "descripcion": "Escama de dragón. Material legendario."
+    },
+    {
+        "id": "cristal_hielo",
+        "nombre": "Cristal de Hielo",
+        "tipo": "material_especial",
+        "rareza": "legendario",
+        "fuente": ["zona_fria", "jefe_hielo"],
+        "valor": 400,
+        "uso": ["herreria", "encantamiento"],
+        "descripcion": "Cristalrozen del hielo eterno."
+    },
+    {
+        "id": "essence_void",
+        "nombre": "Esencia del Vacío",
+        "tipo": "material_especial",
+        "rareza": "unico",
+        "fuente": ["mazmorra_final", "jefe_final"],
+        "valor": 2000,
+        "uso": ["herreria"],
+        "descripcion": "Esencia del vacío. Material único."
+    },
+    {
+        "id": "plata_bendita",
+        "nombre": "Plata Bendita",
+        "tipo": "material_especial",
+        "rareza": "epico",
+        "fuente": ["templo", "mazmorra_sagrada"],
+        "valor": 150,
+        "uso": ["herreria"],
+        "descripcion": "Plata bendita. Efectiva contra no-muertos."
+    },
+    {
+        "id": "agua_bendita",
+        "nombre": "Agua Bendita",
+        "tipo": "consumible",
+        "rareza": "raro",
+        "fuente": ["templo", "tienda"],
+        "valor": 25,
+        "uso": ["purificacion", "alquimia"],
+        "descripcion": "Agua bendita. Elimina perks negativos."
+    },
+    {
+        "id": "luz_solar",
+        "nombre": "Luz Solar",
+        "tipo": "consumible",
+        "rareza": "epico",
+        "fuente": ["evento_especial", "templo_solar"],
+        "valor": 100,
+        "uso": ["purificacion"],
+        "descripcion": "Luz solar concentrada. Elimina hasta 2 perks negativos."
+    },
+    {
+        "id": "ritual_ancestral",
+        "nombre": "Ritual Ancestral",
+        "tipo": "consumible",
+        "rareza": "legendario",
+        "fuente": ["quest_epica", "jefe_legendario"],
+        "valor": 500,
+        "uso": ["purificacion"],
+        "descripcion": "Ritual antiguo. Elimina todos los perks negativos."
+    },
+    {
+        "id": "aceite_afilar",
+        "nombre": "Aceite de Afilar",
+        "tipo": "material_mejora",
+        "rareza": "comun",
+        "fuente": ["tienda", "crafteo"],
+        "valor": 10,
+        "uso": ["reforjar"],
+        "descripcion": "Mejora básica. +5% daño."
+    },
+    {
+        "id": "escencia_forja",
+        "nombre": "Escencia de Forja",
+        "tipo": "material_mejora",
+        "rareza": "raro",
+        "fuente": ["forja_avanzada", "tienda_especializada"],
+        "valor": 30,
+        "uso": ["reforjar"],
+        "descripcion": "Mejora intermedia. +10% stats."
+    },
+    {
+        "id": "fragmento_estelar",
+        "nombre": "Fragmento Estelar",
+        "tipo": "material_mejora",
+        "rareza": "epico",
+        "fuente": ["mazmorra", "evento_especial"],
+        "valor": 100,
+        "uso": ["reforjar"],
+        "descripcion": "Mejora avanzada. +15% stats + chance perk."
+    },
+    {
+        "id": "alma_herrero",
+        "nombre": "Alma de Herrero",
+        "tipo": "material_mejora",
+        "rareza": "legendario",
+        "fuente": ["jefe_legendario", "quest_especial"],
+        "valor": 300,
+        "uso": ["reforjar"],
+        "descripcion": "Mejora máxima. +20% stats + nuevo perk."
+    },
+    {
+        "id": "hierba_curativa",
+        "nombre": "Hierba Curativa",
+        "tipo": "ingrediente",
+        "rareza": "comun",
+        "fuente": ["bosque", "pradera", "tienda"],
+        "valor": 5,
+        "uso": ["alquimia"],
+        "descripcion": "Hierba básica para pociones."
+    },
+    {
+        "id": "agua_fuente",
+        "nombre": "Agua de Fuente",
+        "tipo": "ingrediente",
+        "rareza": "comun",
+        "fuente": ["fuente", "tienda"],
+        "valor": 2,
+        "uso": ["alquimia"],
+        "descripcion": "Agua limpia para pociones."
+    },
+    {
+        "id": "cristal_mana",
+        "nombre": "Cristal de Mana",
+        "tipo": "ingrediente",
+        "rareza": "raro",
+        "fuente": ["mina_magica", "enemigo_mago"],
+        "valor": 40,
+        "uso": ["alquimia", "encantamiento"],
+        "descripcion": "Cristal que contiene energía mística."
+    }
+]

@@ -116,6 +116,13 @@ class Tile:
     enemigos_potenciales: List[str] = field(default_factory=list)
     eventos: List[str] = field(default_factory=list)
     
+    # POI Dinámico (✨)
+    tiene_poi: bool = False
+    poi_completado: bool = False
+    poi_tipo: Optional[str] = None              # combate, npc, tesoro, descubrimiento, mistico, comercio
+    poi_data: Dict[str, Any] = field(default_factory=dict)
+    poi_fecha_regeneracion: Optional[int] = None # Tick en el que se regenera
+    
     # Sub-tiles SIEMPRE existen (10x10 = 100 subtiles de 10m cada uno)
     # Se generan lazy cuando el jugador entra al tile por primera vez
     sub_tiles: List[List[SubTile]] = field(default_factory=list)
@@ -196,6 +203,11 @@ class Tile:
             "recursos": self.recursos,
             "enemigos_potenciales": self.enemigos_potenciales,
             "eventos": self.eventos,
+            "tiene_poi": self.tiene_poi,
+            "poi_completado": self.poi_completado,
+            "poi_tipo": self.poi_tipo,
+            "poi_data": self.poi_data,
+            "poi_fecha_regeneracion": self.poi_fecha_regeneracion,
             "sub_tiles": [[st.to_dict() for st in fila] for fila in self.sub_tiles] if self.sub_tiles else [],
             "sub_tiles_generados": self.sub_tiles_generados,
             "rutas": self.rutas,
@@ -214,6 +226,11 @@ class Tile:
             recursos=data.get("recursos", []),
             enemigos_potenciales=data.get("enemigos_potenciales", []),
             eventos=data.get("eventos", []),
+            tiene_poi=data.get("tiene_poi", False),
+            poi_completado=data.get("poi_completado", False),
+            poi_tipo=data.get("poi_tipo"),
+            poi_data=data.get("poi_data", {}),
+            poi_fecha_regeneracion=data.get("poi_fecha_regeneracion"),
             rutas=data.get("rutas", []),
             costo_movimiento=data.get("costo_movimiento", 1.0),
             sub_tiles_generados=data.get("sub_tiles_generados", False)

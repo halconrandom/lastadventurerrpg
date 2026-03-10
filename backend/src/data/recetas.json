@@ -1,0 +1,224 @@
+{
+  "version": "1.0",
+  "descripcion": "Recetas de crafteo - Last Adventurer",
+  "estaciones": {
+    "yunque": {
+      "nombre": "Yunque",
+      "descripcion": "Estación para forjar armas y armaduras",
+      "recetas_craft": [
+        {
+          "id": "receta_yunque",
+          "nombre": "Yunque Básico",
+          "materiales": [
+            {"id": "piedra", "cantidad": 10},
+            {"id": "hierro", "cantidad": 5},
+            {"id": "carbon", "cantidad": 3}
+          ],
+          "tiempo": 60,
+          "herramienta": null
+        }
+      ],
+      "recetas_items": [
+        {
+          "id": "receta_espada_hierro",
+          "nombre": "Espada de Hierro",
+          "id_item": "espada_hierro",
+          "materiales": [
+            {"id": "hierro", "cantidad": 3},
+            {"id": "madera", "cantidad": 1}
+          ],
+          "tiempo": 10,
+          "nivel_requerido": 1
+        },
+        {
+          "id": "receta_espadon_hierro",
+          "nombre": "Espadón de Hierro",
+          "id_item": "espadon_hierro",
+          "materiales": [
+            {"id": "hierro", "cantidad": 6},
+            {"id": "madera", "cantidad": 2}
+          ],
+          "tiempo": 15,
+          "nivel_requerido": 2
+        },
+        {
+          "id": "receta_escudo_madera",
+          "nombre": "Escudo de Madera",
+          "id_item": "escudo_madera",
+          "materiales": [
+            {"id": "madera", "cantidad": 4}
+          ],
+          "tiempo": 8,
+          "nivel_requerido": 1
+        },
+        {
+          "id": "receta_escudo_acero",
+          "nombre": "Escudo de Acero",
+          "id_item": "escudo_acero",
+          "materiales": [
+            {"id": "hierro", "cantidad": 5},
+            {"id": "madera", "cantidad": 1}
+          ],
+          "tiempo": 12,
+          "nivel_requerido": 2
+        },
+        {
+          "id": "receta_armadura_cuero",
+          "nombre": "Armadura de Cuero",
+          "id_item": "armadura_cuero",
+          "materiales": [
+            {"id": "cuero", "cantidad": 5}
+          ],
+          "tiempo": 10,
+          "nivel_requerido": 1
+        },
+        {
+          "id": "receta_armadura_placas",
+          "nombre": "Armadura de Placas",
+          "id_item": "armadura_placas",
+          "materiales": [
+            {"id": "hierro", "cantidad": 12},
+            {"id": "cuero", "cantidad": 3}
+          ],
+          "tiempo": 20,
+          "nivel_requerido": 3
+        },
+        {
+          "id": "receta_casco_cuero",
+          "nombre": "Casco de Cuero",
+          "id_item": "casco_cuero",
+          "materiales": [
+            {"id": "cuero", "cantidad": 2}
+          ],
+          "tiempo": 5,
+          "nivel_requerido": 1
+        },
+        {
+          "id": "receta_casco_hierro",
+          "nombre": "Casco de Hierro",
+          "id_item": "casco_hierro",
+          "materiales": [
+            {"id": "hierro", "cantidad": 3}
+          ],
+          "tiempo": 8,
+          "nivel_requerido": 2
+        },
+        {
+          "id": "receta_guantes_cuero",
+          "nombre": "Guantes de Cuero",
+          "id_item": "guantes_cuero",
+          "materiales": [
+            {"id": "cuero", "cantidad": 2}
+          ],
+          "tiempo": 5,
+          "nivel_requerido": 1
+        },
+        {
+          "id": "receta_botas_cuero",
+          "nombre": "Botas de Cuero",
+          "id_item": "botas_cuero",
+          "materiales": [
+            {"id": "cuero", "cantidad": 3}
+          ],
+          "tiempo": 6,
+          "nivel_requerido": 1
+        }
+      ]
+    },
+    "mesa_trabajo": {
+      "nombre": "Mesa de Trabajo",
+      "descripcion": "Estación para crear items y mejoras",
+      "recetas_craft": [
+        {
+          "id": "receta_mesa_trabajo",
+          "nombre": "Mesa de Trabajo Básica",
+          "materiales": [
+            {"id": "madera", "cantidad": 15},
+            {"id": "hierro", "cantidad": 3},
+            {"id": "cuero", "cantidad": 2}
+          ],
+          "tiempo": 45,
+          "herramienta": null
+        }
+      ],
+      "recetas_items": [
+        {
+          "id": "receta_kit_reparacion",
+          "nombre": "Kit de Reparación",
+          "id_item": "kit_reparacion",
+          "materiales": [
+            {"id": "hierro", "cantidad": 2},
+            {"id": "cuero", "cantidad": 1}
+          ],
+          "tiempo": 5,
+          "nivel_requerido": 1
+        },
+        {
+          "id": "receta_pergamino_identificar",
+          "nombre": "Pergamino de Identificar",
+          "id_item": "pergamino_identificar",
+          "materiales": [
+            {"id": "tela", "cantidad": 2},
+            {"id": "tinta", "cantidad": 1}
+          ],
+          "tiempo": 8,
+          "nivel_requerido": 2
+        }
+      ]
+    },
+    "taller": {
+      "nombre": "Taller",
+      "descripcion": "Estación para crear herramientas",
+      "recetas_craft": [
+        {
+          "id": "receta_taller",
+          "nombre": "Taller Básico",
+          "materiales": [
+            {"id": "hierro", "cantidad": 8},
+            {"id": "madera", "cantidad": 5},
+            {"id": "cuero", "cantidad": 3}
+          ],
+          "tiempo": 45,
+          "herramienta": null
+        }
+      ],
+      "recetas_items": []
+    },
+    "horno": {
+      "nombre": "Horno",
+      "descripcion": "Estación para procesar materiales y crear comida",
+      "recetas_craft": [
+        {
+          "id": "receta_horno",
+          "nombre": "Horno Básico",
+          "materiales": [
+            {"id": "piedra", "cantidad": 15},
+            {"id": "arcilla", "cantidad": 5},
+            {"id": "carbon", "cantidad": 5}
+          ],
+          "tiempo": 45,
+          "herramienta": null
+        }
+      ],
+      "recetas_items": []
+    },
+    "banco_carpintero": {
+      "nombre": "Banco de Carpintero",
+      "descripcion": "Estación para crear muebles y estructuras",
+      "recetas_craft": [
+        {
+          "id": "receta_banco_carpintero",
+          "nombre": "Banco de Carpintero Básico",
+          "materiales": [
+            {"id": "madera", "cantidad": 20},
+            {"id": "hierro", "cantidad": 2},
+            {"id": "clavos", "cantidad": 5}
+          ],
+          "tiempo": 60,
+          "herramienta": null
+        }
+      ],
+      "recetas_items": []
+    }
+  }
+}

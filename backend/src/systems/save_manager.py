@@ -7,7 +7,7 @@ class SaveManager:
 
     SLOTS_DIR = "saves"
     NUM_SLOTS = 3
-    VERSION = "1.5"  # Actualizado para incluir narrativa e historial
+    VERSION = "1.6"  # Actualizado para incluir combate activo
 
     def __init__(self):
         self._asegurar_directorio()
@@ -157,6 +157,10 @@ class SaveManager:
             if "tags" not in data["progreso"]:
                 data["progreso"]["tags"] = []
 
+        # Migración de 1.5 a 1.6: añadir combate activo
+        if version_guardada in ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"] and "combate" not in data:
+            data["combate"] = None  # None significa que no hay combate activo
+
         # Migración de stats: añadir aliases para frontend
         if "personaje" in data and "stats" in data["personaje"]:
             stats = data["personaje"]["stats"]
@@ -248,5 +252,6 @@ class SaveManager:
                 "rumores": []
             },
             "tiempo": {"tick_total": 480},
-            "historial_eventos": []
+            "historial_eventos": [],
+            "combate": None  # None significa que no hay combate activo
         }

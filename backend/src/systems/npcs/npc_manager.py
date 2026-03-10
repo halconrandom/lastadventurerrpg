@@ -57,11 +57,29 @@ class NPCManager:
 
     def generar_npcs_para_ubicacion(self, ubicacion_id: str, tipo: str, tile: Tuple[int, int], cantidad: int = 10):
         """Genera un grupo de NPCs para una nueva ubicación descubierta."""
+        nuevos_npcs = []
+        
+        # Primero generar todos los NPCs
         for i in range(cantidad):
             npc_id = f"npc_{ubicacion_id}_{i}"
             if npc_id not in self.npcs_cargados:
                 nuevo_npc = self.generador.generar_npc(npc_id, ubicacion_id, tipo, tile)
                 self.registrar_npc(nuevo_npc)
+                nuevos_npcs.append(nuevo_npc)
+        
+        # Luego generar relaciones entre todos los NPCs de la ubicación
+        if nuevos_npcs:
+            self._generar_relaciones_entre_npcs(nuevos_npcs, ubicacion_id)
+    
+    def _generar_relaciones_entre_npcs(self, nuevos_npcs: List[NPC], ubicacion_id: str):
+        """Genera relaciones iniciales entre NPCs de la misma ubicación."""
+        # Obtener todos los NPCs de la ubicación (incluyendo los nuevos)
+        todos_npcs = [npc for npc in self.npcs_cargados.values() 
+                      if npc.ubicacion.ubicacion_id == ubicacion_id]
+        
+        for npc in nuevos_npcs:
+            # Generar relaciones con otros NPCs de la ubicación
+            self.generador.generar_relaciones_iniciales(npc, todos_npcs, ubicacion_id)
 
     def _calcular_distancia(self, pos1: Tuple[int, int], pos2: Tuple[int, int]) -> float:
         return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)

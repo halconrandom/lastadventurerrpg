@@ -50,7 +50,7 @@ El inventario se divide en **3 secciones principales** con funciones diferenciad
 
 ### Slots Base
 - **Capacidad inicial**: 10 slots
-- **Capacidad máxima**: 20 slots (con mejoras)
+- **Capacidad máxima**: 30 slots (con mejoras)
 - **Sistema de stacks**: Los items se apilan según su tipo
 
 ### Tipos de Items en Alforjas
@@ -77,7 +77,7 @@ El inventario se puede ampliar de múltiples formas:
 
 **Concepto simple**: "Las alforjas ahora son más grandes" - no es necesario complicarlo más allá de la narrativa.
 
-**Capacidad base**: 10 slots → **Capacidad máxima**: 20 slots
+**Capacidad base**: 10 slots → **Capacidad máxima**: 30 slots
 
 ---
 
@@ -177,23 +177,21 @@ Set del Guerrero de Hierro (6 piezas: casco, peto, guantes, botas, amuleto, anil
 
 | Rareza | Color | Formato en Texto |
 |--------|-------|-------------------|
-| Común | Gris | `[Espada de Hierro]` - Sin formato especial |
-| Poco Común | Verde | `**Espada de Hierro**` - Texto verde |
-| Raro | Azul | `**Espada de Hierro**` - Texto azul |
-| Épico | Morado | `***Espada de Hierro***` - Texto morado, bold |
-| Legendario | Naranja | `***Espada de Hierro***` - Texto naranja, bold+italic |
-| Único | Rojo | `***Espada de Hierro***` - Texto rojo, bold+italic, descripción extendida |
+| Común | Gris (#9CA3AF) | `Espada de Hierro` |
+| Raro | Verde (#22C55E) | `**Espada de Hierro**` |
+| Épico | Púrpura (#A855F7) | `***Espada de Hierro***` |
+| Legendario | Naranja (#F97316) | `***Espada de Hierro***` |
+| Único | Rojo (#EF4444) | `***Espada de Hierro***` |
 
 ### Stats por Rareza
 
-| Rareza | Modificadores | Ejemplo |
-|--------|---------------|---------|
-| Común | Base | Espada: 10-15 daño |
-| Poco Común | +1 modificador | Espada: 11-16 daño |
-| Raro | +2 modificadores | Espada: 12-17 daño + velocidad |
-| Épico | +3 modificadores | Espada: 13-18 daño + velocidad + crítico |
-| Legendario | +4 modificadores + efecto | Espada: 15-20 daño + efecto especial |
-| Único | Stats únicos | Stats predefinidos |
+| Rareza | Modificador Daño | Perks Positivos | Perks Negativos |
+|--------|------------------|-----------------|-----------------|
+| Común | x1.0 | 0 | 0 |
+| Raro | x1.1 | 0-1 | 0-1 |
+| Épico | x1.25 | 1-2 | 0-1 |
+| Legendario | x1.5 | 2-3 | 0 |
+| Único | x2.0 | 3-4 | 0 |
 
 ---
 
@@ -343,7 +341,6 @@ Set del Guerrero de Hierro (6 piezas: casco, peto, guantes, botas, amuleto, anil
 | Rareza | Requiere Identificación |
 |--------|------------------------|
 | Común | No |
-| Poco Común | No |
 | Raro | Sí |
 | Épico | Sí |
 | Legendario | Sí |
@@ -398,39 +395,27 @@ Set del Guerrero de Hierro (6 piezas: casco, peto, guantes, botas, amuleto, anil
 
 ## Sistema de Durabilidad
 
-**Sistema implementado**: Los items se desgastan con el uso y pueden romperse.
+**Ver documento:** `SISTEMA_DURABILIDAD.md` para detalles completos.
 
-### Items con Durabilidad
+### Resumen de Durabilidad por Rareza
 
-| Tipo de Item | Tiene Durabilidad | Desgaste |
-|--------------|-------------------|----------|
-| Armas | Sí | -1 por ataque |
-| Armaduras | Sí | -1 por golpe recibido |
-| Herramientas | Sí | -1 por uso |
-| Consumibles | No | N/A |
-| Materiales | No | N/A |
-| Misceláneos | Depende | N/A |
+| Rareza | Modificador Durabilidad | Reparaciones Máximas |
+|--------|------------------------|---------------------|
+| Común | x1.0 | 3 |
+| Raro | x1.25 | 5 |
+| Épico | x1.5 | 8 |
+| Legendario | x2.0 | 10 |
+| Único | x2.5 | 15 |
 
 ### Estados de Durabilidad
 
 | Estado | Porcentaje | Efecto |
 |--------|------------|--------|
-| **Perfecto** | 100% | Sin penalización |
-| **Bueno** | 75-99% | Sin penalización |
-| **Desgastado** | 50-74% | -10% efectividad |
-| **Dañado** | 25-49% | -25% efectividad |
-| **Roto** | 0-24% | -50% efectividad, riesgo de destrucción |
-| **Destruido** | 0% | Item eliminado |
-
-### Reparación
-
-| Método | Descripción | Coste |
-|--------|-------------|-------|
-| **Herrero NPC** | Reparación completa | 10% del valor del item por punto |
-| **Kit de Reparación** | Consumible de un uso | 25 oro |
-| **Habilidad Herrería** | Reparar en campo | Materiales + tiempo |
-
-Ver documento: `SISTEMA_DURABILIDAD.md` para más detalles.
+| Perfecto | 100-76% | Sin penalización |
+| Usado | 75-51% | Sin penalización |
+| Gastado | 50-26% | -10% stats |
+| 趙易 | 25-1% | -25% stats |
+| Roto | 0% | No usable |
 
 ---
 
@@ -443,7 +428,6 @@ Ver documento: `SISTEMA_DURABILIDAD.md` para más detalles.
 | Rareza | Encantable | Slots de Encantamiento |
 |--------|------------|------------------------|
 | Común | No | 0 |
-| Poco Común | No | 0 |
 | Raro | Sí | 1 slot |
 | Épico | Sí | 2 slots |
 | Legendario | Sí | 3 slots |
@@ -506,10 +490,9 @@ Ver documento: `SISTEMA_DURABILIDAD.md` para más detalles.
 | Rareza | Precio Base | % del Valor Real |
 |--------|-------------|-------------------|
 | Común | 10-50 oro | 50% |
-| Poco Común | 50-200 oro | 50% |
-| Raro | 200-1000 oro | 50% |
-| Épico | 1000-5000 oro | 50% |
-| Legendario | 5000-50000 oro | 50% |
+| Raro | 50-500 oro | 50% |
+| Épico | 500-3000 oro | 50% |
+| Legendario | 3000-20000 oro | 50% |
 | Único | No se puede vender | N/A |
 
 ### Ejemplo de Cálculo
@@ -598,7 +581,51 @@ Los NPCs venden items a precio completo (100% del valor), pero los descuentos po
 
 ---
 
-## Interacciones del Inventario
+## Sistema de Comparación de Items
+
+**Implementado**: Al equipar un item, se muestra comparación con el item actual.
+
+### UI de Comparación
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        COMPARANDO                                │
+├──────────────────────────┬──────────────────────────────────────┤
+│     ITEM ACTUAL          │        NUEVO ITEM                   │
+│   Espada de Hierro       │      Espada de Acero                 │
+│   [Raro]                 │      [Épico]                         │
+│                         │                                       │
+│   Daño: 12-18           │      Daño: 15-22  (+4)               │
+│   Velocidad: 1.0        │      Velocidad: 1.1 (+0.1)            │
+│   Rareza: +10%          │      Rareza: +25%     (+15%)         │
+│                         │      [Perk: filo durable]            │
+│   ─────────────────     │      ─────────────────               │
+│                         │                                       │
+│   Estado: Perfecto      │      Estado: Perfecto                │
+│                         │                                       │
+├──────────────────────────┴──────────────────────────────────────┤
+│  [ x ] No mostrar más    [Equipar]      [Cancelar]             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Stats Comparados
+
+| Stat | Mostrar |
+|------|---------|
+| Daño/Ataque | Diferencia (+/-) |
+| Defensa | Diferencia (+/-) |
+| Velocidad | Diferencia (+/-) |
+| Perks | Nuevos perks en verde |
+| Durabilidad | Estado actual |
+| Peso | Diferencia (+/-) |
+| Valor | Diferencia (+/-) |
+
+### Comparación Automática
+
+- Se muestra al hacer drag & drop a slot de equipamiento
+- Se muestra al hacer doble-click en slot de equipamiento con item en cursor
+- Se puede desactivar marcando "No mostrar más"
+- Se puede reactivarr en opciones
 
 ### Acciones Disponibles
 
@@ -651,8 +678,9 @@ Los NPCs venden items a precio completo (100% del valor), pero los descuentos po
 
 ### Pendientes
 
-13. **Comparación de items**: ¿Mostrar comparación al equipar?
-    > [PENDIENTE]
+- [x] **Comparación de items**: **Sí, comparar** → Al equipar, muestra stats old vs new
+- [x] **Slots iniciales**: **10 slots**
+- [x] **Stacks máximos**: **Como está ahora** → Consumibles 10, Materiales 50
 
 ---
 

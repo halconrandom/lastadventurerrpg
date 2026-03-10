@@ -2,81 +2,961 @@
     {
         "id": "ropajes_basicos",
         "nombre": "Ropajes Básicos",
-        "tipo": "cosmetico",
-        "efecto": 0,
+        "tipo": "armadura",
+        "subtipo": "tela",
         "descripcion": "Ropajes simples de viaje. No proporcionan protección.",
-        "stackable": false
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "dano_min": 0,
+            "dano_max": 0,
+            "defensa": 1,
+            "resistencia": 0,
+            "velocidad": 100,
+            "peso": 1,
+            "valor": 10,
+            "durabilidad_maxima": 50
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {},
+        "tipo_equipamiento": "peto",
+        "manos": 1
     },
     {
         "id": "pocion_pequena",
         "nombre": "Poción Pequeña",
         "tipo": "pocion",
-        "efecto": 20,
-        "descripcion": "Cura 20 HP",
-        "stackable": true
+        "subtipo": "curacion",
+        "descripcion": "Restaura 20 HP",
+        "stackable": true,
+        "stack_max": 10,
+        "rareza": "comun",
+        "stats": {
+            "valor": 10
+        },
+        "efectos": ["curar_hp_20"],
+        "perks": [],
+        "perks_negativos": []
     },
     {
         "id": "pocion_grande",
         "nombre": "Poción Grande",
         "tipo": "pocion",
-        "efecto": 50,
-        "descripcion": "Cura 50 HP",
-        "stackable": true
+        "subtipo": "curacion",
+        "descripcion": "Restaura 50 HP",
+        "stackable": true,
+        "stack_max": 10,
+        "rareza": "raro",
+        "stats": {
+            "valor": 30
+        },
+        "efectos": ["curar_hp_50"],
+        "perks": [],
+        "perks_negativos": []
     },
     {
         "id": "pocion_maxima",
         "nombre": "Poción Máxima",
         "tipo": "pocion",
-        "efecto": 100,
-        "descripcion": "Cura 100 HP",
-        "stackable": true
+        "subtipo": "curacion",
+        "descripcion": "Restaura 100 HP",
+        "stackable": true,
+        "stack_max": 10,
+        "rareza": "epico",
+        "stats": {
+            "valor": 75
+        },
+        "efectos": ["curar_hp_100"],
+        "perks": [],
+        "perks_negativos": []
     },
     {
         "id": "elixir_vida",
         "nombre": "Elixir de Vida",
         "tipo": "pocion",
-        "efecto": 999,
-        "descripcion": "Cura todo el HP",
-        "stackable": true
+        "subtipo": "curacion",
+        "descripcion": "Restaura todo el HP",
+        "stackable": true,
+        "stack_max": 5,
+        "rareza": "legendario",
+        "stats": {
+            "valor": 200
+        },
+        "efectos": ["curar_hp_todo"],
+        "perks": [],
+        "perks_negativos": []
     },
     {
         "id": "espada_hierro",
         "nombre": "Espada de Hierro",
         "tipo": "arma",
-        "efecto": 5,
-        "descripcion": "Aumenta ataque +5",
-        "stackable": false
+        "subtipo": "espada_una_mano",
+        "descripcion": "Espada básica de hierro. Firme y confiable.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "dano_min": 5,
+            "dano_max": 15,
+            "velocidad": 100,
+            "critico": 5,
+            "peso": 5,
+            "valor": 50,
+            "durabilidad_maxima": 100
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 10
+        },
+        "tipo_arma": "espada",
+        "manos": 1
     },
     {
         "id": "espada_acero",
         "nombre": "Espada de Acero",
         "tipo": "arma",
-        "efecto": 10,
-        "descripcion": "Aumenta ataque +10",
-        "stackable": false
+        "subtipo": "espada_una_mano",
+        "descripcion": "Espada de acero de buena calidad. Más daño que las de hierro.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "raro",
+        "stats": {
+            "dano_min": 10,
+            "dano_max": 22,
+            "velocidad": 105,
+            "critico": 7,
+            "peso": 5,
+            "valor": 150,
+            "durabilidad_maxima": 125
+        },
+        "perks": [
+            {
+                "id": "filo_duradero",
+                "nombre": "Filo Duradero",
+                "tipo": "positivo",
+                "efecto": "+15% durabilidad",
+                "valor": 15
+            }
+        ],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 15
+        },
+        "tipo_arma": "espada",
+        "manos": 1
+    },
+    {
+        "id": "espada_mithril",
+        "nombre": "Espada de Mithril",
+        "tipo": "arma",
+        "subtipo": "espada_una_mano",
+        "descripcion": "Espadaforjada con mithril. Ligera y mortal.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "epico",
+        "stats": {
+            "dano_min": 15,
+            "dano_max": 28,
+            "velocidad": 120,
+            "critico": 12,
+            "peso": 3,
+            "valor": 500,
+            "durabilidad_maxima": 150
+        },
+        "perks": [
+            {
+                "id": "ligero_viento",
+                "nombre": "Ligero como el Viento",
+                "tipo": "positivo",
+                "efecto": "-15% peso",
+                "valor": 15
+            },
+            {
+                "id": "golpe_critico",
+                "nombre": "Golpe Crítico",
+                "tipo": "positivo",
+                "efecto": "+5% crítico",
+                "valor": 5
+            }
+        ],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 20
+        },
+        "tipo_arma": "espada",
+        "manos": 1
+    },
+    {
+        "id": "espada_dragon",
+        "nombre": "Espada del Dragón",
+        "tipo": "arma",
+        "subtipo": "espada_una_mano",
+        "descripcion": "Forjada con escamas de dragón. Irradia calor.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "legendario",
+        "stats": {
+            "dano_min": 20,
+            "dano_max": 35,
+            "dano_fuego": 15,
+            "velocidad": 110,
+            "critico": 15,
+            "peso": 6,
+            "valor": 2000,
+            "durabilidad_maxima": 200
+        },
+        "perks": [
+            {
+                "id": "toque_fuego",
+                "nombre": "Toque de Fuego",
+                "tipo": "positivo",
+                "efecto": "+25% daño fuego",
+                "valor": 25
+            },
+            {
+                "id": "impacto_pesado",
+                "nombre": "Impacto Pesado",
+                "tipo": "positivo",
+                "efecto": "+20% daño",
+                "valor": 20
+            },
+            {
+                "id": "vampirismo",
+                "nombre": "Vampirismo",
+                "tipo": "positivo",
+                "efecto": "+10% robo de vida",
+                "valor": 10
+            }
+        ],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 30
+        },
+        "tipo_arma": "espada",
+        "manos": 1
+    },
+    {
+        "id": "espadon_hierro",
+        "nombre": "Espadón de Hierro",
+        "tipo": "arma",
+        "subtipo": "espada_dos_manos",
+        "descripcion": "Espadón pesado que requiere ambas manos.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "dano_min": 8,
+            "dano_max": 22,
+            "velocidad": 80,
+            "critico": 3,
+            "peso": 12,
+            "valor": 80,
+            "durabilidad_maxima": 80
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 20
+        },
+        "tipo_arma": "espadon",
+        "manos": 2
+    },
+    {
+        "id": "arco_corto",
+        "nombre": "Arco Corto",
+        "tipo": "arma",
+        "subtipo": "arco",
+        "descripcion": "Arco simple y rápido.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "dano_min": 4,
+            "dano_max": 12,
+            "velocidad": 120,
+            "critico": 8,
+            "peso": 2,
+            "valor": 40,
+            "durabilidad_maxima": 120
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {
+            "destreza": 10
+        },
+        "tipo_arma": "arco",
+        "manos": 2
+    },
+    {
+        "id": "arco_largo",
+        "nombre": "Arco Largo",
+        "tipo": "arma",
+        "subtipo": "arco",
+        "descripcion": "Arco largo de guerra. Mayor alcance y daño.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "raro",
+        "stats": {
+            "dano_min": 8,
+            "dano_max": 20,
+            "velocidad": 110,
+            "critico": 10,
+            "peso": 3,
+            "valor": 180,
+            "durabilidad_maxima": 140
+        },
+        "perks": [
+            {
+                "id": "balance_perfecto",
+                "nombre": "Balance Perfecto",
+                "tipo": "positivo",
+                "efecto": "+10% velocidad",
+                "valor": 10
+            }
+        ],
+        "perks_negativos": [],
+        "requisitos": {
+            "destreza": 15
+        },
+        "tipo_arma": "arco",
+        "manos": 2
+    },
+    {
+        "id": "dagas",
+        "nombre": "Dagas",
+        "tipo": "arma",
+        "subtipo": "dagas",
+        "descripcion": "Par de dagas rápidas.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "dano_min": 3,
+            "dano_max": 10,
+            "velocidad": 140,
+            "critico": 15,
+            "peso": 2,
+            "valor": 35,
+            "durabilidad_maxima": 60
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {
+            "destreza": 8
+        },
+        "tipo_arma": "daga",
+        "manos": 1
     },
     {
         "id": "escudo_madera",
         "nombre": "Escudo de Madera",
         "tipo": "armadura",
-        "efecto": 3,
-        "descripcion": "Aumenta defensa +3",
-        "stackable": false
+        "subtipo": "escudo",
+        "descripcion": "Escudo básico de madera.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "defensa": 5,
+            "bloqueo": 10,
+            "peso": 4,
+            "valor": 25,
+            "durabilidad_maxima": 80
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 8
+        },
+        "tipo_equipamiento": "escudo",
+        "manos": 1
+    },
+    {
+        "id": "escudo_acero",
+        "nombre": "Escudo de Acero",
+        "tipo": "armadura",
+        "subtipo": "escudo",
+        "descripcion": "Escudo de acero reforzado.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "raro",
+        "stats": {
+            "defensa": 10,
+            "bloqueo": 20,
+            "peso": 6,
+            "valor": 120,
+            "durabilidad_maxima": 100
+        },
+        "perks": [
+            {
+                "id": "bloqueo_experto",
+                "nombre": "Bloqueo Experto",
+                "tipo": "positivo",
+                "efecto": "+10% bloqueo",
+                "valor": 10
+            }
+        ],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 12
+        },
+        "tipo_equipamiento": "escudo",
+        "manos": 1
+    },
+    {
+        "id": "armadura_cuero",
+        "nombre": "Armadura de Cuero",
+        "tipo": "armadura",
+        "subtipo": "armadura_ligera",
+        "descripcion": "Armadura ligera de cuero.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "defensa": 5,
+            "resistencia": 2,
+            "velocidad": 100,
+            "peso": 5,
+            "valor": 50,
+            "durabilidad_maxima": 80
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {},
+        "tipo_equipamiento": "peto",
+        "manos": 1
     },
     {
         "id": "armadura_placas",
         "nombre": "Armadura de Placas",
         "tipo": "armadura",
-        "efecto": 8,
-        "descripcion": "Aumenta defensa +8",
-        "stackable": false
+        "subtipo": "armadura_pesada",
+        "descripcion": "Armadura pesada de placas de metal.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "raro",
+        "stats": {
+            "defensa": 15,
+            "resistencia": 5,
+            "velocidad": 90,
+            "peso": 15,
+            "valor": 250,
+            "durabilidad_maxima": 150
+        },
+        "perks": [
+            {
+                "id": "acero_endurecido",
+                "nombre": "Acero Endurecido",
+                "tipo": "positivo",
+                "efecto": "+25% durabilidad",
+                "valor": 25
+            }
+        ],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 20
+        },
+        "tipo_equipamiento": "peto",
+        "manos": 1
+    },
+    {
+        "id": "casco_cuero",
+        "nombre": "Casco de Cuero",
+        "tipo": "armadura",
+        "subtipo": "casco",
+        "descripcion": "Casco ligero de cuero.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "defensa": 2,
+            "peso": 1,
+            "valor": 20,
+            "durabilidad_maxima": 60
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "tipo_equipamiento": "casco",
+        "manos": 1
+    },
+    {
+        "id": "casco_hierro",
+        "nombre": "Casco de Hierro",
+        "tipo": "armadura",
+        "subtipo": "casco",
+        "descripcion": "Casco de hierro.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "raro",
+        "stats": {
+            "defensa": 5,
+            "peso": 3,
+            "valor": 80,
+            "durabilidad_maxima": 80
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {
+            "fuerza": 10
+        },
+        "tipo_equipamiento": "casco",
+        "manos": 1
+    },
+    {
+        "id": "guantes_cuero",
+        "nombre": "Guantes de Cuero",
+        "tipo": "armadura",
+        "subtipo": "guantes",
+        "descripcion": "Guantes de cuero.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "defensa": 1,
+            "peso": 1,
+            "valor": 15,
+            "durabilidad_maxima": 60
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "tipo_equipamiento": "guantes",
+        "manos": 1
+    },
+    {
+        "id": "botas_cuero",
+        "nombre": "Botas de Cuero",
+        "tipo": "armadura",
+        "subtipo": "botas",
+        "descripcion": "Botas de viaje.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "comun",
+        "stats": {
+            "defensa": 1,
+            "peso": 2,
+            "valor": 20,
+            "durabilidad_maxima": 60
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "tipo_equipamiento": "botas",
+        "manos": 1
     },
     {
         "id": "anillo_poder",
         "nombre": "Anillo de Poder",
         "tipo": "accesorio",
-        "efecto": 3,
-        "descripcion": "Aumenta ATK y DEF +3",
-        "stackable": false
+        "subtipo": "anillo",
+        "descripcion": "Aumenta ATK y DEF ligeramente.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "raro",
+        "stats": {
+            "defensa": 3,
+            "valor": 100,
+            "durabilidad_maxima": 999
+        },
+        "perks": [
+            {
+                "id": "poder_arcano",
+                "nombre": "Poder Arcano",
+                "tipo": "positivo",
+                "efecto": "+3 ATK y DEF",
+                "valor": 3
+            }
+        ],
+        "perks_negativos": [],
+        "requisitos": {},
+        "tipo_equipamiento": "anillo",
+        "manos": 1
+    },
+    {
+        "id": "amuleto_vida",
+        "nombre": "Amuleto de Vida",
+        "tipo": "accesorio",
+        "subtipo": "amuleto",
+        "descripcion": "Amuleto que otorga vitalidad.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "epico",
+        "stats": {
+            "resistencia": 10,
+            "robo_vida": 5,
+            "valor": 500,
+            "durabilidad_maxima": 999
+        },
+        "perks": [
+            {
+                "id": "vitalidad",
+                "nombre": "Vitalidad",
+                "tipo": "positivo",
+                "efecto": "+10% resistencia",
+                "valor": 10
+            }
+        ],
+        "perks_negativos": [],
+        "tipo_equipamiento": "amuleto",
+        "manos": 1
+    },
+    {
+        "id": "catalizador",
+        "nombre": "Catalizador Místico",
+        "tipo": "arma",
+        "subtipo": "catalizador",
+        "descripcion": "Canaliza la energía mística.",
+        "stackable": false,
+        "stack_max": 1,
+        "rareza": "raro",
+        "stats": {
+            "dano_min": 2,
+            "dano_max": 8,
+            "velocidad": 90,
+            "critico": 3,
+            "peso": 3,
+            "valor": 200,
+            "durabilidad_maxima": 150
+        },
+        "perks": [],
+        "perks_negativos": [],
+        "requisitos": {
+            "inteligencia": 15
+        },
+        "tipo_arma": "catalizador",
+        "manos": 1
+    },
+    {
+        "id": "hierro",
+        "nombre": "Hierro",
+        "tipo": "material",
+        "subtipo": "metal",
+        "descripcion": "Mineral de hierro. Básico para forja.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 5
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "acero",
+        "nombre": "Acero",
+        "tipo": "material",
+        "subtipo": "metal",
+        "descripcion": "Acero refinado. Mejor que el hierro.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "raro",
+        "stats": {
+            "valor": 15
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "mithril",
+        "nombre": "Mithril",
+        "tipo": "material",
+        "subtipo": "metal",
+        "descripcion": "Metal mágico ligero y resistente.",
+        "stackable": true,
+        "stack_max": 20,
+        "rareza": "epico",
+        "stats": {
+            "valor": 100
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "escama_dragon",
+        "nombre": "Escama de Dragón",
+        "tipo": "material",
+        "subtipo": "material_especial",
+        "descripcion": "Escama de dragón. Material legendario.",
+        "stackable": true,
+        "stack_max": 10,
+        "rareza": "legendario",
+        "stats": {
+            "valor": 500
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "kit_reparacion",
+        "nombre": "Kit de Reparación",
+        "tipo": "herramienta",
+        "subtipo": "reparacion",
+        "descripcion": "Repara +30 durabilidad a un item.",
+        "stackable": true,
+        "stack_max": 10,
+        "rareza": "comun",
+        "stats": {
+            "valor": 25
+        },
+        "efectos": ["reparar_30"],
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "pergamino_identificar",
+        "nombre": "Pergamino de Identificar",
+        "tipo": "consumible",
+        "subtipo": "pergamino",
+        "descripcion": "Identifica un item desconocido.",
+        "stackable": true,
+        "stack_max": 10,
+        "rareza": "raro",
+        "stats": {
+            "valor": 50
+        },
+        "efectos": ["identificar"],
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "madera",
+        "nombre": "Madera",
+        "tipo": "material",
+        "subtipo": "material_base",
+        "descripcion": "Madera básica de construcción.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 3
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "piedra",
+        "nombre": "Piedra",
+        "tipo": "material",
+        "subtipo": "material_base",
+        "descripcion": "Piedra básica para construcción.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 2
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "carbon",
+        "nombre": "Carbón",
+        "tipo": "material",
+        "subtipo": "combustible",
+        "descripcion": "Carbón para la forja.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 5
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "cuero",
+        "nombre": "Cuero",
+        "tipo": "material",
+        "subtipo": "material_base",
+        "descripcion": "Cuero de animal para armaduras.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 8
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "tela",
+        "nombre": "Tela",
+        "tipo": "material",
+        "subtipo": "material_base",
+        "descripcion": "Tela básica.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 5
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "arcilla",
+        "nombre": "Arcilla",
+        "tipo": "material",
+        "subtipo": "material_base",
+        "descripcion": "Arcilla para construcción.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 3
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "clavos",
+        "nombre": "Clavos",
+        "tipo": "herramienta",
+        "subtipo": "herramienta",
+        "descripcion": "Clavos de hierro.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 5
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "bisagra",
+        "nombre": "Bisagra",
+        "tipo": "herramienta",
+        "subtipo": "herramienta",
+        "descripcion": "Bisagra de metal.",
+        "stackable": true,
+        "stack_max": 20,
+        "rareza": "comun",
+        "stats": {
+            "valor": 8
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "hilo",
+        "nombre": "Hilo",
+        "tipo": "material",
+        "subtipo": "material_base",
+        "descripcion": "Hilo básico.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 2
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "harina",
+        "nombre": "Harina",
+        "tipo": "consumible",
+        "subtipo": "ingrediente",
+        "descripcion": "Harina para cooking.",
+        "stackable": true,
+        "stack_max": 20,
+        "rareza": "comun",
+        "stats": {
+            "valor": 3
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "agua",
+        "nombre": "Agua",
+        "tipo": "consumible",
+        "subtipo": "ingrediente",
+        "descripcion": "Agua limpia.",
+        "stackable": true,
+        "stack_max": 20,
+        "rareza": "comun",
+        "stats": {
+            "valor": 1
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "carne_cruda",
+        "nombre": "Carne Cruda",
+        "tipo": "consumible",
+        "subtipo": "ingrediente",
+        "descripcion": "Carne cruda de animal.",
+        "stackable": true,
+        "stack_max": 20,
+        "rareza": "comun",
+        "stats": {
+            "valor": 5
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "mineral_hierro",
+        "nombre": "Mineral de Hierro",
+        "tipo": "material",
+        "subtipo": "mineral",
+        "descripcion": "Mineral sin procesar.",
+        "stackable": true,
+        "stack_max": 50,
+        "rareza": "comun",
+        "stats": {
+            "valor": 3
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "cebada",
+        "nombre": "Cebada",
+        "tipo": "consumible",
+        "subtipo": "ingrediente",
+        "descripcion": "Cebada para brewing.",
+        "stackable": true,
+        "stack_max": 20,
+        "rareza": "comun",
+        "stats": {
+            "valor": 4
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "hierba_aceite",
+        "nombre": "Hierba Aceitera",
+        "tipo": "consumible",
+        "subtipo": "ingrediente",
+        "descripcion": "Hierba para aceite.",
+        "stackable": true,
+        "stack_max": 20,
+        "rareza": "comun",
+        "stats": {
+            "valor": 5
+        },
+        "perks": [],
+        "perks_negativos": []
+    },
+    {
+        "id": "tinta",
+        "nombre": "Tinta",
+        "tipo": "material",
+        "subtipo": "material_base",
+        "descripcion": "Tinta para escribir.",
+        "stackable": true,
+        "stack_max": 20,
+        "rareza": "comun",
+        "stats": {
+            "valor": 10
+        },
+        "perks": [],
+        "perks_negativos": []
     }
 ]

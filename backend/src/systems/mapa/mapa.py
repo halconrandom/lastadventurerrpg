@@ -93,6 +93,21 @@ class MapaMundo:
         # Generar tiles para las ubicaciones
         for ubicacion in self.ubicaciones.values():
             self._generar_tile_ubicacion(ubicacion)
+        
+        # Establecer posición inicial del jugador en la primera ubicación importante
+        # Prioridad: Capital > Ciudad > Pueblo
+        pos_inicial = (0, 0)
+        for tipo in [TipoUbicacion.CAPITAL, TipoUbicacion.CIUDAD, TipoUbicacion.PUEBLO]:
+            importantes = [u for u in self.ubicaciones.values() if u.tipo == tipo]
+            if importantes:
+                pos_inicial = (importantes[0].x, importantes[0].y)
+                self.ubicacion_actual = importantes[0].id
+                importantes[0].visitada = True
+                importantes[0].descubierta = True
+                break
+        
+        # Mover al jugador a la posición inicial para cargar chunks
+        self.mover_jugador(pos_inicial[0], pos_inicial[1])
     
     def _generar_tile_ubicacion(self, ubicacion: Ubicacion) -> None:
         """Genera el tile para una ubicación."""
@@ -177,7 +192,7 @@ class MapaMundo:
         # Costo de movimiento
         costo = calcular_costo_movimiento(bioma, terreno)
         
-        return Tile(
+        tile = Tile(
             x=x,
             y=y,
             bioma=bioma,
@@ -185,6 +200,65 @@ class MapaMundo:
             costo_movimiento=costo,
             visibilidad=EstadoVisibilidad.NO_DESCUBIERTO
         )
+
+        # Generar POI dinámico (✨)
+        # Probabilidad base de tener un POI: 15%
+        if rng.random() < 0.15:
+            self._generar_poi(tile, rng)
+            
+        return tile
+
+    def _generar_poi(self, tile: Tile, rng: random.Random) -> None:
+        """Genera un POI dinámico para un tile."""
+        tile.tiene_poi = True
+        tile.poi_completado = False
+        
+        # Probabilidades de tipo de POI
+        tipos = ["combate", "npc", "tesoro", "descubrimiento", "mistico", "comercio"]
+        pesos = [40, 20, 15, 10, 10, 5]
+        
+        tile.poi_tipo = random.choices(tipos, weights=pesos)[0]
+        
+        # Datos específicos según tipo
+        if tile.poi_tipo == "combate":
+            # Determinar dificultad según distancia al origen (0,0)
+            distancia = abs(tile.x) + abs(tile.y)
+            nivel_base = max(1, int(distancia / 10))
+            tile.poi_data = {
+                "nivel": nivel_base + rng.randint(0, 2),
+                "dificultad": rng.choice(["normal", "elite"]) if rng.random() < 0.2 else "normal"
+            }
+        elif tile.poi_tipo == "tesoro":
+            tile.poi_data = {
+                "rareza": rng.choice(["comun", "raro", "epico"]) if rng.random() < 0.1 else "comun"
+            }
+        elif tile.poi_tipo == "npc":
+            tile.poi_data = {
+                "personalidad": rng.choice(["amigable", "neutral", "hostil", "misterioso"])
+            }
+        
+        tile.poi_fecha_regeneracion = None
+
+    def actualizar_pois(self, current_tick: int) -> int:
+        """
+        Verifica y regenera POIs completados que hayan cumplido su cooldown.
+        
+        Returns:
+            Cantidad de POIs regenerados
+        """
+        regenerados = 0
+        # Revisar todos los tiles cargados en chunks
+        for chunk in self.gestor_chunks.chunks.values():
+            for fila in chunk.tiles:
+                for tile in fila:
+                    if tile and tile.poi_completado and tile.poi_fecha_regeneracion:
+                        if current_tick >= tile.poi_fecha_regeneracion:
+                            # Regenerar POI
+                            contexto = f"poi_regen_{tile.x}_{tile.y}_{current_tick}"
+                            rng = self.seed.get_rng(contexto)
+                            self._generar_poi(tile, rng)
+                            regenerados += 1
+        return regenerados
     
     # ==================== MOVIMIENTO ====================
     
@@ -357,9 +431,18 @@ class MapaMundo:
             ubicacion = self.ubicaciones[tile.ubicacion_id]
             ubicacion.descubierta = True
         
+        # Verificar si hay POI
+        poi = None
+        if tile.tiene_poi and not tile.poi_completado:
+            poi = {
+                "tipo": tile.poi_tipo,
+                "data": tile.poi_data
+            }
+        
         return {
             "tile": tile.to_dict(),
-            "ubicacion": ubicacion.to_dict() if ubicacion else None
+            "ubicacion": ubicacion.to_dict() if ubicacion else None,
+            "poi": poi
         }
     
     def get_tiles_visibles(self, radio: int = 3) -> List[Tile]:
@@ -499,6 +582,11 @@ class MapaMundo:
                         simbolo = simbolos_ubicacion.get(ubicacion.tipo.value, "?")
                         fila.append(simbolo)
                         continue
+                
+                # POI Dinámico (✨)
+                if tile and tile.tiene_poi and not tile.poi_completado:
+                    fila.append("✨")
+                    continue
                 
                 # Tile explorado
                 if tile and tile.visibilidad == EstadoVisibilidad.EXPLORADO:

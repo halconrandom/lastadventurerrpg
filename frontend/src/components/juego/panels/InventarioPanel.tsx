@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { 
   Package, 
@@ -8,13 +8,26 @@ import {
   Sword, 
   Wrench, 
   Star,
-  ChevronRight,
   Trash2,
-  Info
+  Info,
+  Loader2,
+  AlertCircle,
+  Hammer
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Item, RarezaItem, Equipamiento, Manos } from "@/lib/types";
+import {
+  getInventario,
+  equiparItem,
+  desequiparItem,
+  usarItem,
+  tirarItem,
+  toggleFavorito,
+  type InventarioResponse
+} from "@/lib/api";
+import { CrafteoModal } from "./CrafteoModal";
 
 // Colores por rareza
 const RARITY_COLORS: Record<RarezaItem, string> = {
@@ -33,84 +46,6 @@ const RARITY_GLOW: Record<RarezaItem, string> = {
   epico: "shadow-[0_0_20px_rgba(168,85,247,0.5)]",
   legendario: "shadow-[0_0_25px_rgba(249,115,22,0.5)]",
   unico: "shadow-[0_0_30px_rgba(239,68,68,0.6)]",
-};
-
-// Datos mock para demostración
-const MOCK_ITEMS: Item[] = [
-  {
-    id: "espada_hierro_001",
-    base_id: "espada_hierro",
-    nombre: "Espada de Hierro",
-    descripcion: "Una espada forjada con hierro común. Resistente y efectiva.",
-    tipo: "arma",
-    subtipo: "espada_una_mano",
-    rareza: "comun",
-    cantidad: 1,
-    stats: { dano_min: 10, dano_max: 15, velocidad: 1.0 },
-    peso: 5,
-    valor: 100,
-    favorito: false,
-    identificado: true,
-    durabilidad: 100,
-    durabilidad_max: 100,
-  },
-  {
-    id: "pocion_hp_001",
-    base_id: "pocion_hp_pequena",
-    nombre: "Poción de Vida Pequeña",
-    descripcion: "Restaura 25 HP al consumirla.",
-    tipo: "consumible",
-    rareza: "comun",
-    cantidad: 5,
-    stats: { hp: 25 },
-    peso: 0.5,
-    valor: 25,
-    favorito: true,
-    identificado: true,
-  },
-  {
-    id: "casco_cuero_001",
-    base_id: "casco_cuero",
-    nombre: "Casco de Cuero",
-    descripcion: "Protección ligera para la cabeza.",
-    tipo: "armadura",
-    subtipo: "casco",
-    rareza: "poco_comun",
-    cantidad: 1,
-    stats: { defensa: 5, evasion: 2 },
-    peso: 3,
-    valor: 75,
-    favorito: false,
-    identificado: true,
-    durabilidad: 80,
-    durabilidad_max: 80,
-  },
-  {
-    id: "hierro_001",
-    base_id: "hierro",
-    nombre: "Hierro",
-    descripcion: "Material de forja común.",
-    tipo: "material",
-    rareza: "comun",
-    cantidad: 15,
-    stats: {},
-    peso: 1,
-    valor: 10,
-    favorito: false,
-    identificado: true,
-  },
-];
-
-const MOCK_EQUIPMENT: Equipamiento = {
-  casco: null,
-  peto: null,
-  guantes: null,
-  botas: null,
-};
-
-const MOCK_HANDS: Manos = {
-  izquierda: null,
-  derecha: MOCK_ITEMS[0], // Espada equipada
 };
 
 // Componente de slot de item
@@ -280,14 +215,188 @@ function HandSlot({ slotName, item, onClick }: HandSlotProps) {
   );
 }
 
+// Props del panel
+interface InventarioPanelProps {
+  slot: number;
+}
+
 // Panel principal
-export function InventarioPanel() {
+export function InventarioPanel({ slot }: InventarioPanelProps) {
   const [selectedItem, selectedItemSet] = useState<Item | null>(null);
-  const [alforjasItems] = useState<Item[]>(MOCK_ITEMS);
-  const [equipamiento] = useState(MOCK_EQUIPMENT);
-  const [manos] = useState(MOCK_HANDS);
-  const [oro] = useState(250);
-  const [slotsMaximos] = useState(10);
+  const [loading, loadingSet] = useState(true);
+  const [error, errorSet] = useState<string | null>(null);
+  const [inventario, inventarioSet] = useState<InventarioResponse | null>(null);
+  const [actionLoading, actionLoadingSet] = useState<string | null>(null);
+  const [crafteoOpen, crafteoOpenSet] = useState(false);
+  const [nivelHerreria, setNivelHerreria] = useState(1);
+
+  // Cargar inventario
+  const cargarInventario = useCallback(async () => {
+    try {
+      loadingSet(true);
+      errorSet(null);
+      const data = await getInventario(slot);
+      inventarioSet(data);
+    } catch (err) {
+      console.error("Error cargando inventario:", err);
+      errorSet(err instanceof Error ? err.message : "Error al cargar inventario");
+    } finally {
+      loadingSet(false);
+    }
+  }, [slot]);
+
+  useEffect(() => {
+    cargarInventario();
+  }, [cargarInventario]);
+
+  // Handlers de acciones
+  const handleEquipar = async (item: Item, slotEquipamiento: string) => {
+    try {
+      actionLoadingSet(`equipar-${item.id}`);
+      const indice = inventario?.items?.findIndex(i => i?.id === item.id) ?? -1;
+      if (indice === -1) return;
+      
+      const response = await equiparItem(slot, indice, slotEquipamiento);
+      if (response.success) {
+        inventarioSet(response.inventario);
+        selectedItemSet(null);
+      }
+    } catch (err) {
+      console.error("Error equipando:", err);
+      errorSet(err instanceof Error ? err.message : "Error al equipar");
+    } finally {
+      actionLoadingSet(null);
+    }
+  };
+
+  const handleDesequipar = async (slotEquipamiento: string) => {
+    try {
+      actionLoadingSet(`desequipar-${slotEquipamiento}`);
+      const response = await desequiparItem(slot, slotEquipamiento);
+      if (response.success) {
+        inventarioSet(response.inventario);
+        selectedItemSet(null);
+      }
+    } catch (err) {
+      console.error("Error desequipando:", err);
+      errorSet(err instanceof Error ? err.message : "Error al desequipar");
+    } finally {
+      actionLoadingSet(null);
+    }
+  };
+
+  const handleUsar = async (item: Item) => {
+    try {
+      actionLoadingSet(`usar-${item.id}`);
+      const indice = inventario?.items?.findIndex(i => i?.id === item.id) ?? -1;
+      if (indice === -1) return;
+      
+      const response = await usarItem(slot, indice);
+      if (response.success) {
+        if (response.inventario) {
+          inventarioSet(response.inventario);
+        }
+        selectedItemSet(null);
+      }
+    } catch (err) {
+      console.error("Error usando item:", err);
+      errorSet(err instanceof Error ? err.message : "Error al usar item");
+    } finally {
+      actionLoadingSet(null);
+    }
+  };
+
+  const handleTirar = async (item: Item) => {
+    try {
+      actionLoadingSet(`tirar-${item.id}`);
+      const indice = inventario?.items?.findIndex(i => i?.id === item.id) ?? -1;
+      if (indice === -1) return;
+      
+      const response = await tirarItem(slot, indice);
+      if (response.success) {
+        if (response.inventario) {
+          inventarioSet(response.inventario);
+        }
+        selectedItemSet(null);
+      }
+    } catch (err) {
+      console.error("Error tirando item:", err);
+      errorSet(err instanceof Error ? err.message : "Error al tirar item");
+    } finally {
+      actionLoadingSet(null);
+    }
+  };
+
+  const handleFavorito = async (item: Item) => {
+    try {
+      actionLoadingSet(`favorito-${item.id}`);
+      const indice = inventario?.items?.findIndex(i => i?.id === item.id) ?? -1;
+      if (indice === -1) return;
+      
+      const response = await toggleFavorito(slot, indice);
+      if (response.success) {
+        inventarioSet(response.inventario);
+        // Actualizar el item seleccionado
+        const updatedItem = response.inventario.items[indice];
+        if (updatedItem) {
+          selectedItemSet(updatedItem);
+        }
+      }
+    } catch (err) {
+      console.error("Error cambiando favorito:", err);
+      errorSet(err instanceof Error ? err.message : "Error al cambiar favorito");
+    } finally {
+      actionLoadingSet(null);
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="size-12 text-[#d4a843] animate-spin" />
+          <span className="text-muted-foreground">Cargando inventario...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && !inventario) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <AlertCircle className="size-12 text-red-500" />
+          <div>
+            <h3 className="text-lg font-bold text-red-400">Error</h3>
+            <p className="text-muted-foreground">{error}</p>
+          </div>
+          <button
+            onClick={cargarInventario}
+            className="px-4 py-2 bg-[#d4a843]/20 hover:bg-[#d4a843]/30 text-[#d4a843] rounded-lg transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Extraer datos del inventario
+  const items = inventario?.items ?? [];
+  const equipamiento: Equipamiento = {
+    casco: inventario?.equipamiento?.casco ?? null,
+    peto: inventario?.equipamiento?.peto ?? null,
+    guantes: inventario?.equipamiento?.guantes ?? null,
+    botas: inventario?.equipamiento?.botas ?? null,
+  };
+  const manos: Manos = {
+    izquierda: inventario?.equipamiento?.mano_izquierda ?? null,
+    derecha: inventario?.equipamiento?.mano_derecha ?? null,
+  };
+  const oro = inventario?.oro ?? 0;
+  const slotsMaximos = inventario?.slots_maximos ?? 10;
 
   return (
     <motion.div
@@ -297,6 +406,21 @@ export function InventarioPanel() {
       exit={{ opacity: 0, y: -10 }}
       className="h-full"
     >
+      {/* Error toast */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-4 right-4 z-50 bg-red-500/20 border border-red-500/50 rounded-lg px-4 py-2 flex items-center gap-2"
+        >
+          <AlertCircle className="size-4 text-red-400" />
+          <span className="text-red-400 text-sm">{error}</span>
+          <button onClick={() => errorSet(null)} className="text-red-400 hover:text-red-300">
+            ✕
+          </button>
+        </motion.div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
         
         {/* COLUMNA 1: ALFORJAS */}
@@ -310,7 +434,7 @@ export function InventarioPanel() {
                 <div>
                   <h3 className="font-medieval text-xl text-[#d4a843]">Alforjas</h3>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    {alforjasItems.length} / {slotsMaximos} slots
+                    {items.filter(Boolean).length} / {slotsMaximos} slots
                   </p>
                 </div>
               </div>
@@ -318,6 +442,15 @@ export function InventarioPanel() {
                 <span className="text-lg">💰</span>
                 <span className="text-[#d4a843] font-medieval text-lg tabular-nums">{oro}</span>
               </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => crafteoOpenSet(true)}
+                className="flex items-center gap-2 text-[#d4a843] hover:text-[#d4a843] hover:bg-[#d4a843]/10"
+              >
+                <Hammer className="size-4" />
+                <span className="text-xs">Craftear</span>
+              </Button>
             </div>
 
             {/* Grid de items */}
@@ -325,8 +458,8 @@ export function InventarioPanel() {
               {Array.from({ length: slotsMaximos }).map((_, i) => (
                 <ItemSlot
                   key={i}
-                  item={alforjasItems[i] || null}
-                  onClick={() => selectedItemSet(alforjasItems[i] || null)}
+                  item={items[i] || null}
+                  onClick={() => selectedItemSet(items[i] || null)}
                 />
               ))}
             </div>
@@ -335,7 +468,7 @@ export function InventarioPanel() {
             <div className="mt-4 pt-4 border-t border-border/30">
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Peso total:</span>
-                <span>{alforjasItems.reduce((acc, item) => acc + item.peso * item.cantidad, 0).toFixed(1)} kg</span>
+                <span>{items.filter(Boolean).reduce((acc, item) => acc + (item?.peso ?? 0) * (item?.cantidad ?? 1), 0).toFixed(1)} kg</span>
               </div>
             </div>
           </CardContent>
@@ -362,21 +495,25 @@ export function InventarioPanel() {
                 slotName="Casco"
                 item={equipamiento.casco}
                 icon={<Shield className="size-5" />}
+                onClick={() => equipamiento.casco && selectedItemSet(equipamiento.casco)}
               />
               <EquipSlot
                 slotName="Peto"
                 item={equipamiento.peto}
                 icon={<Shield className="size-5" />}
+                onClick={() => equipamiento.peto && selectedItemSet(equipamiento.peto)}
               />
               <EquipSlot
                 slotName="Guantes"
                 item={equipamiento.guantes}
                 icon={<Shield className="size-5" />}
+                onClick={() => equipamiento.guantes && selectedItemSet(equipamiento.guantes)}
               />
               <EquipSlot
                 slotName="Botas"
                 item={equipamiento.botas}
                 icon={<Shield className="size-5" />}
+                onClick={() => equipamiento.botas && selectedItemSet(equipamiento.botas)}
               />
             </div>
 
@@ -418,12 +555,12 @@ export function InventarioPanel() {
               <HandSlot
                 slotName="Mano Izq."
                 item={manos.izquierda}
-                onClick={() => selectedItemSet(manos.izquierda)}
+                onClick={() => manos.izquierda && selectedItemSet(manos.izquierda)}
               />
               <HandSlot
                 slotName="Mano Der."
                 item={manos.derecha}
-                onClick={() => selectedItemSet(manos.derecha)}
+                onClick={() => manos.derecha && selectedItemSet(manos.derecha)}
               />
             </div>
 
@@ -535,27 +672,69 @@ export function InventarioPanel() {
               {/* Acciones */}
               <div className="mt-3 pt-3 border-t border-border/30 flex gap-2">
                 {(selectedItem.tipo === "arma" || selectedItem.tipo === "armadura") && (
-                  <button className="flex-1 py-2 px-4 bg-[#d4a843]/20 hover:bg-[#d4a843]/30 text-[#d4a843] rounded-lg text-sm font-bold transition-colors">
-                    Equipar
+                  <button 
+                    onClick={() => handleEquipar(selectedItem, selectedItem.tipo === "arma" ? "mano_derecha" : selectedItem.subtipo || "peto")}
+                    disabled={actionLoading !== null}
+                    className="flex-1 py-2 px-4 bg-[#d4a843]/20 hover:bg-[#d4a843]/30 text-[#d4a843] rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+                  >
+                    {actionLoading === `equipar-${selectedItem.id}` ? (
+                      <Loader2 className="size-4 animate-spin mx-auto" />
+                    ) : (
+                      "Equipar"
+                    )}
                   </button>
                 )}
                 {selectedItem.tipo === "consumible" && (
-                  <button className="flex-1 py-2 px-4 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg text-sm font-bold transition-colors">
-                    Usar
+                  <button 
+                    onClick={() => handleUsar(selectedItem)}
+                    disabled={actionLoading !== null}
+                    className="flex-1 py-2 px-4 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+                  >
+                    {actionLoading === `usar-${selectedItem.id}` ? (
+                      <Loader2 className="size-4 animate-spin mx-auto" />
+                    ) : (
+                      "Usar"
+                    )}
                   </button>
                 )}
-                <button className="py-2 px-4 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-bold transition-colors flex items-center gap-2">
-                  <Trash2 className="size-4" />
+                <button 
+                  onClick={() => handleTirar(selectedItem)}
+                  disabled={actionLoading !== null}
+                  className="py-2 px-4 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 disabled:opacity-50"
+                >
+                  {actionLoading === `tirar-${selectedItem.id}` ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-4" />
+                  )}
                   Tirar
                 </button>
-                <button className="py-2 px-4 bg-muted/30 hover:bg-muted/50 text-muted-foreground rounded-lg text-sm font-bold transition-colors">
-                  <Star className={cn("size-4", selectedItem.favorito && "fill-yellow-500 text-yellow-500")} />
+                <button 
+                  onClick={() => handleFavorito(selectedItem)}
+                  disabled={actionLoading !== null}
+                  className="py-2 px-4 bg-muted/30 hover:bg-muted/50 text-muted-foreground rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+                >
+                  {actionLoading === `favorito-${selectedItem.id}` ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Star className={cn("size-4", selectedItem.favorito && "fill-yellow-500 text-yellow-500")} />
+                  )}
                 </button>
               </div>
             </CardContent>
           </Card>
         </motion.div>
       )}
+
+      <CrafteoModal
+        isOpen={crafteoOpen}
+        onClose={() => crafteoOpenSet(false)}
+        slot={slot}
+        nivelSkill={nivelHerreria}
+        onCrafteoSuccess={(item, nuevoInventario) => {
+          inventarioSet(nuevoInventario);
+        }}
+      />
     </motion.div>
   );
 }

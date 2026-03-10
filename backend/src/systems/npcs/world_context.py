@@ -2,23 +2,17 @@
 WorldContext — Proporciona contexto del mundo para el LLM.
 
 Incluye:
-- NPCs relacionados (conocidos, familiares, rivales)
+- NPCs relacionados (del propio NPC, no hardcodeado)
 - Ubicación actual
 - Hora del día
 - Eventos recientes relevantes
+
+Las relaciones se almacenan en cada NPC y son persistentes.
 """
 
 from typing import Dict, List, Optional
 from dataclasses import dataclass
-
-
-@dataclass
-class NPCRelacionado:
-    """Un NPC relacionado con el NPC actual."""
-    nombre: str
-    relacion: str  # "amigo", "rival", "familia", "conocido", "enemigo"
-    rol: str
-    notas: str = ""
+from systems.npcs.npc import NPC, RelacionNPC, TipoRelacion
 
 
 @dataclass
@@ -34,41 +28,10 @@ class WorldContext:
     """
     Gestiona el contexto del mundo para enriquecer el prompt del LLM.
     
-    Este sistema permite que el NPC tenga conocimiento de:
-    - Otros NPCs en la misma ubicación
-    - Relaciones con otros NPCs
-    - El entorno donde se encuentra
+    Las relaciones ahora vienen del NPC mismo, no de una base hardcodeada.
     """
     
-    # Base de datos de NPCs y sus relaciones (hardcodeada por ahora)
-    # En el futuro, esto vendría de una base de datos o sistema de guardado
-    RELACIONES_NPC: Dict[str, List[NPCRelacionado]] = {
-        "Dorian Xavier": [
-            NPCRelacionado(
-                nombre="Adelina",
-                relacion="prometida",
-                rol="tabernera",
-                notas="Comprometidos hace 2 años. Ella trabaja en la taberna El Viajero."
-            ),
-            NPCRelacionado(
-                nombre="Gareth",
-                relacion="rival",
-                rol="mercader",
-                notas="También interesado en Adelina. Dorian desconfía de él."
-            ),
-        ],
-        "Adelina": [
-            NPCRelacionado(
-                nombre="Dorian Xavier",
-                relacion="prometido",
-                rol="herrero",
-                notas="Comprometidos. Él es celoso y protector."
-            ),
-        ],
-        # Agregar más NPCs según sea necesario
-    }
-    
-    # Ubicaciones conocidas
+    # Ubicaciones conocidas (esto sí puede ser estático)
     UBICACIONES: Dict[str, ContextoUbicacion] = {
         "pueblo_inicio": ContextoUbicacion(
             nombre="Pueblo de Inicio",
@@ -90,12 +53,11 @@ class WorldContext:
     }
     
     def __init__(self):
-        self.relaciones = self.RELACIONES_NPC
         self.ubicaciones = self.UBICACIONES
     
-    def obtener_relaciones(self, nombre_npc: str) -> List[NPCRelacionado]:
-        """Obtiene los NPCs relacionados con el NPC dado."""
-        return self.relaciones.get(nombre_npc, [])
+    def obtener_relaciones_npc(self, npc: NPC) -> List[RelacionNPC]:
+        """Obtiene las relaciones del NPC desde sus propios datos."""
+        return npc.relaciones_npcs
     
     def obtener_ubicacion(self, id_ubicacion: str) -> Optional[ContextoUbicacion]:
         """Obtiene información de una ubicación."""
@@ -103,7 +65,7 @@ class WorldContext:
     
     def formatear_contexto_para_prompt(
         self,
-        nombre_npc: str,
+        npc: NPC,
         ubicacion_id: str = None,
         hora: int = 12
     ) -> str:
@@ -111,7 +73,7 @@ class WorldContext:
         Formatea el contexto del mundo para inyectar en el prompt.
         
         Args:
-            nombre_npc: Nombre del NPC actual
+            npc: El NPC que está hablando (con sus relaciones)
             ubicacion_id: ID de la ubicación actual
             hora: Hora del día (0-23)
         
@@ -125,7 +87,7 @@ class WorldContext:
             ubicacion = self.obtener_ubicacion(ubicacion_id)
             if ubicacion:
                 linea = f"Estás en {ubicacion.nombre}"
-                if ubicacion.propietario and ubicacion.propietario != nombre_npc:
+                if ubicacion.propietario and ubicacion.propietario != npc.nombre:
                     linea += f", lugar de {ubicacion.propietario}"
                 lineas.append(linea + ".")
         
@@ -133,13 +95,25 @@ class WorldContext:
         fase_dia = self._fase_dia(hora)
         lineas.append(f"Es de {fase_dia}.")
         
-        # Relaciones importantes
-        relaciones = self.obtener_relaciones(nombre_npc)
+        # Relaciones importantes del NPC
+        relaciones = self.obtener_relaciones_npc(npc)
         if relaciones:
-            rels_texto = []
-            for r in relaciones[:2]:  # Máximo 2 para no saturar
-                rels_texto.append(f"{r.nombre} es tu {r.relacion} ({r.rol})")
-            lineas.append("Personas importantes: " + ", ".join(rels_texto) + ".")
+            # Filtrar relaciones importantes (familia, romance, rivalidad)
+            importantes = [r for r in relaciones if r.tipo in [
+                TipoRelacion.FAMILIA, 
+                TipoRelacion.ROMANCE, 
+                TipoRelacion.RIVALIDAD,
+                TipoRelacion.ENEMISTAD
+            ] or r.intensidad >= 70]
+            
+            if importantes:
+                rels_texto = []
+                for r in importantes[:2]:  # Máximo 2 para no saturar
+                    tipo_str = self._tipo_relacion_legible(r.tipo)
+                    rels_texto.append(f"{r.nombre} es tu {tipo_str}")
+                    if r.notas:
+                        rels_texto[-1] += f" ({r.notas})"
+                lineas.append("Personas importantes: " + ", ".join(rels_texto) + ".")
         
         return "\n".join(lineas)
     
@@ -154,22 +128,102 @@ class WorldContext:
         else:
             return "madrugada"
     
-    def npc_mencionado(self, mensaje: str, nombre_npc: str) -> Optional[NPCRelacionado]:
+    def _tipo_relacion_legible(self, tipo: TipoRelacion) -> str:
+        """Convierte el tipo de relación a texto legible."""
+        mapeo = {
+            TipoRelacion.FAMILIA: "familia",
+            TipoRelacion.AMISTAD: "amigo",
+            TipoRelacion.ROMANCE: "pareja",
+            TipoRelacion.RIVALIDAD: "rival",
+            TipoRelacion.ENEMISTAD: "enemigo",
+            TipoRelacion.CONOCIDO: "conocido",
+            TipoRelacion.PROFESIONAL: "colega",
+            TipoRelacion.SUBORDINADO: "subordinado",
+            TipoRelacion.SUPERIOR: "superior",
+        }
+        return mapeo.get(tipo, "conocido")
+    
+    def npc_mencionado(self, mensaje: str, npc: NPC) -> Optional[RelacionNPC]:
         """
         Detecta si se menciona un NPC relacionado en el mensaje.
         
         Args:
             mensaje: Mensaje del jugador
-            nombre_npc: Nombre del NPC actual
+            npc: NPC actual (con sus relaciones)
         
         Returns:
-            NPCRelacionado si se encuentra, None si no
+            RelacionNPC si se encuentra, None si no
         """
         mensaje_lower = mensaje.lower()
-        for rel in self.obtener_relaciones(nombre_npc):
+        for rel in self.obtener_relaciones_npc(npc):
             if rel.nombre.lower() in mensaje_lower:
                 return rel
         return None
+    
+    def agregar_relacion(
+        self, 
+        npc: NPC, 
+        npc_id: str, 
+        nombre: str, 
+        tipo: TipoRelacion,
+        intensidad: int = 50,
+        confianza: int = 50,
+        notas: str = ""
+    ) -> None:
+        """
+        Agrega una nueva relación a un NPC.
+        
+        Args:
+            npc: NPC al que se le agrega la relación
+            npc_id: ID del NPC relacionado
+            nombre: Nombre del NPC relacionado
+            tipo: Tipo de relación
+            intensidad: Intensidad (0-100)
+            confianza: Nivel de confianza (0-100)
+            notas: Notas contextuales
+        """
+        # Verificar si ya existe
+        for r in npc.relaciones_npcs:
+            if r.npc_id == npc_id:
+                # Actualizar existente
+                r.tipo = tipo
+                r.intensidad = intensidad
+                r.confianza = confianza
+                r.notas = notas
+                return
+        
+        # Crear nueva
+        nueva_rel = RelacionNPC(
+            npc_id=npc_id,
+            nombre=nombre,
+            tipo=tipo,
+            intensidad=intensidad,
+            confianza=confianza,
+            notas=notas
+        )
+        npc.relaciones_npcs.append(nueva_rel)
+    
+    def modificar_relacion(
+        self,
+        npc: NPC,
+        npc_id: str,
+        delta_intensidad: int = 0,
+        delta_confianza: int = 0
+    ) -> None:
+        """
+        Modifica una relación existente.
+        
+        Args:
+            npc: NPC con la relación
+            npc_id: ID del NPC relacionado
+            delta_intensidad: Cambio en intensidad (-100 a 100)
+            delta_confianza: Cambio en confianza (-100 a 100)
+        """
+        for r in npc.relaciones_npcs:
+            if r.npc_id == npc_id:
+                r.intensidad = max(0, min(100, r.intensidad + delta_intensidad))
+                r.confianza = max(0, min(100, r.confianza + delta_confianza))
+                return
 
 
 # Instancia global

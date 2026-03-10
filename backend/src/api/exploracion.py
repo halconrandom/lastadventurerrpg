@@ -21,6 +21,10 @@ from systems.eventos import EventoGenerator
 from systems.clima import ClimaGenerator
 from systems.save_manager import SaveManager
 from systems.tiempo import TimeManager
+from systems.mapa import MapaMundo
+from systems.combate import CombateManager
+from systems.items import gestor_items
+from models.personaje import Personaje
 from llm.client import LLMClient
 from llm.prompts import PROMPT_DESCRIPCION_ESCENA, PROMPT_SISTEMA_BASE
 
@@ -111,7 +115,7 @@ def iniciar_exploracion():
             bioma=zona.bioma.key,
             ubicacion=zona.nombre,
             hora=tiempo.get_formato_hora(),
-            clima=clima.estado.value,
+            clima=clima.tipo,
             eventos="Has llegado a una nueva zona.",
             tono="inmersivo"
         )
@@ -187,8 +191,6 @@ def ejecutar_exploracion():
     
     Body:
         - slot: Numero de slot
-        - x: Coordenada X
-        - y: Coordenada Y
     
     Returns:
         - resultado: Resultado de la exploracion
@@ -206,39 +208,116 @@ def ejecutar_exploracion():
             }), 400
         
         slot_num = data['slot']
-        x = data.get('x', 0)
-        y = data.get('y', 0)
         
-        cache_key = get_zona_cache_key(slot_num, x, y)
+        # Cargar datos del juego
+        datos, _ = save_manager.cargar(slot_num)
+        if not datos:
+            return jsonify({"success": False, "message": "No se encontró la partida"}), 404
+            
+        seed = get_or_create_seed(datos.get("exploracion", {}).get("seed"))
+        tiempo = TimeManager.from_dict(datos.get("tiempo", {"tick_total": 480}))
         
-        # Obtener zona del cache o generar
-        if cache_key in _zonas_cache:
-            zona = _zonas_cache[cache_key]
-        else:
-            seed = get_global_seed() or init_global_seed()
-            zona_gen = ZonaGenerator(seed)
-            zona = zona_gen.generar_zona((x, y))
-            _zonas_cache[cache_key] = zona
+        # Obtener mapa del save
+        mapa_data = datos.get("mapa")
+        if not mapa_data:
+            return jsonify({"success": False, "message": "No hay mapa en el save"}), 400
         
-        # Ejecutar exploracion
-        resultado = zona.explorar()
+        mapa = MapaMundo.from_dict(mapa_data, seed)
+        
+        # Actualizar POIs (regeneración)
+        mapa.actualizar_pois(tiempo.tick_total)
+        
+        # Explorar tile actual
+        resultado_mapa = mapa.explorar_tile_actual()
+        
+        if "error" in resultado_mapa:
+            return jsonify({"success": False, "message": resultado_mapa["error"]}), 400
+        
+        tile_data = resultado_mapa["tile"]
+        poi = resultado_mapa.get("poi")
+        
+        resultado = {
+            "mensaje": f"Has explorado el área de {tile_data['bioma']}.",
+            "tile": tile_data,
+            "poi": poi
+        }
+        
+        # --- PROCESAR POI ---
+        if poi:
+            tipo = poi["tipo"]
+            poi_data = poi["data"]
+            
+            if tipo == "combate":
+                # Generar enemigos según bioma
+                enemigos_ids = _obtener_enemigos_por_bioma(tile_data["bioma"], poi_data.get("nivel", 1))
+                
+                # Cargar personaje para el combate
+                personaje = Personaje.from_dict(datos['personaje'])
+                
+                # Cargar templates de enemigos
+                enemigos_json = _cargar_enemigos_json()
+                enemigos_templates = []
+                for eid in enemigos_ids:
+                    for cat, lista in enemigos_json['enemigos'].items():
+                        for t in lista:
+                            if t['id'] == eid:
+                                enemigos_templates.append(t)
+                                break
+                
+                # Iniciar combate (usar manager global de api/combate si es posible)
+                from api.combate import combate_activo
+                import api.combate as api_combate
+                
+                api_combate.combate_activo = CombateManager()
+                estado_combate = api_combate.combate_activo.iniciar_combate(personaje, enemigos_templates)
+                
+                resultado["evento_tipo"] = "combate"
+                resultado["combate_estado"] = estado_combate
+                resultado["mensaje"] = f"¡Has sido emboscado por {len(enemigos_ids)} enemigos!"
+                
+            elif tipo == "tesoro":
+                # Generar items aleatorios
+                rareza_str = poi_data.get("rareza", "comun")
+                from systems.items import Rareza
+                rareza = Rareza(rareza_str)
+                
+                item_instancia = gestor_items.generar_item_aleatorio(rareza=rareza)
+                if item_instancia:
+                    # Añadir al inventario
+                    inventario = datos["inventario"]
+                    if len(inventario["items"]) < inventario["slots_maximos"]:
+                        inventario["items"].append(item_instancia.to_dict())
+                        resultado["item_encontrado"] = item_instancia.to_dict()
+                        resultado["mensaje"] = f"¡Has encontrado un cofre con {item_instancia.nombre}!"
+                    else:
+                        resultado["mensaje"] = "Has encontrado un cofre, pero tu inventario está lleno."
+                
+                # Marcar POI como completado
+                x, y = mapa.posicion_jugador
+                tile = mapa.gestor_chunks.get_tile(x, y)
+                tile.poi_completado = True
+                tile.poi_fecha_regeneracion = tiempo.tick_total + (24 * 60 * 3) # Regenera en 3 días
+                
+            elif tipo == "npc":
+                resultado["evento_tipo"] = "npc"
+                resultado["mensaje"] = "Has encontrado a alguien en el camino."
+                # Aquí se integraría con el sistema de NPCs
         
         # --- INTEGRACION TIEMPO Y NARRATIVA ---
-        datos, _ = save_manager.cargar(slot_num)
-        tiempo = TimeManager.from_dict(datos.get("tiempo", {"tick_total": 480}))
         tiempo.avanzar_minutos(10) # Explorar consume 10 minutos
         datos["tiempo"] = tiempo.to_dict()
+        datos["mapa"] = mapa.to_dict()
         
         # Generar narrativa del resultado
         prompt = PROMPT_DESCRIPCION_ESCENA.format(
-            bioma=zona.bioma.key,
-            ubicacion=zona.nombre,
+            bioma=tile_data["bioma"],
+            ubicacion=tile_data.get("terreno", "el área"),
             hora=tiempo.get_formato_hora(),
             clima="variable",
-            eventos=f"Resultado de exploración: {resultado.get('mensaje', 'Nada especial')}",
+            eventos=resultado["mensaje"],
             tono="detallado"
         )
-        narrativa = llm_client.generar(prompt, system_prompt=PROMPT_SISTEMA_BASE) or resultado.get('mensaje')
+        narrativa = llm_client.generar(prompt, system_prompt=PROMPT_SISTEMA_BASE) or resultado["mensaje"]
         resultado["narrativa"] = narrativa
         
         save_manager.guardar(slot_num, datos)
@@ -246,7 +325,7 @@ def ejecutar_exploracion():
         
         return jsonify({
             "success": True,
-            "message": f"Exploracion completada en {zona.nombre}",
+            "message": "Exploracion completada",
             "data": resultado
         })
     except Exception as e:
@@ -255,6 +334,33 @@ def ejecutar_exploracion():
             "success": False,
             "message": f"Error al explorar: {str(e)}"
         }), 500
+
+
+def _obtener_enemigos_por_bioma(bioma: str, nivel: int) -> list:
+    """Retorna una lista de IDs de enemigos coherentes al bioma."""
+    # Mapeo simple por ahora
+    enemigos_por_bioma = {
+        "bosque_ancestral": ["lobo_salvaje", "lobo_alfa", "oso_pardo"],
+        "paramo_marchito": ["esqueleto_guerrero", "zombie_putrefacto"],
+        "pantano_sombrio": ["serpiente_venenosa", "arania_bosque"],
+        "montanas_heladas": ["lobo_invernal", "oso_polar"],
+        "desierto_ceniza": ["serpiente_gigante", "escorpion_arena"],
+        "ruinas_subterraneas": ["esqueleto_arquero", "fantasma_vengativo"],
+        "pradera": ["jabali", "lobo_salvaje"],
+        "costa": ["cangrejo_gigante", "serpiente_marina"]
+    }
+    
+    pool = enemigos_por_bioma.get(bioma, ["lobo_salvaje"])
+    num_enemigos = random.randint(1, 3)
+    return [random.choice(pool) for _ in range(num_enemigos)]
+
+
+def _cargar_enemigos_json():
+    """Carga el archivo de enemigos.json."""
+    import os
+    path = os.path.join(os.path.dirname(__file__), '..', 'data', 'enemigos.json')
+    with open(path, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 
 @exploracion_bp.route('/clima/<int:x>/<int:y>', methods=['GET'])

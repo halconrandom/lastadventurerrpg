@@ -33,6 +33,9 @@ REGLAS ABSOLUTAS:
 5. NUNCA exageres. Prohibido: "ojos desorbitados", "contorsionado", "grita", "se eleva".
 6. Tu personalidad se MUESTRA, no se explica. Un estoico NO grita ni se descontrola.
 7. Responde SOLO con: *acción* "diálogo". Sin JSON, sin explicaciones, sin paréntesis.
+8. SOLO TÚ respondes. Si mencionan a otros, NO generes su diálogo. TÚ eres {nombre}, nadie más.
+9. NUNCA escribas diálogos de otros personajes ni escenas teatrales.
+10. Si el jugador menciona a otro NPC, reacciona TÚ como {nombre}, no hables por ese NPC.
 
 {ejemplos_rag}"""
 
@@ -114,15 +117,15 @@ class ContextBuilder:
 
         # 4. Construir contexto del mundo
         contexto_mundo = self.world_context.formatear_contexto_para_prompt(
-            nombre_npc=npc.nombre,
+            npc=npc,
             ubicacion_id=ubicacion_id,
             hora=hora
         )
         
         # 5. Detectar si se menciona un NPC relacionado
-        npc_mencionado = self.world_context.npc_mencionado(mensaje, npc.nombre)
+        npc_mencionado = self.world_context.npc_mencionado(mensaje, npc)
         if npc_mencionado:
-            contexto_mundo += f"\n{npc_mencionado.nombre} ({npc_mencionado.relacion}): {npc_mencionado.notas}"
+            contexto_mundo += f"\n{npc_mencionado.nombre} ({npc_mencionado.tipo.value}): {npc_mencionado.notas}"
 
         # 6. Construir perfil de relación legible
         perfil = self._perfil_relacion(npc)

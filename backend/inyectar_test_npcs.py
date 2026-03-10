@@ -20,6 +20,15 @@ def inyectar_npcs_prueba(slot_num=1):
         print(f"Creando nueva partida base en Slot {slot_num}...")
         datos = save_manager.crear_save_vacio("Tester", "masculino", "normal")
     
+    # Asegurar que los datos tienen la estructura de NPCs (migración)
+    if "npcs" not in datos:
+        datos["npcs"] = {
+            "version": "1.0",
+            "activos": [],
+            "por_id": {},
+            "rumores": []
+        }
+    
     # 2. Inicializar Manager de NPCs
     seed = init_global_seed(datos.get("exploracion", {}).get("seed", "test_seed_123"))
     manager = NPCManager(seed)

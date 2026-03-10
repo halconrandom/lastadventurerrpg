@@ -11,6 +11,52 @@ class EstadoVital(Enum):
     HERIDO = "herido"
     ENFERMO = "enfermo"
 
+class TipoRelacion(Enum):
+    """Tipos de relación entre NPCs."""
+    FAMILIA = "familia"           # Padre, madre, hijo, hermano
+    AMISTAD = "amistad"           # Amigo, compañero
+    ROMANCE = "romance"           # Pareja, prometido, amante
+    RIVALIDAD = "rivalidad"       # Competidor, enemigo declarado
+    ENEMISTAD = "enemistad"       # Enemigo mortal
+    CONOCIDO = "conocido"         # Conocido casual
+    PROFESIONAL = "profesional"   # Compañero de trabajo, socio
+    SUBORDINADO = "subordinado"   # Empleado, sirviente
+    SUPERIOR = "superior"         # Jefe, señor
+
+@dataclass
+class RelacionNPC:
+    """Relación de este NPC con otro NPC."""
+    npc_id: str                    # ID del NPC relacionado
+    nombre: str                    # Nombre del NPC (para referencia rápida)
+    tipo: TipoRelacion             # Tipo de relación
+    intensidad: int = 50           # 0-100: qué tan fuerte es la relación
+    confianza: int = 50            # 0-100: nivel de confianza
+    notas: str = ""                # Notas contextuales (ej: "prometidos hace 2 años")
+    eventos: List[str] = field(default_factory=list)  # Eventos importantes juntos
+    
+    def to_dict(self) -> Dict:
+        return {
+            "npc_id": self.npc_id,
+            "nombre": self.nombre,
+            "tipo": self.tipo.value,
+            "intensidad": self.intensidad,
+            "confianza": self.confianza,
+            "notas": self.notas,
+            "eventos": self.eventos
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'RelacionNPC':
+        return cls(
+            npc_id=data["npc_id"],
+            nombre=data.get("nombre", ""),
+            tipo=TipoRelacion(data.get("tipo", "conocido")),
+            intensidad=data.get("intensidad", 50),
+            confianza=data.get("confianza", 50),
+            notas=data.get("notas", ""),
+            eventos=data.get("eventos", [])
+        )
+
 @dataclass
 class Personalidad:
     rasgos: List[str] = field(default_factory=list)
@@ -245,7 +291,7 @@ class NPC:
     ubicacion: UbicacionNPC = field(default_factory=UbicacionNPC)
     rutina: Rutina = field(default_factory=lambda: Rutina(zona_base_id=""))
     relacion_jugador: RelacionJugador = field(default_factory=RelacionJugador)
-    relaciones_npcs: Dict[str, Dict] = field(default_factory=dict)
+    relaciones_npcs: List[RelacionNPC] = field(default_factory=list)
     
     # Inventario
     inventario_tipo: str = "personal"
@@ -291,7 +337,7 @@ class NPC:
             "rutina": self.rutina.to_dict(),
             "relaciones": {
                 "jugador": self.relacion_jugador.to_dict(),
-                "npcs": self.relaciones_npcs
+                "npcs": [r.to_dict() for r in self.relaciones_npcs]
             },
             "inventario": {
                 "tipo": self.inventario_tipo,
@@ -317,6 +363,10 @@ class NPC:
         inv = data.get("inventario", {})
         flags = data.get("flags", {})
         
+        rel = data.get("relaciones", {})
+        relaciones_npcs_data = rel.get("npcs", [])
+        relaciones_npcs = [RelacionNPC.from_dict(r) for r in relaciones_npcs_data] if isinstance(relaciones_npcs_data, list) else []
+        
         return cls(
             id=data["id"],
             nombre=data["nombre"],
@@ -336,7 +386,7 @@ class NPC:
             ubicacion=UbicacionNPC.from_dict(data.get("ubicacion", {})),
             rutina=Rutina.from_dict(data.get("rutina", {})),
             relacion_jugador=RelacionJugador.from_dict(rel.get("jugador", {})),
-            relaciones_npcs=rel.get("npcs", {}),
+            relaciones_npcs=relaciones_npcs,
             inventario_tipo=inv.get("tipo", "personal"),
             stock=inv.get("stock", []),
             multiplicador_precios=inv.get("tabla_precios", {}).get("multiplicador", 1.0),

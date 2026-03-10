@@ -49,6 +49,15 @@ PALABRAS_PROHIBIDAS = [
     "se eleva",
 ]
 
+# Patrones que indican cambio de personaje (múltiples personajes hablando)
+PATRONES_CAMBIO_PERSONAJE = [
+    r'"[^"]*"\s*\|\|',  # "diálogo" || (formato teatral)
+    r'\bÉl\s+dice:',  # Él dice:
+    r'\bElla\s+dice:',  # Ella dice:
+    r'\bElla\s+responde:',  # Ella responde:
+    r'\bÉl\s+responde:',  # Él responde:
+]
+
 
 class ResponseCleaner:
     """Limpia respuestas del LLM para hacerlas más naturales."""
@@ -56,6 +65,7 @@ class ResponseCleaner:
     def __init__(self):
         self.palabras_prohibidas = PALABRAS_PROHIBIDAS
         self.exageraciones = EXAGERACIONES
+        self.patrones_cambio = PATRONES_CAMBIO_PERSONAJE
     
     def limpiar(self, respuesta: str, nombre_npc: str = "NPC") -> str:
         """
@@ -73,6 +83,9 @@ class ResponseCleaner:
         
         texto = respuesta.strip()
         original = texto
+        
+        # 0. Detectar cambio de personaje y cortar
+        texto = self._detectar_cambio_personaje(texto)
         
         # 1. Eliminar prefijos comunes del LLM
         texto = self._eliminar_prefijos(texto)
@@ -94,6 +107,15 @@ class ResponseCleaner:
         
         return texto
     
+    def _detectar_cambio_personaje(self, texto: str) -> str:
+        """Detecta si hay cambio de personaje y corta antes del cambio."""
+        for patron in self.patrones_cambio:
+            match = re.search(patron, texto, flags=re.IGNORECASE)
+            if match:
+                # Cortar antes del cambio de personaje
+                texto = texto[:match.start()].strip()
+        return texto
+    
     def _eliminar_prefijos(self, texto: str) -> str:
         """Elimina prefijos como 'Dorian Xavier:', 'Respuesta:', etc."""
         patrones = [
@@ -107,7 +129,26 @@ class ResponseCleaner:
         return texto
     
     def _corregir_primera_persona(self, texto: str, nombre: str) -> str:
-        """Corrige acciones en primera persona."""
+        """Corrige acciones en primera persona y elimina nombres redundantes."""
+        # Eliminar el nombre del NPC de las acciones
+        # *Dorian Xavier observa* -> *observa*
+        # *Dorian observa* -> *observa*
+        
+        # Intentar con el nombre completo primero
+        patron_completo = re.escape(nombre)
+        texto = re.sub(rf"\*\s*{patron_completo}\s+", "* ", texto)
+        
+        # También intentar con la primera palabra del nombre (por si el LLM usa nombre completo)
+        primer_nombre = nombre.split()[0] if nombre.split() else nombre
+        if primer_nombre != nombre:  # Si hay apellido
+            patron_primer = re.escape(primer_nombre)
+            # Solo reemplazar si está seguido de otra palabra (el apellido)
+            texto = re.sub(rf"\*\s*{patron_primer}\s+[A-Z][a-z]+\s+", "* ", texto)
+        
+        # Limpiar espacios extra después del asterisco
+        texto = re.sub(r"\*\s+", "* ", texto)
+        
+        # Corregir primera persona
         reemplazos = [
             (r"\*miro\b", f"*{nombre} mira"),
             (r"\*me acerco\b", f"*{nombre} se acerca"),
@@ -170,6 +211,8 @@ class ResponseCleaner:
         texto = re.sub(r"\s+([.,!?])", r"\1", texto)
         # Espacios después de asteriscos
         texto = re.sub(r"\*\s+", "* ", texto)
+        # Espacio justo después de asterisco de apertura: "* accion" -> "*accion"
+        texto = re.sub(r"^\*\s+", "*", texto)
         return texto.strip()
     
     def validar(self, respuesta: str) -> bool:
