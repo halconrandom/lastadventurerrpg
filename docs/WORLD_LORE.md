@@ -1,322 +1,194 @@
 # World Lore - Last Adventurer
 
-> **Estado:** En desarrollo - Decisiones parciales tomadas
+> **Estado:** Completado - Todas las decisiones tomadas
 > **Última actualización:** 2026-03-09
-> **Fuentes:** `STORYTELLER_SYSTEM.md`, `SISTEMA_HISTORIA.md`, `SISTEMA_EXPLORACION.md`, `ROADMAP.md`
+> **Fuentes:** Todos los documentos del proyecto + respuestas del usuario
 
 ---
 
-## Resumen de Decisiones Tomadas
+## Resumen Ejecutivo
+
+**Last Adventurer** es un RPG de exploración procedural **sandbox** donde el jugador es el primer ser en 1000 años en nacer con el **Don de Exploración**. El mundo es neutral (sin bien/mal absolutos), con tono D&D y toques oscuros. El objetivo es permitir que el jugador decida qué hacer libremente: ser minero, cazador, comerciante, etc. No hay límites, solo la imaginación.
+
+---
+
+## Los 3 Pilares del Juego
+
+### Pilar 1: Experiencia Core
+**Exploración** - El jugador explora el mundo minuto a minuto.
+
+### Pilar 2: Progresión
+**Consecuencias de decisiones** - Lo que mantiene al jugador enganchado.
+
+### Pilar 3: Finalidad
+**Sandbox sin objetivo fijo** - El jugador decide qué hacer con su vida libremente.
+
+---
+
+## Decisiones Tomadas (Consolidado)
+
+### Mundo y Cosmología
 
 | Aspecto | Decisión | Fuente |
 |---------|----------|--------|
 | **Nombre del mundo** | Aleatorio por partida (LLM genera opciones) | STORYTELLER_SYSTEM.md |
 | **Cosmología** | Generada por LLM, única por mundo | STORYTELLER_SYSTEM.md |
 | **Facciones** | Generadas por LLM, únicas por mundo | STORYTELLER_SYSTEM.md |
-| **Razas** | Clásicas de fantasía (Humanos, Elfos, Enanos, etc.) | STORYTELLER_SYSTEM.md |
 | **Conflicto central** | Mundo neutral - no hay bien/mal absolutos | STORYTELLER_SYSTEM.md |
-| **El jugador** | Primero en 1000 años con el Don de Exploración | STORYTELLER_SYSTEM.md |
-| **Geografía** | Sistema procedural (tiles X/Y, mundo infinito con chunks) | SISTEMA_MAPA.md |
-| **Historia procedural** | 100 años de eventos generados al crear mundo | STORYTELLER_SYSTEM.md |
 | **Tono** | D&D con toques oscuros y lore profundo | SISTEMA_HISTORIA.md |
 | **Voz narrativa** | Omnisciente pero limitada en información | SISTEMA_HISTORIA.md |
-| **LLM** | Llama 3.2 3B con fine-tuning (LoRA), VPS propia | SISTEMA_LLM.md |
-| **Mapa** | Sistema dual (mundial + local), tiles de 1km, subtiles de 100m | SISTEMA_MAPA_DUAL.md |
-| **Tiempo** | Día/noche, estaciones, avanza por acción | SISTEMA_TIEMPO.md |
-| **Relaciones** | Sistema híbrido (numérico + estados), red de NPCs | SISTEMA_RELACIONES.md |
-| **Combate** | Por turnos, por velocidad, grupo completo | SISTEMA_COMBATE.md |
-| **Creación personaje** | Sin arquetipos al inicio, se definen por misiones | SISTEMA_CREACION_PERSONAJE.md |
-| **Spawn** | Aleatorio en pueblo/ciudad seguro | SISTEMA_HISTORIA.md |
+
+### Entidades Cosmológicas
+
+| Aspecto | Decisión |
+|---------|----------|
+| **Qué son** | 5 fuerzas de la naturaleza personificadas: Vida, Muerte, Creación, Destrucción, Estabilidad |
+| **Todavía existen** | Sí, son fuerzas permanentes |
+| **Relación con el jugador** | No son "elegidos", no observan al jugador, el jugador no es un accidente |
+
+### El Don de Exploración
+
+| Aspecto | Decisión |
+|---------|----------|
+| **Qué hace** | Permite ver cosas que otros no ven en sitios cualquiera. Es la mecánica central de exploración. No dota de poderes especiales. |
+| **Niveles** | No tiene niveles, no se desarrolla, no mejora |
+| **Costo** | No consume nada, no tiene límites, no se pierde |
+| **Quién lo tiene** | Cualquier raza puede tenerlo, no solo humanos |
+| **Es magia** | No, es un poder diferente |
+
+### Razas
+
+| Aspecto | Decisión |
+|---------|----------|
+| **Razas incluidas** | Humanos, Elfos, Enanos, Orcos, Gnomos, Halflings + Sub-razas (Elfos Nocturnos, Enanos del Vacío, etc.) |
+| **Jugables al inicio** | No todas, se añaden más adelante |
+| **Bonificaciones** | Sí, cada raza tiene stats diferentes |
+| **Don de Exploración** | Cualquier raza puede tenerlo |
+
+### Sistema de Magia
+
+| Aspecto | Decisión |
+|---------|----------|
+| **Existe** | Sí, pero es rara |
+| **Cómo funciona** | Todas las formas: Vanciana (spells memorizados), Mana (recurso), Ritual (tiempo/componentes), Pactos (poder de entidades) |
+| **Quién puede usarla** | Cualquiera con entrenamiento, mediante artefactos |
+| **Relación con el Don** | El Don de Exploración NO es magia, es un poder diferente |
+
+### Tecnología y Sociedad
+
+| Aspecto | Decisión |
+|---------|----------|
+| **Nivel tecnológico** | Mixto según región: algunas áreas más mágicas, otras steampunk, otras renacentistas |
+| **Sociedad** | Mixta: feudal, republicana, tribal según región |
+
+### Misterios Centrales
+
+| Misterio | ¿Existe? |
+|----------|----------|
+| ¿Qué son las entidades cosmológicas? | Sí |
+| ¿Por qué se debilitó el Don? | Sí |
+| ¿Puede recuperarse el Don para todos? | Sí |
+| ¿Qué pasó en los últimos 1000 años? | Sí |
+| ¿Hay otros con el Don ocultos? | Sí |
+
+| Aspecto | Decisión |
+|---------|----------|
+| **Cantidad de misterios** | Bastantes |
+| **Solucionables** | Sí, pero no es el objetivo principal del juego |
+| **Cómo se revelan** | De todas las formas: exploración de ruinas, NPCs y diálogos, libros y documentos |
+
+### Duración y Finalidad
+
+| Aspecto | Decisión |
+|---------|----------|
+| **Duración** | Infinita (sandbox) |
+| **Qué hace volver al jugador** | Descubrir secretos, progresar en poder, ver consecuencias de decisiones, llevar una vida en el juego |
+| **Final** | No tiene fin, se puede seguir jugando siempre |
+| **Múltiples finales** | Sí |
+
+### El Jugador
+
+| Aspecto | Decisión | Fuente |
+|---------|----------|--------|
+| **Spawn inicial** | Aleatorio en lugar seguro (pueblo/ciudad) | SISTEMA_HISTORIA.md, SISTEMA_MAPA.md |
+| **Arquetipos** | NO se eligen al inicio. Se definen mediante misiones | SISTEMA_CREACION_PERSONAJE.md |
+| **Stats iniciales** | Base iguales para todos: HP:100, ATK:10, DEF:5, etc. | SISTEMA_CREACION_PERSONAJE.md |
+| **Género** | Sí - Masculino/Femenino/No especificar | SISTEMA_CREACION_PERSONAJE.md |
+| **Items iniciales** | Sin items de combate. Ropajes básicos (cosméticos) | SISTEMA_CREACION_PERSONAJE.md |
+| **Dificultad** | Fácil/Normal/Difícil con modificadores | SISTEMA_CREACION_PERSONAJE.md |
+
+### Sistemas de Juego
+
+| Aspecto | Decisión | Fuente |
+|---------|----------|--------|
+| **Mapa** | Tiles X/Y, mundo infinito con chunks, 1 tile = 1km² | SISTEMA_MAPA.md |
+| **Sub-tiles** | 1 tile = 100 sub-tiles (10x10), cada sub-tile = 100m | SISTEMA_MAPA.md |
+| **Tiempo** | Día/noche + estaciones + avanza por acción | SISTEMA_TIEMPO.md |
+| **Combate** | Por turnos, orden por velocidad, grupo completo | SISTEMA_COMBATE.md |
+| **Críticos** | Basado en stat crítico | SISTEMA_COMBATE.md |
+| **Evasión** | Probabilidad de esquivar ataque completo | SISTEMA_COMBATE.md |
 | **Fast travel** | No, exploración a pie obligatoria | SISTEMA_HISTORIA.md |
-| **Persistencia** | Todo se guarda permanentemente | SISTEMA_HISTORIA.md |
+| **Cartografía** | Sistema progresivo, mapa se obtiene y mejora | SISTEMA_MAPA.md |
+
+### Persistencia y Mundo Dinámico
+
+| Aspecto | Decisión | Fuente |
+|---------|----------|--------|
+| **Persistencia** | TODO se guarda permanentemente | SISTEMA_HISTORIA.md |
 | **Memoria NPCs** | Total, recuerdan todo | SISTEMA_HISTORIA.md |
 | **Mundo dinámico** | Sí, cambia sin intervención del jugador | SISTEMA_HISTORIA.md |
+| **Reputación** | Híbrido: numérico + estados + red de relaciones | SISTEMA_HISTORIA.md |
 | **Consecuencias** | Retardadas pero consistentes, irreversibles | SISTEMA_HISTORIA.md |
+| **Propagación de info** | Por rutas y proximidad | SISTEMA_HISTORIA.md |
+
+### LLM y Narrativa
+
+| Aspecto | Decisión | Fuente |
+|---------|----------|--------|
+| **Modelo LLM** | Llama 3.2 3B con LoRA | SISTEMA_HISTORIA.md |
+| **Hosting** | VPS propia | SISTEMA_HISTORIA.md |
+| **Contenido LLM** | Generalista RPG (descripciones, diálogos, eventos) | SISTEMA_HISTORIA.md |
+| **Temperatura** | Media (0.6-0.7) | SISTEMA_HISTORIA.md |
+| **Fallback LLM** | Mostrar error y pausar el juego | SISTEMA_HISTORIA.md |
+
+### Criaturas y Enemigos
+
+| Aspecto | Decisión | Fuente |
+|---------|----------|--------|
+| **Categorías** | Bestias, Humanoides, No-muertos, Mágicos, Demonios, Dragones | CATALOGO_ENEMIGOS_COMPLETO.md |
+| **Enemigos únicos** | Sí (Fenrir, Arachne, Kraken, etc.) | CATALOGO_ENEMIGOS_COMPLETO.md |
+| **Jefes finales** | 4 (Rey Demonio, Anciano del Vacío, Dragón Primordial, Dios Caído) | CATALOGO_ENEMIGOS_COMPLETO.md |
+| **Total enemigos** | 161 enemigos documentados | CATALOGO_ENEMIGOS_COMPLETO.md |
+| **Escalado** | Por nivel del jugador Y zona | SISTEMA_ENEMIGOS.md |
+| **Respawn** | Sí, aparecen de nuevo después de un tiempo | SISTEMA_ENEMIGOS.md |
 
 ---
 
-## 1. El Don de Exploración
+## Próximos Pasos de Implementación
 
-**Concepto confirmado:**
-- Las entidades cosmológicas dotaron a ciertos humanos con la capacidad de exploración
-- Este don permite descubrir cosas donde otros no las ven
-- Las guerras y la codicia humana provocaron que el don se debilitara
-- Han pasado más de 1000 años desde el nacimiento del último humano aventurero
-- **El jugador es el primero en 1000 años en nacer con este don**
+### Prioridad Alta
 
-### Preguntas Pendientes
+1. **Sistema del Don de Exploración** - Implementar la mecánica central
+2. **Sistema de Razas** - Definir stats y bonificaciones por raza
+3. **Sistema de Magia** - Implementar las 4 formas de magia
+4. **Generador de Entidades Cosmológicas** - Templates para las 5 fuerzas
 
-1. **¿Qué puede hacer exactamente el jugador con el Don?**
-   - ¿Ver cosas ocultas que otros no ven?
-   - ¿Encontrar secretos automáticamente?
-   - ¿Acceder a áreas bloqueadas para otros?
-   - ¿Interactuar con entidades cosmológicas?
-   - ¿Combinación de todo lo anterior?
+### Prioridad Media
 
-2. **¿El Don tiene niveles o se desarrolla?**
-   - ¿Es estático desde el inicio?
-   - ¿Puede mejorar con el tiempo?
-   - ¿Hay habilidades específicas del Don?
+5. **Sistema de Misterios** - Implementar descubrimiento de misterios
+6. **Sistema de Vida** - Permitir profesiones (minero, cazador, comerciante, etc.)
+7. **Generador de Regiones** - Variación tecnológica y social por región
 
-3. **¿El Don tiene un costo?**
-   - ¿Consume algo (stamina, mana)?
-   - ¿Tiene límites de uso?
-   - ¿Puede perderse o debilitarse?
+### Prioridad Baja
 
-4. **¿Las otras razas pueden tener el Don?**
-   - ¿Solo humanos?
-   - ¿Alguna raza puede tenerlo?
-   - ¿Es exclusivo del jugador?
-
----
-
-## 2. Razas
-
-**Decisión:** Usar las **razas clásicas de fantasía**.
-
-### Lista de Razas a Definir
-
-| Raza | ¿Incluida? | ¿Jugable? | Notas |
-|------|------------|-----------|-------|
-| Humanos | ✅ Sí | ✅ Sí | Base del juego, pueden tener el Don |
-| Elfos | ❓ Pendiente | ❓ | ¿Elfos Nocturnos? ¿Elfos clásicos? |
-| Enanos | ❓ Pendiente | ❓ | ¿Enanos del Vacío? ¿Enanos clásicos? |
-| Orcos | ❓ Pendiente | ❓ | ¿Hostiles? ¿Jugables? |
-| Gnomos | ❓ Pendiente | ❓ | |
-| Halflings | ❓ Pendiente | ❓ | |
-| Otros | ❓ Pendiente | ❓ | ¿Dragones? ¿Demonios? ¿No-muertos? |
-
-### Preguntas Pendientes
-
-1. **¿Qué razas específicas incluimos?**
-2. **¿Todas las razas son jugables?**
-3. **¿Alguna raza puede tener el Don de Exploración?**
-4. **¿Las razas tienen bonificación/stats diferentes?**
-5. **¿Hay sub-razas?**
-
----
-
-## 3. Sistema de Magia
-
-**PENDIENTE DE DECISIÓN**
-
-### Preguntas sobre Magia:
-
-1. **¿La magia existe?**
-   - Sí, es común
-   - Sí, pero es rara
-   - Sí, pero es peligrosa
-   - No, es tecnología avanzada
-
-2. **¿Cómo funciona la magia?**
-   - **Vanciana:** Spells memorizados, slots
-   - **Mana:** Recurso que se gasta
-   - **Ritual:** Tiempo y componentes
-   - **Pactos:** Poder de entidades
-
-3. **¿Quién puede usar magia?**
-   - ¿Cualquiera con entrenamiento?
-   - ¿Solo los nacidos con el don?
-   - ¿Solo mediante artefactos?
-   - ¿Solo mediante pactos?
-
-4. **¿El Don de Exploración es magia?**
-   - ¿Es lo mismo que usar hechizos?
-   - ¿Es un poder diferente?
-   - ¿Pueden coexistir?
-
----
-
-## 4. Tecnología y Sociedad
-
-**PENDIENTE DE DECISIÓN**
-
-### Preguntas sobre Tecnología:
-
-1. **¿Qué nivel tecnológico tiene el mundo?**
-   - **Primitivo:** Piedra, bronce
-   - **Medieval:** Hierro, castillos
-   - **Renacentista:** Pólvora, imprenta
-   - **Steampunk:** Vapor, engranajes
-   - **Magitech:** Magia + tecnología
-
-2. **¿Cómo es la sociedad?**
-   - **Feudal:** Reyes, nobles, campesinos
-   - **Republicana:** Consejos, gremios
-   - **Tribal:** Clanes, jefes
-   - **Mixta:** Diferente según región
-
-3. **¿Hay economía?**
-   - ¿Monedas universales?
-   - ¿Trueque?
-   - ¿Sistema de reputación?
-
----
-
-## 5. Criaturas y Monstruos
-
-**PENDIENTE DE DECISIÓN**
-
-### Preguntas sobre Criaturas:
-
-1. **¿Qué tipo de criaturas existen?**
-   - ¿Bestias naturales?
-   - ¿Criaturas mágicas?
-   - ¿Monstruos del vacío?
-   - ¿Muertos vivientes?
-
-2. **¿Los monstruos son siempre hostiles?**
-   - ¿Se pueden domesticar?
-   - ¿Se pueden negociar?
-   - ¿Hay monstruos "buenos"?
-
-3. **¿Hay jefes únicos?**
-   - ¿Dragones antiguos?
-   - ¿Demonios mayores?
-   - ¿Criaturas legendarias?
-
----
-
-## 6. Misterios Centrales
-
-**PENDIENTE DE DECISIÓN**
-
-### Preguntas sobre Misterios:
-
-1. **¿Cuántos misterios principales quieres?**
-   - 1 (Muy enfocado, todo gira alrededor)
-   - 2-3 (Interconectados, pero distintos)
-   - 4-5 (Complejo, múltiples líneas de historia)
-
-2. **¿Los misterios tienen solución?**
-   - ¿El jugador puede resolverlos?
-   - ¿Son permanentes del mundo?
-   - ¿Hay múltiples interpretaciones?
-
-3. **¿Cómo se revelan los misterios?**
-   - ¿Exploración de ruinas?
-   - ¿NPCs y diálogos?
-   - ¿Libros y documentos?
-   - ¿Visiones y sueños?
-
-4. **Misterios potenciales:**
-   - ¿Qué son las entidades cosmológicas?
-   - ¿Por qué se debilitó el Don?
-   - ¿Puede recuperarse el Don para todos?
-   - ¿Qué pasó en los últimos 1000 años?
-   - ¿Hay otros con el Don ocultos?
-
----
-
-## 7. Entidades Cosmológicas
-
-**PENDIENTE DE DECISIÓN**
-
-### Preguntas:
-
-1. **¿Qué son las entidades cosmológicas?**
-   - ¿Dioses que caminaban el mundo?
-   - ¿Una civilización avanzada?
-   - ¿Visitantes de otro plano?
-   - ¿Fuerzas de la naturaleza personificadas?
-   - ¿Algo más abstracto?
-
-2. **¿Todavía existen?**
-   - ¿Se fueron?
-   - ¿Están dormidas?
-   - ¿Observan desde lejos?
-   - ¿Desaparecieron completamente?
-
-3. **¿Tienen relación con el jugador?**
-   - ¿El jugador es su "elegido"?
-   - ¿El jugador es un accidente?
-   - ¿Observan al jugador?
-   - ¿Son indiferentes?
-
----
-
-## 8. Duración y Progresión
-
-**PENDIENTE DE DECISIÓN**
-
-### Preguntas:
-
-1. **¿Cuánto dura una partida "completa"?**
-   - ¿5-10 horas?
-   - ¿20-40 horas?
-   - ¿Infinita (roguelike/sandbox)?
-
-2. **¿Qué hace que el jugador vuelva?**
-   - ¿Descubrir secretos?
-   - ¿Progresar en poder?
-   - ¿Ver las consecuencias de sus decisiones?
-   - ¿Completar la historia?
-
-3. **¿Hay un "final"?**
-   - ¿El juego tiene fin?
-   - ¿Se puede seguir jugando después?
-   - ¿Hay múltiples finales?
-
----
-
-## 9. Los 3 Pilares (Prioridad)
-
-> **Define estos primero** - el resto de decisiones fluirán naturalmente.
-
-### Pilar 1: Experiencia Core
-**¿Qué hace el jugador minuto a minuto?**
-- [ ] Combatir
-- [ ] Explorar
-- [ ] Hablar/Negociar
-- [ ] Resolver puzzles
-- [ ] Gestionar recursos
-- [ ] Otro: ____________
-
-### Pilar 2: Progresión
-**¿Qué mantiene al jugador enganchado?**
-- [ ] Descubrir secretos/historia
-- [ ] Subir de nivel/poder
-- [ ] Consecuencias de decisiones
-- [ ] Coleccionar/Completar
-- [ ] Superar desafíos
-- [ ] Otro: ____________
-
-### Pilar 3: Finalidad
-**¿Cuál es el objetivo del juego?**
-- [ ] Completar la historia principal
-- [ ] Sobrevivir el mayor tiempo posible
-- [ ] Descubrir todos los secretos
-- [ ] Construir/Crear algo
-- [ ] No hay objetivo fijo (sandbox)
-- [ ] Otro: ____________
-
----
-
-## 10. Próximos Pasos
-
-### Orden sugerido para responder:
-
-1. **Primero: Los 3 Pilares (Sección 9)** - Define la experiencia core, progresión y finalidad
-2. **Segundo: El Don de Exploración (Sección 1)** - Qué hace exactamente
-3. **Tercero: Razas (Sección 2)** - Cuáles y cómo funcionan
-4. **Cuarto: Magia (Sección 3)** - Existe y cómo funciona
-5. **Quinto: Tecnología (Sección 4)** - Nivel tecnológico del mundo
-6. **Sexto: El resto de secciones** - Detalles específicos
-
-### Una vez respondas, podemos:
-
-1. Crear templates para generación procedural de nombres/cosmología/facciones
-2. Definir la lista exacta de razas con stats
-3. Diseñar el sistema del Don de Exploración
-4. Crear el generador de eventos históricos
-5. Diseñar las criaturas y monstruos
-6. Escribir la documentación técnica para el Storyteller System
+8. **Múltiples finales** - Implementar finales según decisiones
+9. **Sistema de herencias** - Continuar con descendencia
 
 ---
 
 ## Notas de Diseño
 
-> Espacio para notas adicionales, ideas sueltas, o referencias que quieras guardar.
+> Espacio para notas adicionales, ideas sueltas, o referencias.
 
 ```
 [ Tus notas aquí ]
@@ -324,4 +196,4 @@
 
 ---
 
-**Recuerda:** No hay respuestas correctas o incorrectas. Este es TU mundo. Solo necesito saber qué dirección tomas para ayudarte a construirlo de forma coherente.
+**Documento completado** - Todas las decisiones del World Lore han sido tomadas y documentadas.

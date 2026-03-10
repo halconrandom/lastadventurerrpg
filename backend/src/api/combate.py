@@ -163,9 +163,13 @@ def finalizar_combate():
     if combate_activo.estado == EstadoCombate.VICTORIA:
         recompensas = combate_activo.get_recompensas()
         
-        # Dar experiencia
+        # Dar experiencia de nivel
         if recompensas.get('experiencia'):
             personaje.ganar_experiencia(recompensas['experiencia'])
+        
+        # Dar experiencia de habilidades acumulada
+        for hab_nombre, exp_cantidad in combate_activo.exp_acumulada.items():
+            personaje.ganar_experiencia_habilidad(hab_nombre, exp_cantidad)
         
         # Dar oro
         if recompensas.get('oro'):
@@ -191,7 +195,6 @@ def finalizar_combate():
                         })
         
         # Actualizar HP del personaje
-
         jugador_participante = combate_activo.jugadores.get('jugador_1')
         if jugador_participante:
             personaje.stats.hp_actual = jugador_participante.hp

@@ -7,7 +7,7 @@ class SaveManager:
 
     SLOTS_DIR = "saves"
     NUM_SLOTS = 3
-    VERSION = "1.2"  # Actualizado para incluir mapa
+    VERSION = "1.5"  # Actualizado para incluir narrativa e historial
 
     def __init__(self):
         self._asegurar_directorio()
@@ -135,6 +135,28 @@ class SaveManager:
             mapa.generar_mundo_inicial()
             data["mapa"] = mapa.to_dict()
 
+        # Migración de 1.2 a 1.3: añadir NPCs
+        if version_guardada in ["1.0", "1.1", "1.2"] and "npcs" not in data:
+            data["npcs"] = {
+                "version": "1.0",
+                "activos": [],
+                "por_id": {},
+                "rumores": []
+            }
+
+        # Migración de 1.3 a 1.4: añadir tiempo
+        if version_guardada in ["1.0", "1.1", "1.2", "1.3"] and "tiempo" not in data:
+            data["tiempo"] = {"tick_total": 480} # 08:00 AM
+
+        # Migración de 1.4 a 1.5: añadir historial y tags
+        if version_guardada in ["1.0", "1.1", "1.2", "1.3", "1.4"]:
+            if "historial_eventos" not in data:
+                data["historial_eventos"] = []
+            if "progreso" not in data:
+                data["progreso"] = {}
+            if "tags" not in data["progreso"]:
+                data["progreso"]["tags"] = []
+
         # Migración de stats: añadir aliases para frontend
         if "personaje" in data and "stats" in data["personaje"]:
             stats = data["personaje"]["stats"]
@@ -214,8 +236,17 @@ class SaveManager:
                 "misiones_completadas": [],
                 "misiones_activas": [],
                 "zonas_visitadas": ["pueblo_inicio"],
-                "npcs_conocidos": []
+                "npcs_conocidos": [],
+                "tags": []
             },
             "exploracion": exploracion.to_dict(),
-            "mapa": mapa.to_dict()
+            "mapa": mapa.to_dict(),
+            "npcs": {
+                "version": "1.0",
+                "activos": [],
+                "por_id": {},
+                "rumores": []
+            },
+            "tiempo": {"tick_total": 480},
+            "historial_eventos": []
         }

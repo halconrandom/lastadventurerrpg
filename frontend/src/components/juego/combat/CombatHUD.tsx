@@ -91,16 +91,22 @@ export function CombatHUD({ participante, esJugador }: CombatHUDProps) {
       </div>
 
       {/* Estado */}
-      {participante.esta_bloqueando && (
-        <div className="mt-2 text-xs text-blue-400 flex items-center gap-1">
-          <span>🛡️ Bloqueando</span>
-        </div>
-      )}
-      {!participante.esta_vivo && (
-        <div className="mt-2 text-xs text-red-400 font-bold">
-          💀 Derrotado
-        </div>
-      )}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {participante.esta_bloqueando && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30 flex items-center gap-1"
+          >
+            🛡️ BLOQUEO ACTIVO (-50%)
+          </motion.div>
+        )}
+        {!participante.esta_vivo && (
+          <div className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30 font-bold">
+            💀 DERROTADO
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -133,6 +133,10 @@ class CombateManager:
         
         self.log: List[EntradaLog] = []
         self.ultimo_resultado: Optional[Dict] = None
+        
+        # Tracking de experiencia de habilidades durante el combate
+        self.exp_acumulada: Dict[str, int] = {} # {nombre_habilidad: cantidad}
+        self.arma_equipada: str = "Espada" # Por defecto para el jugador
     
     def iniciar_combate(self, personaje: Personaje, enemigos_data: List[Dict]) -> Dict:
         """Inicia un nuevo combate."""
@@ -154,9 +158,13 @@ class CombateManager:
             evasion=personaje.stats.get_evasion(),
             nivel=personaje.get_nivel(),
             es_jugador=True,
-            habilidades=[]
+            habilidades=[],
+            experiencia=0
         )
         self.jugadores[jugador.id] = jugador
+        
+        # Intentar determinar el arma desde el personaje (si existiera el campo)
+        # Por ahora usamos "Espada" como base o lo que el jugador elija
         
         # Crear enemigos
         for i, enemigo_data in enumerate(enemigos_data):
@@ -231,6 +239,10 @@ class CombateManager:
         vivos = [p for p in objetivos.values() if p.esta_vivo]
         return vivos[0] if vivos else None
     
+    def _registrar_exp_habilidad(self, nombre_habilidad: str, cantidad: int):
+        """Registra experiencia para una habilidad específica"""
+        self.exp_acumulada[nombre_habilidad] = self.exp_acumulada.get(nombre_habilidad, 0) + cantidad
+    
     def ejecutar_accion(self, actor_id: str, accion: str, 
                         objetivo_id: Optional[str] = None,
                         habilidad_nombre: Optional[str] = None,
@@ -286,7 +298,8 @@ class CombateManager:
             ))
             return {"success": True, "accion": "atacar", "evasion": True, "mensaje": f"¡{objetivo.nombre} esquivó el ataque!"}
         
-        # Calcular daño
+        # Calcular daño según SISTEMA_COMBATE.md
+        # Daño Base = ATK Personaje + Daño Arma (simplificado: usamos actor.ataque)
         daño = actor.ataque
         es_critico = False
         
@@ -295,11 +308,19 @@ class CombateManager:
             es_critico = True
         
         # Aplicar reducción por defensa
+        # Reducción = Defensa % + (Nivel Defensa × 1%)
+        # Nota: actor.defensa ya debería incluir el nivel de defensa en su cálculo si viene del Personaje
         reduccion = min(objetivo.defensa, 80) / 100
-        if objetivo.esta_bloqueando:
-            reduccion = min(reduccion + 0.5, 0.8)
         
-        daño_real = int(daño * (1 - reduccion))
+        daño_recibido = int(daño * (1 - reduccion))
+        
+        # Aplicar Bloqueo (Si el objetivo está bloqueando, reduce daño recibido en 50%)
+        daño_real = daño_recibido
+        if objetivo.esta_bloqueando:
+            daño_real = int(daño_recibido * 0.5)
+            # Ganar exp de Defensa si el objetivo es jugador
+            if not actor.es_jugador: # El jugador está bloqueando
+                self._registrar_exp_habilidad("Defensa", actor.nivel * 2)
         objetivo.hp -= daño_real
         if objetivo.hp < 0:
             objetivo.hp = 0
@@ -309,6 +330,10 @@ class CombateManager:
         if es_critico:
             mensaje += " ¡CRÍTICO!"
         mensaje += f" causando {daño_real} de daño."
+        
+        # Registrar experiencia de arma si el actor es jugador
+        if actor.es_jugador:
+            self._registrar_exp_habilidad(self.arma_equipada, 5) # 5 exp base por ataque exitoso
         
         self.log.append(EntradaLog(
             turno=self.turno,
@@ -398,7 +423,7 @@ class CombateManager:
         if es_critico:
             mensaje += " ¡CRÍTICO!"
         mensaje += f" causando {daño_real} de daño."
-        
+
         self.log.append(EntradaLog(
             turno=self.turno,
             actor_id=actor.id,
@@ -410,6 +435,10 @@ class CombateManager:
             es_critico=es_critico,
             mensaje=mensaje
         ))
+        
+        # Registrar experiencia de habilidad si el actor es jugador
+        if actor.es_jugador:
+            self._registrar_exp_habilidad(habilidad_nombre, 10) # 10 exp base por uso de habilidad
         
         return {
             "success": True,
