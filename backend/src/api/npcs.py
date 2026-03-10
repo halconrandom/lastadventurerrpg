@@ -109,22 +109,9 @@ def hablar_npc(npc_id):
         }), 500
     
     respuesta_texto = respuesta_json.get("respuesta", "...")
-    
-    # Registrar la interacción en la memoria del NPC
-    interaccion = {
-        "jugador": mensaje_jugador,
-        "npc": respuesta_texto,
-        "timestamp": tiempo.tick_total
-    }
-    
-    # Asegurar que la estructura de memoria existe
-    if not hasattr(npc, 'memoria') or npc.memoria is None:
-        from systems.npcs.npc import MemoriaNPC
-        npc.memoria = MemoriaNPC()
-        
-    npc.memoria.ultimas_interacciones.append(interaccion)
-    
+
     # Guardar cambios en el NPC y en el save
+    # (la memoria ya fue actualizada dentro de NarrativaManager)
     datos["npcs"] = manager.to_dict()
     save_manager.guardar(slot, datos)
     
@@ -133,11 +120,7 @@ def hablar_npc(npc_id):
         "data": {
             "respuesta": respuesta_texto,
             "npc": npc.nombre,
-            "debug": {
-                "pensamiento": respuesta_json.get("pensamiento"),
-                "animo_delta": respuesta_json.get("animo_delta"),
-                "decision": respuesta_json.get("decision")
-            }
+            "debug": respuesta_json.get("debug", {})
         }
     })
 

@@ -1,93 +1,180 @@
-from typing import List, Dict, Optional, Any
-import json
+"""
+NarrativaManager — Orquestador del pipeline cognitivo de NPCs.
+
+Pipeline:
+  1. IntentClassifier  → Clasifica intención del jugador (sin LLM)
+  2. EmotionEngine     → Actualiza emoción del NPC con inercia
+  3. GoalEngine        → Obtiene meta activa y evalúa al jugador
+  4. DialoguePolicy    → Filtra decisiones absurdas
+  5. ContextBuilder    → Construye prompt minimalista
+  6. LLMClient         → Solo genera el texto del diálogo
+  7. ResponseParser    → Limpia artefactos del LLM
+"""
+
 import re
+from typing import List, Dict, Optional
+
 from systems.tiempo import TimeManager
 from systems.npcs.npc import NPC
-from systems.npcs.memory_index import MemoryIndex
-from systems.npcs.intent_parser import IntentParser
-from systems.npcs.dialogue_policy import DialoguePolicy
+from systems.npcs.intent_classifier import IntentClassifier
+from systems.npcs.emotion_engine import EmotionEngine
+from systems.npcs.goal_engine import GoalEngine
+from systems.npcs.context_builder import ContextBuilder
 from llm.client import LLMClient
-from llm.prompts import PROMPT_NPC_DIALOGO, PROMPT_SISTEMA_BASE
+from llm.prompts import PROMPT_DESCRIPCION_ESCENA
+
 
 class NarrativaManager:
     """
-    Orquestador narrativo: construye el contexto para el LLM y parsea la respuesta.
+    Orquestador del pipeline cognitivo de NPCs.
+    El LLM solo genera diálogo. Toda la lógica es código.
     """
 
     def __init__(self, llm_client: LLMClient):
         self.llm = llm_client
-        self.memory_indexer = MemoryIndex()
-        self.intent_parser = IntentParser(llm_client)
-        self.dialogue_policy = DialoguePolicy()
+        self.intent_classifier = IntentClassifier()
+        self.emotion_engine = EmotionEngine()
+        self.goal_engine = GoalEngine()
+        self.context_builder = ContextBuilder()
 
-    def generar_dialogo_npc(self, npc: NPC, mensaje_jugador: str, jugador_data: Dict, tiempo: TimeManager, rumores_locales: List[Dict]) -> Dict:
-        """Llama al LLM para generar una respuesta estructurada del NPC."""
-        
-        # 1. Interpretar intención del jugador (NUEVA CAPA)
-        intent = self.intent_parser.parsear(mensaje_jugador)
-        
-        # 2. Obtener memoria indexada del NPC
-        contexto_memoria = self.memory_indexer.generar_contexto_memoria(npc)
-        
-        # 3. Construir el prompt con el análisis de intención
-        prompt = PROMPT_NPC_DIALOGO.format(
-            nombre=npc.nombre,
-            raza=npc.raza,
-            rol=f"{npc.rol_tipo} ({npc.rol_subtipo})",
-            personalidad=", ".join(npc.personalidad.rasgos),
-            perfil_relacion=contexto_memoria["perfil_relacion"],
-            animo_valor=npc.relacion_jugador.reputacion_valor,
-            hilo_reciente=contexto_memoria["hilo_reciente"],
+    # -----------------------------------------------------------------------
+    # Pipeline principal de diálogo
+    # -----------------------------------------------------------------------
+    def generar_dialogo_npc(
+        self,
+        npc: NPC,
+        mensaje_jugador: str,
+        jugador_data: Dict,
+        tiempo: TimeManager,
+        rumores_locales: List[Dict]
+    ) -> Dict:
+        """
+        Ejecuta el pipeline completo y devuelve la respuesta del NPC.
+        """
+
+        # PASO 1: Clasificar intención del jugador (sin LLM)
+        intent = self.intent_classifier.clasificar(mensaje_jugador)
+
+        # PASO 2: Obtener meta activa según rol y hora
+        hora_actual = tiempo.hora if hasattr(tiempo, 'hora') else 12
+        meta = self.goal_engine.get_meta_activa(npc.rol_tipo, hora_actual)
+
+        # PASO 3: Evaluar si el jugador ayuda u obstaculiza la meta
+        efecto_jugador = self.goal_engine.evaluar_jugador(meta, intent.tipo)
+
+        # PASO 4: Construir prompt (también actualiza emoción del NPC)
+        prompt_data = self.context_builder.construir(
+            npc=npc,
             mensaje=mensaje_jugador,
-            intent_analisis=json.dumps(intent) # Inyectar análisis de intención
+            intent=intent,
+            meta=meta,
+            efecto_jugador=efecto_jugador,
         )
 
-        respuesta_raw = self.llm.generar(prompt, system_prompt=PROMPT_SISTEMA_BASE)
-        
+        # PASO 5: Llamar al LLM solo para generar el texto
+        respuesta_raw = self.llm.generar(
+            prompt_data["user"],
+            system_prompt=prompt_data["system"]
+        )
+
         if not respuesta_raw:
-            return {
-                "pensamiento": "Error de conexión",
-                "animo_delta": 0,
-                "decision": "HABLAR",
-                "respuesta": "..."
+            return self._respuesta_fallback(npc)
+
+        # PASO 6: Limpiar la respuesta
+        respuesta_limpia = self._limpiar_respuesta(respuesta_raw, npc.nombre)
+
+        # PASO 7: Guardar en memoria del NPC
+        npc.memoria.ultimas_interacciones.append({
+            "jugador": mensaje_jugador,
+            "npc": respuesta_limpia,
+            "timestamp": getattr(tiempo, 'tick_total', 0)
+        })
+        # Mantener solo las últimas 10 interacciones
+        npc.memoria.ultimas_interacciones = npc.memoria.ultimas_interacciones[-10:]
+
+        return {
+            "respuesta": respuesta_limpia,
+            "debug": {
+                "intent": intent.tipo,
+                "agresion": intent.agresion,
+                "emocion": npc.estado_emocional.emocion,
+                "emocion_intensidad": npc.estado_emocional.intensidad,
+                "meta_activa": meta.tipo,
+                "efecto_jugador": efecto_jugador,
             }
-            
-        try:
-            # Intentar parsear el JSON del LLM
-            inicio = respuesta_raw.find('{')
-            fin = respuesta_raw.rfind('}') + 1
-            if inicio != -1 and fin != -1:
-                respuesta_json = json.loads(respuesta_raw[inicio:fin])
-            else:
-                respuesta_json = json.loads(respuesta_raw)
-                
-            # 4. Validar decisión con DialoguePolicy (NUEVA CAPA)
-            decision_original = respuesta_json.get("decision", "HABLAR")
-            decision_validada = self.dialogue_policy.validar_decision(npc, intent, decision_original)
-            respuesta_json["decision"] = decision_validada
-            
-            # Actualizar el ánimo del NPC en el objeto real
-            delta = respuesta_json.get("animo_delta", 0)
-            npc.relacion_jugador.reputacion_valor += delta
-            
-            return respuesta_json
+        }
 
-        except (json.JSONDecodeError, ValueError) as e:
-            # Fallback si el LLM no devuelve JSON
-            respuesta_limpia = respuesta_raw.split("]")[-1].strip() if "]" in respuesta_raw else respuesta_raw
-            return {
-                "pensamiento": "Fallo en el motor lógico",
-                "animo_delta": 0,
-                "decision": "HABLAR",
-                "respuesta": respuesta_limpia
+    # -----------------------------------------------------------------------
+    # Descripción de escena (para exploración)
+    # -----------------------------------------------------------------------
+    def generar_descripcion_escena(
+        self,
+        bioma: str,
+        ubicacion: str,
+        hora: str,
+        clima: str,
+        eventos: List[str],
+        tono: str = "misterioso"
+    ) -> str:
+        """Genera una descripción narrativa del entorno para la exploración."""
+        prompt = PROMPT_DESCRIPCION_ESCENA.format(
+            bioma=bioma,
+            ubicacion=ubicacion,
+            hora=hora,
+            clima=clima,
+            eventos="\n".join(f"- {e}" for e in eventos) if eventos else "Ninguno.",
+            tono=tono
+        )
+        respuesta = self.llm.generar(prompt)
+        return respuesta or "El silencio del camino te envuelve."
+
+    # -----------------------------------------------------------------------
+    # Helpers privados
+    # -----------------------------------------------------------------------
+
+    def _limpiar_respuesta(self, texto: str, nombre_npc: str) -> str:
+        """
+        Elimina artefactos comunes del LLM:
+        - Prefijos como "NPC:", "Dorian:", "Respuesta:"
+        - Etiquetas JSON residuales
+        - Líneas vacías múltiples
+        """
+        # Eliminar prefijos de nombre
+        texto = re.sub(rf"^{re.escape(nombre_npc)}\s*:\s*", "", texto, flags=re.IGNORECASE)
+        texto = re.sub(r"^(NPC|Respuesta|Response)\s*:\s*", "", texto, flags=re.IGNORECASE)
+
+        # Eliminar bloques JSON residuales
+        texto = re.sub(r"\{.*?\}", "", texto, flags=re.DOTALL)
+
+        # Eliminar etiquetas tipo [PENSAMIENTO], [DECISION]
+        texto = re.sub(r"\[.*?\]", "", texto)
+
+        # Limpiar espacios y saltos de línea múltiples
+        texto = re.sub(r"\n{3,}", "\n\n", texto)
+        texto = texto.strip()
+
+        return texto if texto else "..."
+
+    def _respuesta_fallback(self, npc: NPC) -> Dict:
+        """Respuesta de emergencia si el LLM no está disponible."""
+        emocion = npc.estado_emocional.emocion
+        fallbacks = {
+            "neutral":      "*asiente levemente* Mmm.",
+            "molesto":      "*frunce el ceño* Ahora no.",
+            "furioso":      "*aprieta los puños* ...",
+            "feliz":        "*sonríe* ¡Ah, forastero!",
+            "asustado":     "*retrocede un paso* ¿Qué quieres?",
+            "cauteloso":    "*te observa con cautela* ¿Sí?",
+            "desconfiado":  "*entrecierra los ojos* ¿Qué buscas?",
+        }
+        return {
+            "respuesta": fallbacks.get(emocion, "..."),
+            "debug": {
+                "intent": "desconocido",
+                "agresion": 0.0,
+                "emocion": emocion,
+                "emocion_intensidad": npc.estado_emocional.intensidad,
+                "meta_activa": "desconocida",
+                "efecto_jugador": "neutral",
             }
-
-    def _extraer_etiqueta(self, texto: str, etiqueta: str) -> Optional[str]:
-        """Extrae el contenido de una etiqueta tipo [ETIQUETA] contenido."""
-        pattern = rf"\[{etiqueta}\]\s*(.*?)(?=\n\[|\Z)"
-        match = re.search(pattern, texto, re.DOTALL | re.IGNORECASE)
-        return match.group(1).strip() if match else None
-
-    def _formatear_rumores(self, rumores: List[Dict]) -> str:
-        if not rumores: return "No hay rumores."
-        return "\n".join([f"- {r.get('contenido', '...')}" for r in rumores[:3]])
+        }
