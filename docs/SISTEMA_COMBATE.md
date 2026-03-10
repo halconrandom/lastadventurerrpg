@@ -335,113 +335,224 @@ Fin de turno 1:
 
 ---
 
-## Preguntas a Definir
+## Recompensas
 
-- [ ] **¿Usar item consume turno?**
-  - Sí
-  - No
-  - Respuesta: Si
+### Experiencia
+- Cada enemigo otorga experiencia al ser derrotado
+- La experiencia se divide entre los participantes vivos del bando ganador
+- Fórmula: `Exp por participante = Exp Total / Participantes Vivos`
 
-- [ ] **¿Orden de turnos?**
-  - Por velocidad
-  - Jugador siempre primero
-  - Aleatorio
-  - Respuesta: Por velocidad
+### Oro
+- Cada enemigo otorga oro al ser derrotado
+- El oro se divide entre los participantes vivos del bando ganador
+- Fórmula: `Oro por participante = Oro Total / Participantes Vivos`
 
-- [ ] **¿Combate en grupo?**
-  - Solo 1v1
-  - Múltiples enemigos
-  - Respuesta: Grupo completo
+### Drops
+- Cada enemigo tiene una lista de drops con probabilidades
+- Los drops se asignan aleatoriamente a los participantes vivos
+- Probabilidad de drop: `Probabilidad Base × (1 + Nivel Jugador × 0.01)`
 
-- [ ] **¿Críticos?**
-  - Probabilidad fija (5%)
-  - Basado en habilidad
-  - Respuesta: Basado en habilidad
+### Tabla de Drops por Rareza
 
-- [ ] **¿Esvasión?**
-  - Probabilidad de esquivar
-  - Basado en armadura ligera
-  - Respuesta: Probabilidad de esquivar ataque completo (basado en stat evasion)
+| Rareza Drop | Probabilidad | Ejemplo |
+|-------------|--------------|---------|
+| Común | 30-50% | Hueso, Piel |
+| Poco Común | 15-25% | Colmillo, Garra |
+| Raro | 8-15% | Esencia, Núcleo |
+| Muy Raro | 3-8% | Corazón, Fragmento |
+| Legendario | 1-3% | Item único de jefe |
 
 ---
 
-## Estructura JSON Propuesta
+## Estructura JSON
 
 ### Estado de Combate
 ```json
 {
+  "estado": "turno_jugador",
   "turno": 5,
-  "jugador": {
-    "hp_actual": 85,
-    "hp_maximo": 100,
-    "mana_actual": 30,
-    "mana_maximo": 50,
-    "stamina_actual": 40,
-    "stamina_maximo": 50
+  "orden_turnos": ["jugador_1", "enemigo_1", "enemigo_2"],
+  "jugadores": {
+    "jugador_1": {
+      "id": "jugador_1",
+      "nombre": "Aventurero",
+      "tipo": "jugador",
+      "hp": 85,
+      "hp_max": 100,
+      "mana": 30,
+      "mana_max": 50,
+      "stamina": 10,
+      "stamina_max": 10,
+      "ataque": 20,
+      "defensa": 15,
+      "velocidad": 20,
+      "critico": 10,
+      "evasion": 15,
+      "nivel": 5,
+      "esta_vivo": true,
+      "esta_bloqueando": false,
+      "habilidades": []
+    }
   },
-  "enemigo": {
-    "nombre": "Orco",
-    "hp_actual": 20,
-    "hp_maximo": 50
+  "enemigos": {
+    "enemigo_1": {
+      "id": "enemigo_1",
+      "nombre": "Lobo Salvaje",
+      "tipo": "enemigo",
+      "hp": 20,
+      "hp_max": 30,
+      "mana": 0,
+      "mana_max": 0,
+      "stamina": 10,
+      "stamina_max": 10,
+      "ataque": 8,
+      "defensa": 2,
+      "velocidad": 15,
+      "critico": 8,
+      "evasion": 10,
+      "nivel": 3,
+      "esta_vivo": true,
+      "esta_bloqueando": false,
+      "habilidades": [
+        {
+          "nombre": "Mordisco",
+          "multiplicador": 1.2,
+          "costo": 15,
+          "tipo": "fisico"
+        }
+      ],
+      "experiencia": 25,
+      "oro": 8,
+      "drops": [
+        {
+          "item_id": "colmillo_lobo",
+          "probabilidad": 0.3,
+          "cantidad_min": 1,
+          "cantidad_max": 1
+        }
+      ]
+    }
   },
-  "acciones_disponibles": ["atacar", "habilidad", "item", "bloquear", "huir"]
+  "log": [
+    {
+      "turno": 1,
+      "actor_id": "jugador_1",
+      "actor_nombre": "Aventurero",
+      "accion": "atacar",
+      "objetivo_id": "enemigo_1",
+      "objetivo_nombre": "Lobo Salvaje",
+      "daño": 15,
+      "es_critico": false,
+      "es_evasion": false,
+      "mensaje": "Aventurero ataca a Lobo Salvaje causando 15 de daño."
+    }
+  ]
 }
 ```
 
 ---
 
-## Notas Adicionales
+## Preguntas Resueltas
 
-<!-- Agrega aquí cualquier idea o comentario adicional sobre el sistema de combate -->  
+### Alta Prioridad - RESUELTAS
 
-Preguntas de Diseño
+1. **¿Usar item consume turno?** ✅ Sí, consume turno (5 stamina)
+2. **¿Orden de turnos?** ✅ Por velocidad (stat existente)
+3. **¿Combate en grupo?** ✅ Grupo completo (múltiples aliados y enemigos)
+4. **¿Críticos?** ✅ Basado en stat crítico (x1.5 daño)
+5. **¿Evasión?** ✅ Probabilidad de esquivar ataque completo (basado en stat evasion)
+6. **¿Qué pasa al huir?** ✅ Probabilidad basada en nivel (jugador vs enemigo)
+7. **¿Recompensas al ganar?** ✅ Experiencia + oro + drops (depende del tipo de monstruo)
 
-  Antes de implementar, necesito que definas:
+### Media Prioridad - RESUELTAS
 
-  1. ¿Usar item consume turno?
-   - A) Sí, consume turno
-   - B) No, es acción gratuita
-   - C) Solo pociones de curación son gratuitas
+8. **¿Sistema de Stamina?** ✅ Implementado (10 base, acciones por turno)
+9. **¿Turnos extra por velocidad?** ✅ Implementado (cada 50% diferencia = +1 ataque)
+10. **¿Contraataque tras bloqueo?** ✅ Implementado (10% base + nivel defensa)
+11. **¿Evasión activa vs pasiva?** ✅ Implementado (activa = 100%, pasiva = chance)
+12. **¿Estados alterados?** ✅ Documentados (quemadura, veneno, sangrado, etc.)
+13. **¿IA de enemigos?** ✅ Documentada (agresivo, defensivo, mágico, etc.)
 
-  Respuesta: Consumen un turno.
+### Pendientes - RESUELTAS
 
-  2. ¿Orden de turnos?
-   - A) Jugador siempre primero
-   - B) Por velocidad (stat existente)
-   - C) Aleatorio cada turno
-Respuesta: por velocidad
+14. **¿Sistema de combos?** ¿Encadenar ataques para efectos especiales?
+    > ❌ NO - No se implementará sistema de combos
 
-  3. ¿Combate en grupo?
-   - A) Solo 1v1 (jugador vs 1 enemigo)
-   - B) 1 vs múltiples enemigos (el jugador ataca a uno por turno)
-   - C) Grupo completo (múltiples aliados y enemigos)
+15. **¿Sistema de cover?** ¿Proteger a aliados recibiendo daño por ellos?
+    > ❌ NO - No se implementará sistema de cover
 
-Respuesta:  Grupo completo
+16. **¿Sistema de interrupción?** ¿Interrumpir habilidades enemigas?
+    > ❌ NO - No se implementará sistema de interrupción
 
-  4. ¿Cómo funcionan los críticos?
-   - A) Probabilidad fija 5%
-   - B) Basado en stat critico (ya existe en Stats)
-   - C) Ambos: base 5% + stat crítico
+---
 
-Respuesta:  basado en stat critico
+## Implementación Técnica
 
-  5. ¿Cómo funciona la evasión?
-   - A) No hay evasión
-   - B) Probabilidad de esquivar ataque completo (basado en stat evasion)
-   - C) Reduce daño en lugar de esquivar
+### Archivos del Sistema
 
-Respuesta:  Probabilidad de esquivar ataque completo (basado en stat evasion)
+```
+backend/src/systems/
+├── combate.py              # Lógica del combate (CombateManager)
+└── stats.py                # Cálculo de stats
 
-  6. ¿Qué pasa al huir?
-   - A) Probabilidad basada en nivel (jugador vs enemigo)
-   - B) Siempre funciona pero pierdes oro/experiencia
-   - C) Solo funciona si el enemigo está por debajo de 50% HP
+backend/src/api/
+├── combate.py              # Endpoints de combate
+└── ...
 
-Respuesta:  Probabilidad basada en nivel (jugador vs enemigo)
+backend/src/models/
+├── personaje.py            # Modelo de personaje
+└── enemigo.py              # Modelo de enemigo
 
-  7. ¿Recompensas al ganar?
-   - A) Solo experiencia
-   - B) Experiencia + oro
-   - C) Experiencia + oro + posible drop de item
+frontend/src/components/
+└── juego/combat/
+    ├── CombatHUD.tsx       # UI de combate
+    └── ...
+```
 
-Respuesta: Depende del tipo de monstruo, su nivel y demas, pero seria la C
+### Endpoints API
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/combate/iniciar` | POST | Inicia un nuevo combate |
+| `/api/combate/accion` | POST | Ejecuta una acción |
+| `/api/combate/estado` | GET | Obtiene estado actual |
+| `/api/combate/recompensas` | GET | Obtiene recompensas tras victoria |
+
+---
+
+## Checklist de Implementación
+
+### Fase 1: Estructura Base
+- [x] Actualizar modelo de datos de combate
+- [x] Implementar sistema de turnos por velocidad
+- [x] Implementar sistema de grupo completo
+- [x] Implementar sistema de stamina
+
+### Fase 2: Acciones
+- [x] Implementar atacar
+- [x] Implementar usar habilidad
+- [x] Implementar usar item
+- [x] Implementar bloquear
+- [x] Implementar evadir activamente
+- [x] Implementar huir
+
+### Fase 3: Mecánicas Avanzadas
+- [x] Implementar turnos extra por velocidad
+- [x] Implementar contraataque tras bloqueo
+- [x] Implementar evasión pasiva vs activa
+- [ ] Implementar estados alterados
+- [ ] Implementar IA de enemigos
+
+### Fase 4: Integración
+- [x] Conectar con backend
+- [x] Persistir cambios
+- [x] Sincronizar con inventario
+- [ ] Sincronizar con sistema de experiencia
+
+---
+
+*Sistema documentado - Versión 2.0*
+*Dependencias: SISTEMA_STATS.md, CATALOGO_ENEMIGOS_COMPLETO.md, SISTEMA_INVENTARIO.md*
+3. **¿Combate en grupo?** ✅ Grupo completo (múltiples aliados y enemigos)
+4. **¿Críticos?** ✅ Basado en stat crítico (x1.5 daño)
+5. **¿Evasión?
