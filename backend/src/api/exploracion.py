@@ -19,15 +19,20 @@ from systems.biomas import BiomaGenerator
 from systems.zonas import Zona, ZonaGenerator
 from systems.eventos import EventoGenerator
 from systems.clima import ClimaGenerator
+from systems.save_manager import SaveManager
+from systems.tiempo import TimeManager
+from llm.client import LLMClient
+from llm.prompts import PROMPT_DESCRIPCION_ESCENA, PROMPT_SISTEMA_BASE
 
 # Configurar logging
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
-
 # Blueprint para exploracion
 exploracion_bp = Blueprint('exploracion', __name__, url_prefix='/api/exploracion')
 
+save_manager = SaveManager()
+llm_client = LLMClient()
 
 # Cache de zonas generadas (en produccion usar Redis o similar)
 _zonas_cache: Dict[str, Zona] = {}
@@ -98,6 +103,22 @@ def iniciar_exploracion():
         cache_key = get_zona_cache_key(slot_num, x, y)
         _zonas_cache[cache_key] = zona
         
+        # --- INTEGRACION NARRATIVA ---
+        datos, _ = save_manager.cargar(slot_num)
+        tiempo = TimeManager.from_dict(datos.get("tiempo", {"tick_total": 480}))
+        
+        prompt = PROMPT_DESCRIPCION_ESCENA.format(
+            bioma=zona.bioma.key,
+            ubicacion=zona.nombre,
+            hora=tiempo.get_formato_hora(),
+            clima=clima.estado.value,
+            eventos="Has llegado a una nueva zona.",
+            tono="inmersivo"
+        )
+        
+        narrativa = llm_client.generar(prompt, system_prompt=PROMPT_SISTEMA_BASE) or zona.bioma.get_descripcion()
+        # -----------------------------
+        
         return jsonify({
             "success": True,
             "message": f"Exploracion iniciada en {zona.nombre}",
@@ -105,7 +126,7 @@ def iniciar_exploracion():
                 "zona": zona.to_dict(),
                 "clima": clima.to_dict(),
                 "ciclo": ciclo.to_dict(),
-                "descripcion": zona.bioma.get_descripcion()
+                "descripcion": narrativa
             }
         })
     except Exception as e:
@@ -201,6 +222,27 @@ def ejecutar_exploracion():
         
         # Ejecutar exploracion
         resultado = zona.explorar()
+        
+        # --- INTEGRACION TIEMPO Y NARRATIVA ---
+        datos, _ = save_manager.cargar(slot_num)
+        tiempo = TimeManager.from_dict(datos.get("tiempo", {"tick_total": 480}))
+        tiempo.avanzar_minutos(10) # Explorar consume 10 minutos
+        datos["tiempo"] = tiempo.to_dict()
+        
+        # Generar narrativa del resultado
+        prompt = PROMPT_DESCRIPCION_ESCENA.format(
+            bioma=zona.bioma.key,
+            ubicacion=zona.nombre,
+            hora=tiempo.get_formato_hora(),
+            clima="variable",
+            eventos=f"Resultado de exploración: {resultado.get('mensaje', 'Nada especial')}",
+            tono="detallado"
+        )
+        narrativa = llm_client.generar(prompt, system_prompt=PROMPT_SISTEMA_BASE) or resultado.get('mensaje')
+        resultado["narrativa"] = narrativa
+        
+        save_manager.guardar(slot_num, datos)
+        # --------------------------------------
         
         return jsonify({
             "success": True,

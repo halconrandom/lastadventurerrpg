@@ -28,7 +28,7 @@ app = Flask(__name__)
 
 # Configurar CORS para permitir requests del frontend
 CORS(app, resources={
-    r"/api/.*": {
+    r"/*": {
         "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type"]
@@ -317,4 +317,5 @@ def explorar():
 if __name__ == "__main__":
     print("Last Adventurer API - Flask")
     print("Servidor corriendo en http://localhost:5000")
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    # Escuchar en 0.0.0.0 para evitar problemas de conexión desde el frontend
+    app.run(host="0.0.0.0", port=5000, debug=True)

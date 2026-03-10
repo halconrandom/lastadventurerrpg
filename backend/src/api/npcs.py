@@ -2,9 +2,14 @@ from flask import Blueprint, request, jsonify
 from systems.save_manager import SaveManager
 from systems.npcs.npc_manager import NPCManager
 from systems.seed import init_global_seed
+from systems.tiempo import TimeManager
+from systems.narrativa import NarrativaManager
+from llm.client import LLMClient
 
 npcs_bp = Blueprint('npcs', __name__)
 save_manager = SaveManager()
+llm_client = LLMClient() # Instancia global para la API
+narrativa_manager = NarrativaManager(llm_client)
 
 def get_npc_manager(slot_num):
     datos, _ = save_manager.cargar(slot_num)
@@ -24,15 +29,21 @@ def listar_npcs():
     if not slot:
         return jsonify({"success": False, "message": "Falta slot"}), 400
         
-    manager, _ = get_npc_manager(slot)
+    manager, datos_partida = get_npc_manager(slot)
     if not manager:
         return jsonify({"success": False, "message": "Partida no encontrada"}), 404
         
     if ubicacion_id:
         npcs = manager.get_npcs_en_ubicacion(ubicacion_id)
     else:
-        # Por defecto devolver activos
+        # Por defecto devolver activos, si no hay activos, devolver los del pueblo de inicio para testeo
         npcs = [manager.obtener_npc(nid) for nid in manager.npcs_activos_ids]
+        if not npcs:
+            npcs = manager.get_npcs_en_ubicacion("pueblo_inicio")
+        
+    # Guardar cambios si se generaron NPCs
+    datos_partida["npcs"] = manager.to_dict()
+    save_manager.guardar(slot, datos_partida)
         
     return jsonify({
         "success": True,
@@ -71,15 +82,62 @@ def hablar_npc(npc_id):
     if not npc:
         return jsonify({"success": False, "message": "NPC no encontrado"}), 404
         
-    # Placeholder para integración con LLM
-    # Aquí se llamaría al NarrativeManager / LLMClient
-    respuesta_texto = f"Hola, soy {npc.nombre}. Por ahora solo puedo decirte esto (LLM en desarrollo)."
+    # Integración real con NarrativaManager y LLM
+    tiempo_dict = datos.get("tiempo", {"tick_total": 480})
+    tiempo = TimeManager.from_dict(tiempo_dict)
+    rumores = manager.rumores
+    
+    try:
+        respuesta_json = narrativa_manager.generar_dialogo_npc(
+            npc=npc,
+            mensaje_jugador=mensaje_jugador,
+            jugador_data=datos,
+            tiempo=tiempo,
+            rumores_locales=rumores
+        )
+        
+        if not isinstance(respuesta_json, dict):
+            raise ValueError("Respuesta del motor narrativo no es un diccionario")
+            
+    except Exception as e:
+        import traceback
+        print(f"ERROR CRÍTICO en narrativa_manager: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "success": False, 
+            "message": f"Error interno en el motor narrativo: {str(e)}"
+        }), 500
+    
+    respuesta_texto = respuesta_json.get("respuesta", "...")
+    
+    # Registrar la interacción en la memoria del NPC
+    interaccion = {
+        "jugador": mensaje_jugador,
+        "npc": respuesta_texto,
+        "timestamp": tiempo.tick_total
+    }
+    
+    # Asegurar que la estructura de memoria existe
+    if not hasattr(npc, 'memoria') or npc.memoria is None:
+        from systems.npcs.npc import MemoriaNPC
+        npc.memoria = MemoriaNPC()
+        
+    npc.memoria.ultimas_interacciones.append(interaccion)
+    
+    # Guardar cambios en el NPC y en el save
+    datos["npcs"] = manager.to_dict()
+    save_manager.guardar(slot, datos)
     
     return jsonify({
         "success": True,
         "data": {
             "respuesta": respuesta_texto,
-            "npc": npc.nombre
+            "npc": npc.nombre,
+            "debug": {
+                "pensamiento": respuesta_json.get("pensamiento"),
+                "animo_delta": respuesta_json.get("animo_delta"),
+                "decision": respuesta_json.get("decision")
+            }
         }
     })
 

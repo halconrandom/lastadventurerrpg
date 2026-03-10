@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
-from .npc import NPC, EstadoNPC
-from ..tiempo import TimeManager
+from systems.npcs.npc import NPC, EstadoNPC
+from systems.tiempo import TimeManager
 
 class NPCScheduler:
     """Gestiona la actualización de rutinas y actividades de los NPCs basadas en el tiempo."""

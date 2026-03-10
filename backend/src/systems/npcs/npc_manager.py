@@ -1,8 +1,8 @@
 import math
 from typing import List, Dict, Optional, Tuple
-from .npc import NPC
-from .generador import GeneradorNPC
-from ..seed import WorldSeed
+from systems.npcs.npc import NPC
+from systems.npcs.generador import GeneradorNPC
+from systems.seed import WorldSeed
 
 class NPCManager:
     """Gestor de NPCs: carga, caché y simulación de radio activo."""
@@ -68,4 +68,11 @@ class NPCManager:
 
     def get_npcs_en_ubicacion(self, ubicacion_id: str) -> List[NPC]:
         """Retorna lista de NPCs que están actualmente en una ubicación."""
-        return [npc for npc in self.npcs_cargados.values() if npc.ubicacion.ubicacion_id == ubicacion_id]
+        # Si no hay NPCs en esta ubicación, intentar generar algunos por defecto
+        npcs = [npc for npc in self.npcs_cargados.values() if npc.ubicacion.ubicacion_id == ubicacion_id]
+        
+        if not npcs and ubicacion_id == "pueblo_inicio":
+            self.generar_npcs_para_ubicacion(ubicacion_id, "pueblo", (0, 0), 5)
+            npcs = [npc for npc in self.npcs_cargados.values() if npc.ubicacion.ubicacion_id == ubicacion_id]
+            
+        return npcs

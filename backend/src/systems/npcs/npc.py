@@ -24,6 +24,11 @@ class Personalidad:
         "paciencia": 0.5,
         "supersticion": 0.5
     })
+    # EJES DE CONDUCTA PERSISTENTE (-100 a 100)
+    moralidad: int = 0      # Malvado <-> Heroico
+    sociabilidad: int = 0   # Ermitaño <-> Extrovertido
+    templanza: int = 0      # Impulsivo <-> Calculador
+    
     tono_voz: str = "neutral"
     muletillas: List[str] = field(default_factory=list)
     registro_voz: str = "coloquial"
@@ -33,6 +38,11 @@ class Personalidad:
             "rasgos": self.rasgos,
             "valores": self.valores,
             "sliders": self.sliders,
+            "conducta": {
+                "moralidad": self.moralidad,
+                "sociabilidad": self.sociabilidad,
+                "templanza": self.templanza
+            },
             "voz": {
                 "tono": self.tono_voz,
                 "muletillas": self.muletillas,
@@ -43,10 +53,14 @@ class Personalidad:
     @classmethod
     def from_dict(cls, data: Dict) -> 'Personalidad':
         voz = data.get("voz", {})
+        conducta = data.get("conducta", {})
         return cls(
             rasgos=data.get("rasgos", []),
             valores=data.get("valores", []),
             sliders=data.get("sliders", {}),
+            moralidad=conducta.get("moralidad", 0),
+            sociabilidad=conducta.get("sociabilidad", 0),
+            templanza=conducta.get("templanza", 0),
             tono_voz=voz.get("tono", "neutral"),
             muletillas=voz.get("muletillas", []),
             registro_voz=voz.get("registro", "coloquial")

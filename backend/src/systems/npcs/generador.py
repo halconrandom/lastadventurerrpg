@@ -1,8 +1,8 @@
 import random
 from typing import List, Dict, Optional, Tuple
-from .npc import NPC, Personalidad, EstadoNPC, UbicacionNPC, Rutina, MemoriaNPC, RelacionJugador, EstadoVital
-from ..seed import WorldSeed
-from ..nombres import NombreGenerator
+from systems.npcs.npc import NPC, Personalidad, EstadoNPC, UbicacionNPC, Rutina, MemoriaNPC, RelacionJugador, EstadoVital
+from systems.seed import WorldSeed
+from systems.nombres import NombreGenerator
 
 class GeneradorNPC:
     """Generador procedural determinista de NPCs."""
@@ -113,11 +113,19 @@ class GeneradorNPC:
             "paciencia": rng.random(),
             "supersticion": rng.random()
         }
+
+        # Generar ejes de conducta persistente (-100 a 100)
+        moralidad = rng.randint(-100, 100)
+        sociabilidad = rng.randint(-100, 100)
+        templanza = rng.randint(-100, 100)
         
         return Personalidad(
             rasgos=rasgos,
             valores=valores,
             sliders=sliders,
+            moralidad=moralidad,
+            sociabilidad=sociabilidad,
+            templanza=templanza,
             tono_voz=rng.choice(["seco", "amable", "autoritario", "susurrante", "alegre"]),
             registro_voz=rng.choice(["coloquial", "formal", "vulgar"])
         )

@@ -9,19 +9,30 @@ class MemoryIndex:
 
     def generar_contexto_memoria(self, npc: NPC, max_eventos: int = 5) -> Dict:
         """
-        Construye un diccionario de contexto optimizado para el prompt del LLM.
-        Incluye resúmenes y los eventos más recientes.
+        Construye un contexto de memoria que prioriza la continuidad narrativa.
         """
         memoria = npc.memoria
         
-        # Obtener los N eventos más recientes
-        eventos_recientes = memoria.eventos[-max_eventos:] if memoria.eventos else []
+        # 1. Formatear interacciones como un hilo de chat coherente
+        hilo_conversacion = ""
+        if memoria.ultimas_interacciones:
+            # Solo tomamos las últimas 3 para no saturar al modelo pequeño
+            for i in memoria.ultimas_interacciones[-3:]:
+                hilo_conversacion += f"> Jugador: {i.get('jugador', '')}\n"
+                hilo_conversacion += f"> {npc.nombre}: {i.get('npc', '')}\n"
         
+        # 2. Crear un perfil de cómo el NPC ve al jugador basado en el ánimo
+        perfil_relacion = "Neutral"
+        valor = npc.relacion_jugador.reputacion_valor
+        if valor > 20: perfil_relacion = "Amistosa/Confianza"
+        elif valor > 50: perfil_relacion = "Lealtad absoluta"
+        elif valor < -20: perfil_relacion = "Hostil/Desconfianza"
+        elif valor < -50: perfil_relacion = "Enemistad/Odio"
+
         return {
-            "resumen_general": memoria.resumen_general,
-            "resumen_jugador": memoria.resumen_jugador,
-            "interacciones_recientes": memoria.ultimas_interacciones[-3:],
-            "eventos_clave": eventos_recientes
+            "hilo_reciente": hilo_conversacion or "Acabáis de empezar a hablar.",
+            "perfil_relacion": perfil_relacion,
+            "resumen_jugador": memoria.resumen_jugador or "Un forastero recién llegado."
         }
 
     def añadir_evento(self, npc: NPC, evento: Dict):
