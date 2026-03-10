@@ -8,7 +8,7 @@ Pipeline:
   4. DialoguePolicy    → Filtra decisiones absurdas
   5. ContextBuilder    → Construye prompt minimalista
   6. LLMClient         → Solo genera el texto del diálogo
-  7. ResponseParser    → Limpia artefactos del LLM
+  7. ResponseCleaner   → Limpia exageraciones y errores
 """
 
 import re
@@ -20,6 +20,7 @@ from systems.npcs.intent_classifier import IntentClassifier
 from systems.npcs.emotion_engine import EmotionEngine
 from systems.npcs.goal_engine import GoalEngine
 from systems.npcs.context_builder import ContextBuilder
+from systems.npcs.response_cleaner import get_response_cleaner
 from llm.client import LLMClient
 from llm.prompts import PROMPT_DESCRIPCION_ESCENA
 
@@ -36,6 +37,7 @@ class NarrativaManager:
         self.emotion_engine = EmotionEngine()
         self.goal_engine = GoalEngine()
         self.context_builder = ContextBuilder()
+        self.response_cleaner = get_response_cleaner()
 
     # -----------------------------------------------------------------------
     # Pipeline principal de diálogo
@@ -46,10 +48,19 @@ class NarrativaManager:
         mensaje_jugador: str,
         jugador_data: Dict,
         tiempo: TimeManager,
-        rumores_locales: List[Dict]
+        rumores_locales: List[Dict],
+        ubicacion_id: str = None,
     ) -> Dict:
         """
         Ejecuta el pipeline completo y devuelve la respuesta del NPC.
+        
+        Args:
+            npc: El NPC que responde
+            mensaje_jugador: Mensaje del jugador
+            jugador_data: Datos del jugador
+            tiempo: Gestor de tiempo
+            rumores_locales: Rumores disponibles
+            ubicacion_id: ID de la ubicación actual (opcional)
         """
 
         # PASO 1: Clasificar intención del jugador (sin LLM)
@@ -69,6 +80,8 @@ class NarrativaManager:
             intent=intent,
             meta=meta,
             efecto_jugador=efecto_jugador,
+            ubicacion_id=ubicacion_id,
+            hora=hora_actual,
         )
 
         # PASO 5: Llamar al LLM solo para generar el texto
@@ -80,10 +93,15 @@ class NarrativaManager:
         if not respuesta_raw:
             return self._respuesta_fallback(npc)
 
-        # PASO 6: Limpiar la respuesta
-        respuesta_limpia = self._limpiar_respuesta(respuesta_raw, npc.nombre)
+        # PASO 6: Limpiar la respuesta con ResponseCleaner
+        respuesta_limpia = self.response_cleaner.limpiar(respuesta_raw, npc.nombre)
 
-        # PASO 7: Guardar en memoria del NPC
+        # PASO 7: Validar que no tenga exageraciones
+        if not self.response_cleaner.validar(respuesta_limpia):
+            # Si tiene exageraciones, intentar limpiar más agresivamente
+            respuesta_limpia = self._limpiar_respuesta(respuesta_limpia, npc.nombre)
+
+        # PASO 8: Guardar en memoria del NPC
         npc.memoria.ultimas_interacciones.append({
             "jugador": mensaje_jugador,
             "npc": respuesta_limpia,

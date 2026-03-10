@@ -15,6 +15,7 @@ from systems.npcs.emotion_engine import EmotionEngine, EstadoEmocional
 from systems.npcs.goal_engine import Goal
 from systems.npcs.intent_classifier import IntentResult
 from systems.npcs.example_retriever import get_example_retriever, ExampleRetriever
+from systems.npcs.world_context import get_world_context, WorldContext
 
 
 # ---------------------------------------------------------------------------
@@ -25,19 +26,21 @@ Rasgos de personalidad: {rasgos}.
 Hablas de forma {voz}. Frases cortas. Lenguaje simple y directo.
 
 REGLAS ABSOLUTAS:
-1. Las acciones van entre asteriscos en TERCERA PERSONA usando tu nombre. Ejemplo: *{nombre} cruza los brazos*
-2. NUNCA uses primera persona en las acciones. MAL: *miro al forastero* BIEN: *{nombre} mira al forastero*
-3. NUNCA digas "jugador". Di "forastero", "viajero" o el nombre si lo sabes.
-4. NUNCA uses lenguaje psicológico. Reacciona como un ser vivo, no como un analista.
-5. Responde SOLO con la acción y el diálogo. Sin JSON. Sin etiquetas. Sin explicaciones.
-6. Tu personalidad debe REFLEJARSE en lo que dices, no explicarse.
+1. UNA acción corta entre asteriscos en TERCERA PERSONA. Ejemplo: *{nombre} frunce el ceño*
+2. UNA o DOS frases de diálogo máximo. NUNCA más de 30 palabras.
+3. NUNCA uses primera persona en acciones. MAL: *miro* BIEN: *{nombre} mira*
+4. NUNCA digas "jugador". Di "forastero" o "viajero".
+5. NUNCA exageres. Prohibido: "ojos desorbitados", "contorsionado", "grita", "se eleva".
+6. Tu personalidad se MUESTRA, no se explica. Un estoico NO grita ni se descontrola.
+7. Responde SOLO con: *acción* "diálogo". Sin JSON, sin explicaciones, sin paréntesis.
 
 {ejemplos_rag}"""
 
 # ---------------------------------------------------------------------------
 # Prompt de usuario — Contexto + mensaje
 # ---------------------------------------------------------------------------
-USER_PROMPT_TEMPLATE = """Estado emocional: {emocion_descripcion}.
+USER_PROMPT_TEMPLATE = """{contexto_mundo}
+Estado emocional: {emocion_descripcion}.
 Ahora mismo: {actitud_meta}.
 Relación con este forastero: {perfil_relacion}.
 
@@ -49,12 +52,14 @@ Relación con este forastero: {perfil_relacion}.
 class ContextBuilder:
     """
     Ensambla el prompt final para el LLM usando los resultados
-    de EmotionEngine, GoalEngine, IntentClassifier y ExampleRetriever (RAG).
+    de EmotionEngine, GoalEngine, IntentClassifier, ExampleRetriever (RAG)
+    y WorldContext.
     """
 
-    def __init__(self, retriever: ExampleRetriever = None):
+    def __init__(self, retriever: ExampleRetriever = None, world_context: WorldContext = None):
         self.emotion_engine = EmotionEngine()
         self.retriever = retriever or get_example_retriever()
+        self.world_context = world_context or get_world_context()
 
     def construir(
         self,
@@ -63,9 +68,20 @@ class ContextBuilder:
         intent: IntentResult,
         meta: Goal,
         efecto_jugador: str,
+        ubicacion_id: str = None,
+        hora: int = 12,
     ) -> Dict[str, str]:
         """
         Devuelve {"system": ..., "user": ...} listos para enviar al LLM.
+        
+        Args:
+            npc: El NPC que responde
+            mensaje: Mensaje del jugador
+            intent: Resultado del IntentClassifier
+            meta: Meta activa del NPC
+            efecto_jugador: Efecto del jugador en la meta
+            ubicacion_id: ID de la ubicación actual
+            hora: Hora del día (0-23)
         """
 
         # 1. Actualizar emoción del NPC con el evento del intent
@@ -96,18 +112,31 @@ class ContextBuilder:
             ejemplos_rag=ejemplos_formateados if ejemplos_formateados else "(Sin ejemplos específicos)",
         )
 
-        # 4. Construir perfil de relación legible
+        # 4. Construir contexto del mundo
+        contexto_mundo = self.world_context.formatear_contexto_para_prompt(
+            nombre_npc=npc.nombre,
+            ubicacion_id=ubicacion_id,
+            hora=hora
+        )
+        
+        # 5. Detectar si se menciona un NPC relacionado
+        npc_mencionado = self.world_context.npc_mencionado(mensaje, npc.nombre)
+        if npc_mencionado:
+            contexto_mundo += f"\n{npc_mencionado.nombre} ({npc_mencionado.relacion}): {npc_mencionado.notas}"
+
+        # 6. Construir perfil de relación legible
         perfil = self._perfil_relacion(npc)
 
-        # 5. Construir hilo de conversación (últimas 3 frases)
+        # 7. Construir hilo de conversación (últimas 3 frases)
         hilo = self._hilo_conversacion(npc)
 
-        # 6. Actitud basada en meta + efecto del jugador
+        # 8. Actitud basada en meta + efecto del jugador
         from systems.npcs.goal_engine import GoalEngine
         actitud = GoalEngine().describir_actitud(meta, efecto_jugador)
 
-        # 7. Construir user prompt
+        # 9. Construir user prompt
         user = USER_PROMPT_TEMPLATE.format(
+            contexto_mundo=contexto_mundo,
             emocion_descripcion=self.emotion_engine.describir(nuevo_estado),
             actitud_meta=actitud,
             perfil_relacion=perfil,
