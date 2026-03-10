@@ -19,21 +19,26 @@ from systems.npcs.intent_classifier import IntentResult
 # Prompt de sistema — Identidad del NPC
 # ---------------------------------------------------------------------------
 SYSTEM_PROMPT_TEMPLATE = """Eres {nombre}, {articulo} {rol} {raza} en un mundo de fantasía medieval.
+Rasgos de personalidad: {rasgos}.
 Hablas de forma {voz}. Frases cortas. Lenguaje simple y directo.
-NUNCA uses lenguaje psicológico ni analices al jugador.
-Responde SOLO con el diálogo. Sin JSON. Sin explicaciones. Sin etiquetas."""
+
+REGLAS ABSOLUTAS:
+1. Las acciones van entre asteriscos en TERCERA PERSONA usando tu nombre. Ejemplo: *{nombre} cruza los brazos*
+2. NUNCA uses primera persona en las acciones. MAL: *miro al forastero* BIEN: *{nombre} mira al forastero*
+3. NUNCA digas "jugador". Di "forastero", "viajero" o el nombre si lo sabes.
+4. NUNCA uses lenguaje psicológico. Reacciona como un ser vivo, no como un analista.
+5. Responde SOLO con la acción y el diálogo. Sin JSON. Sin etiquetas. Sin explicaciones."""
 
 # ---------------------------------------------------------------------------
 # Prompt de usuario — Contexto + mensaje
 # ---------------------------------------------------------------------------
-USER_PROMPT_TEMPLATE = """Estado: {emocion_descripcion}.
+USER_PROMPT_TEMPLATE = """Estado emocional: {emocion_descripcion}.
 Ahora mismo: {actitud_meta}.
 Relación con este forastero: {perfil_relacion}.
 
-{hilo_conversacion}
-El forastero dice: "{mensaje}"
+{hilo_conversacion}El forastero dice: "{mensaje}"
 
-{nombre} responde:"""
+{nombre} responde (recuerda: acción en tercera persona con tu nombre, luego diálogo):"""
 
 
 class ContextBuilder:
@@ -69,6 +74,7 @@ class ContextBuilder:
             articulo=self._articulo(npc.genero),
             rol=npc.rol_tipo,
             raza=npc.raza,
+            rasgos=", ".join(npc.personalidad.rasgos) if npc.personalidad.rasgos else "ninguno definido",
             voz=self._describir_voz(npc),
         )
 
@@ -103,21 +109,41 @@ class ContextBuilder:
 
     def _describir_voz(self, npc: NPC) -> str:
         """Traduce los rasgos de personalidad a un estilo de voz."""
-        rasgos = npc.personalidad.rasgos
+        rasgos = [r.lower() for r in npc.personalidad.rasgos]
         sliders = npc.personalidad.sliders
 
+        # Rasgos con prioridad alta (primero los más específicos)
+        MAPA_RASGOS = {
+            "fanático":      "intensa, apasionada y sin matices. Habla con convicción absoluta",
+            "estoico":       "fría, contenida y de pocas palabras. No muestra emociones fácilmente",
+            "paranoico":     "suspicaz y nerviosa, siempre buscando segundas intenciones",
+            "desconfiado":   "cautelosa y reservada, mide cada palabra",
+            "codicioso":     "calculadora, siempre pensando en el beneficio propio",
+            "alegre":        "animada y amigable, con energía positiva",
+            "optimista":     "animada y esperanzadora",
+            "pesimista":     "apagada y resignada, espera lo peor",
+            "arrogante":     "altiva y condescendiente, se cree superior",
+            "humilde":       "modesta y respetuosa",
+            "agresivo":      "brusca, directa y sin filtros",
+            "cobarde":       "nerviosa y evasiva, evita el conflicto",
+            "valiente":      "directa y sin miedo, habla con seguridad",
+            "curioso":       "inquisitiva y entusiasta, hace preguntas",
+            "serio":         "formal y sin humor, va al grano",
+            "gracioso":      "con humor y sarcasmo ligero",
+            "melancólico":   "lenta y nostálgica, con un tono triste",
+            "leal":          "firme y comprometida, habla con honor",
+            "traicionero":   "amable en la superficie pero con doble intención",
+        }
+
+        for rasgo in rasgos:
+            if rasgo in MAPA_RASGOS:
+                return MAPA_RASGOS[rasgo]
+
+        # Fallback a sliders si no hay rasgo mapeado
         if sliders.get("agresividad", 0.5) > 0.7:
             return "brusca y directa"
         if sliders.get("empatía", 0.5) > 0.7:
             return "cálida y cercana"
-        if sliders.get("codicia", 0.5) > 0.7:
-            return "calculadora y desconfiada"
-        if "paranoico" in rasgos or "desconfiado" in rasgos:
-            return "suspicaz y nerviosa"
-        if "alegre" in rasgos or "optimista" in rasgos:
-            return "animada y amigable"
-        if "seria" in rasgos or "formal" in rasgos:
-            return "seria y formal"
 
         return "neutral y directa"
 
