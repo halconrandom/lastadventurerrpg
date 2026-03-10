@@ -1,16 +1,22 @@
 import requests
 import json
 import time
+import os
 from typing import Optional, Dict, Any
+
+# Configuración por defecto (puede sobreescribirse con env vars)
+DEFAULT_OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "dolphin3")
 
 class LLMClient:
     """Cliente para interactuar con Ollama o APIs remotas de LLM."""
 
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "llama3.2:3b"):
-        self.base_url = base_url
-        self.model = model
-        self.timeout = 30 # Segundos
+    def __init__(self, base_url: str = None, model: str = None):
+        self.base_url = base_url or DEFAULT_OLLAMA_URL
+        self.model = model or DEFAULT_MODEL
+        self.timeout = 60  # Aumentado para modelos más grandes
         self.is_available = True
+        print(f"[LLMClient] Modelo: {self.model}, URL: {self.base_url}")
 
     def generar(self, prompt: str, system_prompt: Optional[str] = None, stream: bool = False) -> Optional[str]:
         """Genera una respuesta del LLM."""
