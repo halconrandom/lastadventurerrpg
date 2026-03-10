@@ -3,9 +3,10 @@ ContextBuilder — Construye el prompt minimalista para el LLM.
 
 Principios:
 - El LLM solo recibe lo que necesita para HABLAR, no para pensar.
-- Máximo ~300 tokens de input.
+- Máximo ~400 tokens de input (aumentado para incluir ejemplos RAG).
 - El LLM devuelve SOLO texto de diálogo. Sin JSON. Sin etiquetas.
 - El código ya tomó todas las decisiones lógicas antes de llegar aquí.
+- RAG: Se inyectan ejemplos de diálogo relevantes para guiar el estilo.
 """
 
 from typing import List, Dict
@@ -13,10 +14,11 @@ from systems.npcs.npc import NPC
 from systems.npcs.emotion_engine import EmotionEngine, EstadoEmocional
 from systems.npcs.goal_engine import Goal
 from systems.npcs.intent_classifier import IntentResult
+from systems.npcs.example_retriever import get_example_retriever, ExampleRetriever
 
 
 # ---------------------------------------------------------------------------
-# Prompt de sistema — Identidad del NPC
+# Prompt de sistema — Identidad del NPC + Reglas + Ejemplos RAG
 # ---------------------------------------------------------------------------
 SYSTEM_PROMPT_TEMPLATE = """Eres {nombre}, {articulo} {rol} {raza} en un mundo de fantasía medieval.
 Rasgos de personalidad: {rasgos}.
@@ -27,7 +29,10 @@ REGLAS ABSOLUTAS:
 2. NUNCA uses primera persona en las acciones. MAL: *miro al forastero* BIEN: *{nombre} mira al forastero*
 3. NUNCA digas "jugador". Di "forastero", "viajero" o el nombre si lo sabes.
 4. NUNCA uses lenguaje psicológico. Reacciona como un ser vivo, no como un analista.
-5. Responde SOLO con la acción y el diálogo. Sin JSON. Sin etiquetas. Sin explicaciones."""
+5. Responde SOLO con la acción y el diálogo. Sin JSON. Sin etiquetas. Sin explicaciones.
+6. Tu personalidad debe REFLEJARSE en lo que dices, no explicarse.
+
+{ejemplos_rag}"""
 
 # ---------------------------------------------------------------------------
 # Prompt de usuario — Contexto + mensaje
@@ -38,17 +43,18 @@ Relación con este forastero: {perfil_relacion}.
 
 {hilo_conversacion}El forastero dice: "{mensaje}"
 
-{nombre} responde (recuerda: acción en tercera persona con tu nombre, luego diálogo):"""
+{nombre} responde (acción en tercera persona con tu nombre, luego diálogo):"""
 
 
 class ContextBuilder:
     """
     Ensambla el prompt final para el LLM usando los resultados
-    de EmotionEngine, GoalEngine e IntentClassifier.
+    de EmotionEngine, GoalEngine, IntentClassifier y ExampleRetriever (RAG).
     """
 
-    def __init__(self):
+    def __init__(self, retriever: ExampleRetriever = None):
         self.emotion_engine = EmotionEngine()
+        self.retriever = retriever or get_example_retriever()
 
     def construir(
         self,
@@ -68,7 +74,18 @@ class ContextBuilder:
         )
         npc.estado_emocional = nuevo_estado  # Persistir en el objeto
 
-        # 2. Construir system prompt
+        # 2. Buscar ejemplos RAG relevantes
+        tipo_interaccion = self._mapear_tipo_interaccion(intent.tipo)
+        ejemplos = self.retriever.buscar_ejemplos(
+            raza=npc.raza,
+            rasgos=npc.personalidad.rasgos,
+            rol=npc.rol_tipo,
+            tipo_interaccion=tipo_interaccion,
+            max_ejemplos=3
+        )
+        ejemplos_formateados = self.retriever.formatear_ejemplos_para_prompt(ejemplos, npc.nombre)
+
+        # 3. Construir system prompt con ejemplos RAG
         system = SYSTEM_PROMPT_TEMPLATE.format(
             nombre=npc.nombre,
             articulo=self._articulo(npc.genero),
@@ -76,19 +93,20 @@ class ContextBuilder:
             raza=npc.raza,
             rasgos=", ".join(npc.personalidad.rasgos) if npc.personalidad.rasgos else "ninguno definido",
             voz=self._describir_voz(npc),
+            ejemplos_rag=ejemplos_formateados if ejemplos_formateados else "(Sin ejemplos específicos)",
         )
 
-        # 3. Construir perfil de relación legible
+        # 4. Construir perfil de relación legible
         perfil = self._perfil_relacion(npc)
 
-        # 4. Construir hilo de conversación (últimas 3 frases)
+        # 5. Construir hilo de conversación (últimas 3 frases)
         hilo = self._hilo_conversacion(npc)
 
-        # 5. Actitud basada en meta + efecto del jugador
+        # 6. Actitud basada en meta + efecto del jugador
         from systems.npcs.goal_engine import GoalEngine
         actitud = GoalEngine().describir_actitud(meta, efecto_jugador)
 
-        # 6. Construir user prompt
+        # 7. Construir user prompt
         user = USER_PROMPT_TEMPLATE.format(
             emocion_descripcion=self.emotion_engine.describir(nuevo_estado),
             actitud_meta=actitud,
@@ -106,6 +124,27 @@ class ContextBuilder:
 
     def _articulo(self, genero: str) -> str:
         return "una" if genero.lower() in ("femenino", "f") else "un"
+
+    def _mapear_tipo_interaccion(self, tipo_intent: str) -> str:
+        """Mapea el tipo de intent a tipo de interaccion para buscar ejemplos."""
+        MAPEO = {
+            "saludo": "saludo",
+            "pregunta": "pregunta",
+            "charla": "charla",
+            "comercio": "comercio",
+            "regateo": "regateo",
+            "elogio": "elogio",
+            "queja_leve": "queja",
+            "queja_fuerte": "queja",
+            "amenaza": "amenaza",
+            "despedida": "despedida",
+            "informacion": "pregunta",
+            "encargo": "encargo",
+            "herida": "herida",
+            "plan": "plan",
+            "conflicto": "conflicto",
+        }
+        return MAPEO.get(tipo_intent, "saludo")
 
     def _describir_voz(self, npc: NPC) -> str:
         """Traduce los rasgos de personalidad a un estilo de voz."""

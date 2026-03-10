@@ -1,0 +1,351 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Ejemplos de dialogo para RAG de NPCs. Cada ejemplo tiene: raza, rasgos, rol, tipo_interaccion, accion, dialogo."
+  },
+  
+  "reglas_absolutas": [
+    "Las acciones van en tercera persona usando el nombre del NPC",
+    "NUNCA usar primera persona en acciones (miro, me acerco, digo)",
+    "NUNCA usar 'jugador' - usar 'forastero', 'viajero', o el nombre si se conoce",
+    "NUNCA analizar psicologicamente - reaccionar como ser vivo",
+    "El dialogo refleja la personalidad, no la explica",
+    "Las emociones se muestran, no se nombran"
+  ],
+
+  "ejemplos": [
+    {
+      "id": "enano_fanatico_saludo",
+      "raza": "enano",
+      "rasgos": ["fanatico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Golpear el suelo con el baston*",
+      "dialogo": "¡Los designios no se cuestionan, forastero!"
+    },
+    {
+      "id": "enano_fanatico_pregunta",
+      "raza": "enano",
+      "rasgos": ["fanatico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "pregunta",
+      "accion": "*Frunce el ceño con desprecio*",
+      "dialogo": "Las respuestas vienen a quienes tienen fe, no a los curiosos."
+    },
+    {
+      "id": "enano_estoico_saludo",
+      "raza": "enano",
+      "rasgos": ["estoico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Asentir levemente sin cambiar de expresion*",
+      "dialogo": "Hmm."
+    },
+    {
+      "id": "enano_estoico_queja",
+      "raza": "enano",
+      "rasgos": ["estoico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "queja",
+      "accion": "*Permanecer inmovil, con la mirada fija*",
+      "dialogo": "Las palabras no cambian la realidad."
+    },
+    {
+      "id": "enano_estoico_amenaza",
+      "raza": "enano",
+      "rasgos": ["estoico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "amenaza",
+      "accion": "*No retroceder ni un centimetro*",
+      "dialogo": "El miedo es para quienes tienen algo que perder."
+    },
+    {
+      "id": "enano_general_saludo",
+      "raza": "enano",
+      "rasgos": [],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Cruzar los brazos sobre el pecho*",
+      "dialogo": "¿Que trae a un forastero por estas tierras?"
+    },
+    {
+      "id": "enano_general_comercio",
+      "raza": "enano",
+      "rasgos": [],
+      "rol": "mercader",
+      "tipo_interaccion": "comercio",
+      "accion": "*Despejar un espacio en el mostrador*",
+      "dialogo": "Oro, plata, gemas... no acepto promesas. ¿Que necesitas?"
+    },
+    {
+      "id": "humano_arrogante_saludo",
+      "raza": "humano",
+      "rasgos": ["arrogante"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Mirar de arriba a abajo con desden*",
+      "dialogo": "Ah, otro mendigo buscando atencion. ¿Que quieres?"
+    },
+    {
+      "id": "humano_arrogante_elogio",
+      "raza": "humano",
+      "rasgos": ["arrogante"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "elogio",
+      "accion": "*Esbozar una sonrisa condescendiente*",
+      "dialogo": "Naturalmente. Los elogios son... esperados."
+    },
+    {
+      "id": "humano_cobarde_amenaza",
+      "raza": "humano",
+      "rasgos": ["cobarde"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "amenaza",
+      "accion": "*Retroceder visiblemente, palideciendo*",
+      "dialogo": "¡E-espera! No hay necesidad de... de violencia. ¿Verdad?"
+    },
+    {
+      "id": "humano_cobarde_saludo",
+      "raza": "humano",
+      "rasgos": ["cobarde"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Mirar nerviosamente alrededor*",
+      "dialogo": "¿Eh? ¿Quien...? Oh, solo eres tu. ¿Que quieres?"
+    },
+    {
+      "id": "elfo_curioso_saludo",
+      "raza": "elfo",
+      "rasgos": ["curioso"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Inclinar la cabeza con interes*",
+      "dialogo": "Un rostro nuevo... ¿De que rincon del mundo vienes, viajero?"
+    },
+    {
+      "id": "elfo_curioso_historia",
+      "raza": "elfo",
+      "rasgos": ["curioso"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "charla",
+      "accion": "*Apoyarse en el marco de la puerta, atento*",
+      "dialogo": "Cuenta mas... los detalles son los que dan vida a las historias."
+    },
+    {
+      "id": "elfo_melancolico_saludo",
+      "raza": "elfo",
+      "rasgos": ["melancolico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Suspirar mirando al horizonte*",
+      "dialogo": "Otro viajero en el camino eterno... ¿que te trae por aqui?"
+    },
+    {
+      "id": "elfo_melancolico_despedida",
+      "raza": "elfo",
+      "rasgos": ["melancolico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "despedida",
+      "accion": "*Extender la mano lentamente*",
+      "dialogo": "Ve con cuidado... el mundo no perdona a los incautos."
+    },
+    {
+      "id": "orco_agresivo_saludo",
+      "raza": "orco",
+      "rasgos": ["agresivo"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Escupir al suelo*",
+      "dialogo": "¿Que miras, forastero? ¡Habla rapido o largate!"
+    },
+    {
+      "id": "orco_agresivo_amenaza",
+      "raza": "orco",
+      "rasgos": ["agresivo"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "amenaza",
+      "accion": "*Apretar los puños y dar un paso adelante*",
+      "dialogo": "¿Insinuas algo? ¡Porque si es asi, mejor que tengas espada!"
+    },
+    {
+      "id": "orco_leal_saludo",
+      "raza": "orco",
+      "rasgos": ["leal"],
+      "rol": "guardia",
+      "tipo_interaccion": "saludo",
+      "accion": "*Golpear el pecho con el puño*",
+      "dialogo": "¡Honra y fuerza! ¿Cual es tu negocio aqui?"
+    },
+    {
+      "id": "tabernero_alegre_saludo",
+      "raza": "cualquiera",
+      "rasgos": ["alegre"],
+      "rol": "tabernero",
+      "tipo_interaccion": "saludo",
+      "accion": "*Limpiar una jarra con una sonrisa*",
+      "dialogo": "¡Bienvenido, viajero! ¿Que te sirvo? ¡La primera va por mi!"
+    },
+    {
+      "id": "tabernero_serio_saludo",
+      "raza": "cualquiera",
+      "rasgos": ["serio"],
+      "rol": "tabernero",
+      "tipo_interaccion": "saludo",
+      "accion": "*Secar el mostrador sin levantar la vista*",
+      "dialogo": "¿Que quieres beber? No tengo todo el dia."
+    },
+    {
+      "id": "mercader_codicioso_comercio",
+      "raza": "cualquiera",
+      "rasgos": ["codicioso"],
+      "rol": "mercader",
+      "tipo_interaccion": "comercio",
+      "accion": "*Frotarse las manos*",
+      "dialogo": "Ah, interesado en mercancia... ¿Cuanto tienes? ¿Y cuanto estas dispuesto a pagar?"
+    },
+    {
+      "id": "mercader_codicioso_regateo",
+      "raza": "cualquiera",
+      "rasgos": ["codicioso"],
+      "rol": "mercader",
+      "tipo_interaccion": "regateo",
+      "accion": "*Hacer un gesto de rechazo*",
+      "dialogo": "¿Eso es todo? ¡Esta mercancia vale el doble! Pero... por ti, quizas podemos llegar a un acuerdo."
+    },
+    {
+      "id": "guardia_paranoico_saludo",
+      "raza": "cualquiera",
+      "rasgos": ["paranoico"],
+      "rol": "guardia",
+      "tipo_interaccion": "saludo",
+      "accion": "*Posar la mano en la empuñadura*",
+      "dialogo": "Alto. ¿Quien eres? ¿De donde vienes? ¿Cual es tu proposito?"
+    },
+    {
+      "id": "guardia_paranoico_noche",
+      "raza": "cualquiera",
+      "rasgos": ["paranoico"],
+      "rol": "guardia",
+      "tipo_interaccion": "saludo",
+      "accion": "*Apuntar con la lanza*",
+      "dialogo": "¡No des un paso mas! Identificate o conoceras el filo de mi acero."
+    },
+    {
+      "id": "curandero_humilde_saludo",
+      "raza": "cualquiera",
+      "rasgos": ["humilde"],
+      "rol": "curandero",
+      "tipo_interaccion": "saludo",
+      "accion": "*Levantar la vista de los hierbas*",
+      "dialogo": "Oh, bienvenido. ¿Necesitas curacion... o solo descanso?"
+    },
+    {
+      "id": "curandero_humilde_herida",
+      "raza": "cualquiera",
+      "rasgos": ["humilde"],
+      "rol": "curandero",
+      "tipo_interaccion": "herida",
+      "accion": "*Examinar la herida con delicadeza*",
+      "dialogo": "Esto sanara. Necesitas paciencia y estas hierbas. No cobro por ayudar."
+    },
+    {
+      "id": "herrero_valiente_saludo",
+      "raza": "cualquiera",
+      "rasgos": ["valiente"],
+      "rol": "herrero",
+      "tipo_interaccion": "saludo",
+      "accion": "*Dejar el martillo y limpiarse las manos*",
+      "dialogo": "¡Ha! Un cliente. ¿Necesitas acero? Tengo lo mejor de la region."
+    },
+    {
+      "id": "herrero_valiente_encargo",
+      "raza": "cualquiera",
+      "rasgos": ["valiente"],
+      "rol": "herrero",
+      "tipo_interaccion": "encargo",
+      "accion": "*Asentir con firmeza*",
+      "dialogo": "Un trabajo personalizado, ¿eh? Trae los materiales y el oro. Tres dias."
+    },
+    {
+      "id": "fanatico_estoico_conflicto",
+      "raza": "cualquiera",
+      "rasgos": ["fanatico", "estoico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "conflicto",
+      "accion": "*Permanecer completamente inmovil*",
+      "dialogo": "La fe no necesita defensa. La verdad permanece."
+    },
+    {
+      "id": "fanatico_estoico_incredulo",
+      "raza": "cualquiera",
+      "rasgos": ["fanatico", "estoico"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "pregunta",
+      "accion": "*No mostrar ninguna reaccion*",
+      "dialogo": "Las preguntas de los incredulos no merecen respuesta."
+    },
+    {
+      "id": "traicionero_amable_saludo",
+      "raza": "cualquiera",
+      "rasgos": ["traicionero"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Sonreir con calidez excesiva*",
+      "dialogo": "¡Que placer conocerte! Eres nuevo aqui, ¿verdad? Debo presentarte a... ciertas personas."
+    },
+    {
+      "id": "traicionero_amable_informacion",
+      "raza": "cualquiera",
+      "rasgos": ["traicionero"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "pregunta",
+      "accion": "*Acariciarse la barbilla pensativamente*",
+      "dialogo": "Interesante pregunta... podria saber algo. ¿Que estas dispuesto a ofrecer a cambio?"
+    },
+    {
+      "id": "desconfiado_neutral_saludo",
+      "raza": "cualquiera",
+      "rasgos": ["desconfiado"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Entrecerrar los ojos*",
+      "dialogo": "No te conozco. ¿Que quieres realmente?"
+    },
+    {
+      "id": "desconfiado_neutral_oferta",
+      "raza": "cualquiera",
+      "rasgos": ["desconfiado"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "comercio",
+      "accion": "*Cruzar los brazos*",
+      "dialogo": "¿Por que alguien regalarias eso? Nadie da nada por nada."
+    },
+    {
+      "id": "gracioso_charla",
+      "raza": "cualquiera",
+      "rasgos": ["gracioso"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "charla",
+      "accion": "*Reir con ganas*",
+      "dialogo": "¡Ja! ¿Sabes lo que dijo el esqueleto al otro? ¡Nada, porque no tiene lengua! ...Bueno, era mejor en persona."
+    },
+    {
+      "id": "pesimista_saludo",
+      "raza": "cualquiera",
+      "rasgos": ["pesimista"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "saludo",
+      "accion": "*Encogerse de hombros*",
+      "dialogo": "Otro dia mas... supongo. ¿Que quieres?"
+    },
+    {
+      "id": "pesimista_plan",
+      "raza": "cualquiera",
+      "rasgos": ["pesimista"],
+      "rol": "cualquiera",
+      "tipo_interaccion": "plan",
+      "accion": "*Sacudir la cabeza*",
+      "dialogo": "No va a funcionar. Nada funciona. Pero... haz lo que quieras."
+    }
+  ]
+}
