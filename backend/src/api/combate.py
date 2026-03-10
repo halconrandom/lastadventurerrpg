@@ -78,24 +78,29 @@ def iniciar_combate():
 def ejecutar_accion():
     """Ejecuta una acción del jugador en combate"""
     global combate_activo
-    
+
     if not combate_activo:
         return api_response(False, "No hay combate activo", status_code=400)
-    
+
     data = request.get_json()
     actor_id = data.get('actor_id', 'jugador_1')
     accion = data.get('accion')
     objetivo_id = data.get('objetivo_id')
     habilidad_nombre = data.get('habilidad_nombre')
     item_id = data.get('item_id')
-    
+
     if not accion:
         return api_response(False, "No se especificó acción", status_code=400)
-    
+
+    # Validar acción
+    acciones_validas = ["atacar", "habilidad", "item", "bloquear", "evadir", "huir"]
+    if accion not in acciones_validas:
+        return api_response(False, f"Acción no válida. Acciones válidas: {', '.join(acciones_validas)}", status_code=400)
+
     resultado = combate_activo.ejecutar_accion(
         actor_id, accion, objetivo_id, habilidad_nombre, item_id
     )
-    
+
     return api_response(True, "Acción ejecutada", resultado)
 
 
